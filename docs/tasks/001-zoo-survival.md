@@ -38,25 +38,25 @@ Convenciones:
 
 **Objetivo:** todos los modelos en Godot, con sus animaciones.
 
-- [ ] T-020 [P] Crear las utilidades comunes de Blender: `lib/materials.py`, `lib/mesh_utils.py`, `lib/anim_utils.py` y `lib/export_utils.py`
-- [ ] T-021 `prepare_giraffe.py`: escala, nombres estándar de las acciones, nueva acción `death` y exportación — RF-110, RF-111, RF-113
-- [ ] T-022 `prepare_elephant.py`: lo mismo para el elefante — RF-110, RF-111, RF-113
-- [ ] T-023 [P] `prepare_zombie.py`: escala, nombres estándar (`walk`, `run`, `attack`, `hit`, `death`, `idle`) y exportación — RF-67
-- [ ] T-024 `prepare_fp_arms.py`: quitar las animaciones de otras herramientas, renombrar (`fire`, `draw`, `carry`, `axe_swing` a partir de `E_Martillo`) y agregar la acción `reload` — RF-111, RF-113
-- [ ] T-024b [P] Preparar `hacha.glb`: escala, origen en el mango, texturas reducidas y exportación — RF-5A
-- [ ] T-025 [P] `models/giraffe_feeder.py`: comedero elevado sobre poste — RF-24
-- [ ] T-026 [P] `models/elephant_feeder.py`: comedero bajo — RF-24
-- [ ] T-027 [P] `models/food_crate.py` y `models/ammo_box.py` — RF-112
-- [ ] T-028 Crear la variante `weak` en Godot (`speed_scale` bajo + cabeza baja) para ambos animales — RF-27, RF-111
-- [ ] T-029 Verificar: reproducir en Godot todas las animaciones de cada modelo y comparar escalas lado a lado
-- [ ] T-030 Registrar autor, fuente y licencia de cada modelo en `docs/assets.md`
+- [x] T-020 [P] Crear las utilidades comunes de Blender: `lib/materials.py`, `lib/mesh_utils.py`, `lib/anim_utils.py` y `lib/export_utils.py` (además `lib/rig_prep.py`, `lib/animal_prep.py` y `lib/preview.py`)
+- [x] T-021 `prepare_giraffe.py`: escala, nombres estándar de las acciones, nuevas acciones `death` y `weak` y exportación — RF-110, RF-111, RF-113
+- [x] T-022 `prepare_elephant.py`: lo mismo para el elefante — RF-110, RF-111, RF-113
+- [x] T-023 [P] `prepare_zombie.py`: escala, nombres estándar (`walk`, `run`, `attack`, `hit`, `death`, `idle`) y exportación — RF-67
+- [x] T-024 `prepare_fp_arms.py`: quitar las animaciones de otras herramientas y renombrar (`shotgun_idle`, `shotgun_fire`, `shotgun_draw`, `axe_idle`, `axe_swing` a partir de `E_Martillo`) — RF-111, RF-113. La recarga se hace por código en T-052 y el transporte de la caja en T-034 (ver plan §1.4)
+- [x] T-024b [P] Preparar `hacha.glb`: escala, origen en el mango, texturas reducidas y exportación — RF-5A
+- [x] T-025 [P] `models/giraffe_feeder.py`: comedero elevado sobre poste — RF-24
+- [x] T-026 [P] `models/elephant_feeder.py`: comedero bajo — RF-24
+- [x] T-027 [P] `models/food_crate.py` y `models/ammo_box.py` — RF-112
+- [x] T-028 Crear la variante `weak` para ambos animales (se hizo en Blender: `idle` 1.6× más lento con cuello y cabeza caídos) — RF-27, RF-111
+- [x] T-029 Verificar: reproducir en Godot todas las animaciones de cada modelo y comparar escalas lado a lado
+- [x] T-030 Registrar autor, fuente y licencia de cada modelo en `docs/assets.md`
 
 ## Fase 3: Alimentación y transporte de cajas
 
 - [ ] T-031 Crear `food_crate.tscn` + `food_crate.gd` (`Interactable`: recoger) — RF-11
 - [ ] T-032 Crear `food_crate_spawn.tscn` + coordinador de reaparición y máximo de cajas activas — RF-10, RF-13
 - [ ] T-033 Crear `PlayerCarry` con los estados `ARMED`/`CARRYING`, velocidad reducida y una sola caja — RF-04, RF-05, RF-12
-- [ ] T-034 Viewmodel: animación `carry` con la caja y la escopeta oculta — RF-03, RF-05
+- [ ] T-034 Viewmodel de transporte: brazos ocultos y caja frente a la cámara con balanceo procedural al caminar — RF-03, RF-05
 - [ ] T-035 Crear `Feeder` (`Interactable`: alimentar si `CARRYING` y el animal está contenido) — RF-25
 - [ ] T-036 Crear `Enclosure` (sin daño todavía) + `EnclosureRegistry`; colocar a la jirafa, al elefante y sus comederos; paseo dentro del recinto — RF-20, RF-24
 - [ ] T-037 Hacer que la caja se pierda al morir el jugador — RF-14
@@ -74,7 +74,7 @@ Convenciones:
 
 - [ ] T-050 Crear `AmmoState` (lógica pura) con pruebas — RF-51, CA-12
 - [ ] T-051 Crear `shotgun.gd`: hitscan con N perdigones, dispersión, alcance y cadencia — RF-50, RF-54
-- [ ] T-052 Recarga con animación y duración — RF-52
+- [ ] T-052 Recarga con animación procedural (Tween: bajar el arma, bombear la corredera `Corredera`, volver) y duración — RF-52
 - [ ] T-053 Agregar feedback: fogonazo, retroceso de cámara, sonido e impacto — RF-53
 - [ ] T-054 Bloquear el disparo y la recarga en `CARRYING` — RF-05
 - [ ] T-055 Crear `ammo_pickup.tscn`: recogida automática hasta el máximo y desaparición por tiempo — RF-56, RF-57

@@ -1,0 +1,45 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/debug/model_showcase.gd" id="1_showcase"]
+
+[sub_resource type="ProceduralSkyMaterial" id="sky_mat"]
+sky_top_color = Color(0.36, 0.42, 0.5, 1)
+sky_horizon_color = Color(0.62, 0.6, 0.55, 1)
+
+[sub_resource type="Sky" id="sky"]
+sky_material = SubResource("sky_mat")
+
+[sub_resource type="Environment" id="env"]
+background_mode = 2
+sky = SubResource("sky")
+ambient_light_source = 3
+tonemap_mode = 2
+
+[sub_resource type="PlaneMesh" id="ground_mesh"]
+size = Vector2(120, 40)
+
+[node name="ModelShowcase" type="Node3D"]
+script = ExtResource("1_showcase")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.8, -0.6, 0)
+shadow_enabled = true
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+position = Vector3(28, 0, 0)
+mesh = SubResource("ground_mesh")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+current = true
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Help" type="Label" parent="UI"]
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 900.0
+offset_bottom = 120.0
+theme_override_font_sizes/font_size = 26

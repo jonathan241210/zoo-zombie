@@ -63,9 +63,10 @@ La distancia entre la jirafa y el elefante es de ~71 m. Los refugios quedan en l
 
 | Animación | Solución |
 |---|---|
-| Jirafa y elefante: `weak` | En Godot: `idle` o `walk` con `speed_scale` bajo + cabeza baja por `SkeletonModifier3D` o un Tween de hueso |
-| Jirafa y elefante: `death` | En Blender, por script: una acción nueva sobre el rig existente (caer de lado y quedar quieto) que se exporta en el mismo GLB |
-| Brazos: `reload` | En Blender, por script: una acción nueva sobre el rig de `brazo_escopeta` (bajar el arma, bombear la corredera y volver). Alternativa: un Tween en Godot |
+| Jirafa y elefante: `weak` | ✅ En Blender (`lib/rig_prep.add_weak_action`): copia de `idle` 1.6× más lenta, con cuello y cabeza caídos |
+| Jirafa y elefante: `death` | ✅ En Blender (`lib/rig_prep.add_death_action`): se doblan las patas, el cuerpo cae de lado y queda apoyado en el suelo (2.25 s) |
+| Brazos: `reload` | En Godot, por código (Fase 5, T-052): Tween sobre el viewmodel y el nodo de la corredera (`Corredera`), que es un nodo aparte en el GLB |
+| Transporte de caja | El rig de brazos tiene **un solo brazo** (derecho) y sus poses de "caja" no se ven creíbles. Al cargar comida se ocultan los brazos y la caja se muestra frente a la cámara con balanceo procedural (Fase 3, T-034) |
 
 ---
 
@@ -210,6 +211,23 @@ Todo esto lo hace un script por modelo: `blender_zoo-zombie/scripts/prepare/prep
 - Navmesh horneado con `tools/bake_navmesh.gd`: 2 542 polígonos, agente de radio 0.5 m. El área caminable sigue la cerca perimetral irregular del zoológico.
 - `tools/validate_level.gd` comprueba que cada marcador esté sobre el suelo, libre de colisiones y sobre el navmesh. Los puntos de aparición de zombis se recolocaron junto al borde interior de la cerca. El punto "SouthEast" se descartó porque quedaba a 20 m de la jirafa. Quedan 8 puntos, todos a 36 m o más de los recintos.
 - **Rendimiento** (`-- --perf`, 1920×1080, Apple M3): 120 FPS de promedio, mínimo 113, ~1 060 draw calls. El límite lo pone la frecuencia de la pantalla. CA-15 se cumple.
+
+**Resultado de la Fase 2 (2026-11-17):**
+
+| GLB en Godot | Script | Resultado |
+|---|---|---|
+| `animals/giraffe.glb` | `prepare/prepare_giraffe.py` | 5.0 m, 7 animaciones (`idle`, `walk`, `run`, `eat`, `attack`, `weak`, `death`), 9.7 MB |
+| `animals/elephant.glb` | `prepare/prepare_elephant.py` | 3.2 m, las mismas 7 animaciones, 8.2 MB |
+| `zombies/zombie.glb` | `prepare/prepare_zombie.py` | 1.8 m, 9 animaciones (`idle`, `idle_2`, `walk`, `walk_2`, `run`, `attack`, `attack_2`, `hit`, `death`), 1.2 MB |
+| `weapons/fp_arms_shotgun.glb` | `prepare/prepare_fp_arms.py` | Brazo derecho + escopeta, ~0.9 m, centrado en el origen; `shotgun_idle`, `shotgun_fire`, `shotgun_draw`, `axe_idle`, `axe_swing` |
+| `weapons/axe.glb` | `prepare/prepare_axe.py` | 0.75 m, mango vertical, origen en el punto de agarre |
+| `props/*.glb` | `models/*.py` | Caja de comida, caja de munición y comederos, todos procedurales y de menos de 700 triángulos |
+
+Lecciones del pipeline (ya resueltas en `lib/`):
+
+- El importador glTF de Blender debe usar `guess_original_bind_pose=False`. Si no, los esqueletos convertidos desde FBX (Sketchfab) se exportan con las animaciones giradas 90° (el modelo queda acostado).
+- Los modelos de Sketchfab vienen envueltos en cadenas de nodos vacíos con escalas que se compensan (×34 y ×0.01). Se eliminan solo los vacíos **por encima** del esqueleto. Los de abajo se conservan porque pueden ser piezas unidas a huesos o animadas, como la escopeta y su corredera.
+- La verificación visual se hace **en Godot** con `tools/preview_model.gd`, porque el ida y vuelta por Blender no es confiable para revisar esqueletos.
 
 ### 3.4 Scripts de Blender
 
