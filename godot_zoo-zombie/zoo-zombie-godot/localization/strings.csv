@@ -1,0 +1,97 @@
+keys,es,en
+GAME_TITLE,Zoo Zombie,Zoo Zombie
+PRESS_ANY_KEY,Presiona cualquier tecla,Press any key
+PRESS_ANY_BUTTON,Presiona cualquier botón,Press any button
+MENU_PLAY,Jugar,Play
+MENU_HOW_TO_PLAY,Cómo jugar,How to play
+MENU_CONTROLS,Controles,Controls
+MENU_SETTINGS,Configuración,Settings
+MENU_CREDITS,Créditos,Credits
+MENU_QUIT,Salir,Quit
+MENU_RESUME,Continuar,Resume
+MENU_RESTART,Reiniciar,Restart
+MENU_QUIT_TO_MENU,Salir al menú,Quit to menu
+DIALOG_YES,Sí,Yes
+DIALOG_NO,No,No
+DIALOG_CONFIRM,Confirmar,Confirm
+DIALOG_CANCEL,Cancelar,Cancel
+DIALOG_BACK,Volver,Back
+DIALOG_ACCEPT,Aceptar,Accept
+DIALOG_QUIT_CONFIRM,¿Seguro que quieres salir?,Are you sure you want to quit?
+DIALOG_RESTART_CONFIRM,¿Reiniciar la partida?,Restart the game?
+DIALOG_QUIT_TO_MENU_CONFIRM,¿Volver al menú principal?,Return to the main menu?
+DIALOG_WATCH_TUTORIAL,¿Ver el tutorial rápido?,Watch the quick tutorial?
+DIALOG_DONT_ASK_AGAIN,No volver a preguntar,Don't ask again
+DIALOG_KEEP_CHANGES,¿Mantener estos cambios?,Keep these changes?
+DIALOG_REVERT_COUNTDOWN,Se revertirán en %d s,Reverting in %d s
+LOADING,Cargando...,Loading...
+SETTINGS_TAB_GRAPHICS,Gráficos,Graphics
+SETTINGS_TAB_AUDIO,Audio,Audio
+SETTINGS_TAB_CONTROLS,Controles,Controls
+SETTINGS_TAB_GAMEPLAY,Gameplay,Gameplay
+SETTINGS_RESTORE_DEFAULTS,Restaurar valores por defecto,Restore defaults
+SETTINGS_WINDOW_MODE,Modo de ventana,Window mode
+SETTINGS_WINDOW_MODE_WINDOWED,Ventana,Windowed
+SETTINGS_WINDOW_MODE_FULLSCREEN,Pantalla completa,Fullscreen
+SETTINGS_WINDOW_MODE_BORDERLESS,Sin bordes,Borderless
+SETTINGS_RESOLUTION,Resolución,Resolution
+SETTINGS_VSYNC,VSync,VSync
+SETTINGS_MAX_FPS,Límite de FPS,FPS limit
+SETTINGS_MAX_FPS_UNLIMITED,Sin límite,Unlimited
+SETTINGS_SHADOW_QUALITY,Calidad de sombras,Shadow quality
+SETTINGS_QUALITY_LOW,Baja,Low
+SETTINGS_QUALITY_MEDIUM,Media,Medium
+SETTINGS_QUALITY_HIGH,Alta,High
+SETTINGS_RENDER_SCALE,Escala de renderizado,Render scale
+SETTINGS_ANTIALIASING,Antialiasing,Anti-aliasing
+SETTINGS_AA_OFF,Apagado,Off
+SETTINGS_AA_FXAA,FXAA,FXAA
+SETTINGS_AA_MSAA2X,MSAA 2x,MSAA 2x
+SETTINGS_BRIGHTNESS,Brillo,Brightness
+SETTINGS_MASTER_VOLUME,Volumen general,Master volume
+SETTINGS_MUSIC_VOLUME,Música,Music
+SETTINGS_SFX_VOLUME,Efectos,Effects
+SETTINGS_UI_VOLUME,Interfaz,Interface
+SETTINGS_MUTE_ON_FOCUS_LOSS,Silenciar al perder el foco,Mute when unfocused
+SETTINGS_MOUSE_SENSITIVITY,Sensibilidad del mouse,Mouse sensitivity
+SETTINGS_STICK_SENSITIVITY,Sensibilidad del stick,Stick sensitivity
+SETTINGS_INVERT_Y_MOUSE,Invertir eje Y (mouse),Invert Y axis (mouse)
+SETTINGS_INVERT_Y_STICK,Invertir eje Y (stick),Invert Y axis (stick)
+SETTINGS_FOV,Campo de visión,Field of view
+SETTINGS_VIBRATION,Vibración del control,Controller vibration
+SETTINGS_REMAP_CONTROLS,Reasignar controles,Remap controls
+SETTINGS_SHOW_TIPS,Consejos activados,Tips enabled
+SETTINGS_RESET_TIPS,Reiniciar consejos,Reset tips
+SETTINGS_UI_SCALE,Tamaño de la interfaz,Interface size
+SETTINGS_CAMERA_SHAKE,Movimiento de cámara al disparar,Camera shake when firing
+SETTINGS_CROSSHAIR,Mira visible,Show crosshair
+SETTINGS_LANGUAGE,Idioma,Language
+SETTINGS_ON,Sí,On
+SETTINGS_OFF,No,Off
+LANGUAGE_ES,Español,Español
+LANGUAGE_EN,English,English
+PROMPT_INTERACT,Interactuar,Interact
+PROMPT_PICK_UP,Recoger,Pick up
+PROMPT_FEED,Alimentar,Feed
+ANIMAL_GIRAFFE,Jirafa,Giraffe
+ANIMAL_ELEPHANT,Elefante,Elephant
+WAVE_LABEL,Oleada,Wave
+HUD_SCORE,Puntaje,Score
+HUD_TIME,Tiempo,Time
+HUD_AMMO,Munición,Ammo
+HUD_HEALTH,Vida,Health
+HUD_FOOD,Alimento,Food
+ACTION_MOVE,Moverse,Move
+ACTION_LOOK,Mirar,Look
+ACTION_SPRINT,Correr,Sprint
+ACTION_FIRE,Disparar / Golpear,Fire / Strike
+ACTION_RELOAD,Recargar,Reload
+ACTION_INTERACT,Interactuar,Interact
+ACTION_SWITCH_WEAPON,Cambiar arma,Switch weapon
+ACTION_SHOTGUN,Escopeta,Shotgun
+ACTION_AXE,Hacha,Axe
+ACTION_PAUSE,Pausa,Pause
+ACTION_UI_ACCEPT,Aceptar,Accept
+ACTION_UI_BACK,Volver,Back
+ACTION_UI_TAB_PREV,Pestaña anterior,Previous tab
+ACTION_UI_TAB_NEXT,Pestaña siguiente,Next tab

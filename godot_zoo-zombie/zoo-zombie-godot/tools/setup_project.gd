@@ -8,10 +8,21 @@ const LOOK_DEADZONE := 0.15
 ## Matches every keyboard/mouse/gamepad (InputEvent.device -1).
 const ALL_DEVICES := -1
 
-const AUTOLOADS := {
-	"EventBus": "res://scripts/autoload/event_bus.gd",
-	"GameManager": "res://scripts/autoload/game_manager.gd",
-}
+## Order matters: SettingsManager loads first so window/audio start with saved settings.
+const AUTOLOADS: Array[Array] = [
+	["SettingsManager", "res://scripts/autoload/settings_manager.gd"],
+	["EventBus", "res://scripts/autoload/event_bus.gd"],
+	["GameManager", "res://scripts/autoload/game_manager.gd"],
+	["InputGlyphs", "res://scripts/autoload/input_glyphs.gd"],
+	["SceneLoader", "res://scripts/autoload/scene_loader.gd"],
+]
+
+const UI_THEME := "res://scenes/ui/theme/ui_theme.tres"
+const BUS_LAYOUT := "res://default_bus_layout.tres"
+const TRANSLATIONS := [
+	"res://localization/strings.es.translation",
+	"res://localization/strings.en.translation",
+]
 
 const PHYSICS_LAYERS := {
 	1: "world",
@@ -29,6 +40,10 @@ func _init() -> void:
 	_setup_input()
 	_setup_autoloads()
 	_setup_layers()
+	ProjectSettings.set_setting("gui/theme/custom", UI_THEME)
+	ProjectSettings.set_setting("audio/buses/default_bus_layout", BUS_LAYOUT)
+	ProjectSettings.set_setting("internationalization/locale/fallback", "es")
+	ProjectSettings.set_setting("internationalization/locale/translations", PackedStringArray(TRANSLATIONS))
 	ProjectSettings.set_setting("application/run/main_scene", "res://scenes/main/game.tscn")
 	ProjectSettings.set_setting("editor_plugins/enabled", PackedStringArray(["res://addons/gut/plugin.cfg"]))
 	var err := ProjectSettings.save()
@@ -54,12 +69,19 @@ func _setup_input() -> void:
 	_action("weapon_1", DEADZONE, [_key(KEY_1)])
 	_action("weapon_2", DEADZONE, [_key(KEY_2)])
 	_action("pause", DEADZONE, [_key(KEY_ESCAPE), _button(JOY_BUTTON_START)])
+	_action("ui_tab_prev", DEADZONE, [_key(KEY_Q), _button(JOY_BUTTON_LEFT_SHOULDER)])
+	_action("ui_tab_next", DEADZONE, [_key(KEY_E), _button(JOY_BUTTON_RIGHT_SHOULDER)])
 
 
 func _setup_autoloads() -> void:
-	for autoload_name: String in AUTOLOADS:
+	# Clear first so re-runs keep the declared order.
+	for prop: Dictionary in ProjectSettings.get_property_list():
+		var prop_name: String = prop["name"]
+		if prop_name.begins_with("autoload/"):
+			ProjectSettings.set_setting(prop_name, null)
+	for entry: Array in AUTOLOADS:
 		# Leading "*" registers the autoload as a singleton (global name).
-		ProjectSettings.set_setting("autoload/" + autoload_name, "*" + AUTOLOADS[autoload_name])
+		ProjectSettings.set_setting("autoload/" + String(entry[0]), "*" + String(entry[1]))
 
 
 func _setup_layers() -> void:

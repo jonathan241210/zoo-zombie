@@ -8,12 +8,12 @@ Convenciones: `[ ]` pendiente · `[x]` hecha · `[P]` paralelizable. **Ninguna f
 
 ## Fase A: Base de interfaz (en paralelo con la Fase 1 de la 001)
 
-- [ ] T-A01 [P] Crear el tema `ui_theme.tres`: tipografía, paleta y estilos de foco visibles — RF-101
-- [ ] T-A02 [P] Crear el autoload `SettingsManager` (cargar, guardar y aplicar), con buses de audio `Master`, `Music`, `SFX` y `UI`, y pruebas — RF-70 a RF-75
-- [ ] T-A03 [P] Crear el autoload `InputGlyphs`: detección de dispositivo y textura por acción; importar Kenney Input Prompts — RF-64
-- [ ] T-A04 [P] Crear el autoload `SceneLoader` con carga en segundo plano — RF-11
-- [ ] T-A05 Crear `localization/strings.csv` (es por defecto + en), importarlo en Godot y definir el español como idioma inicial — RF-102
-- [ ] T-A06 Agregar las acciones de menú (`ui_tab_prev` y `ui_tab_next`) al input map — RF-100
+- [x] T-A01 [P] Crear el tema `ui_theme.tres`: tipografía, paleta y estilos de foco visibles — RF-101
+- [x] T-A02 [P] Crear el autoload `SettingsManager` (cargar, guardar y aplicar), con buses de audio `Master`, `Music`, `SFX` y `UI`, y pruebas — RF-70 a RF-75
+- [x] T-A03 [P] Crear el autoload `InputGlyphs`: detección de dispositivo y textura por acción; importar Kenney Input Prompts — RF-64
+- [x] T-A04 [P] Crear el autoload `SceneLoader` con carga en segundo plano — RF-11
+- [x] T-A05 Crear `localization/strings.csv` (es por defecto + en), importarlo en Godot y definir el español como idioma inicial — RF-102
+- [x] T-A06 Agregar las acciones de menú (`ui_tab_prev` y `ui_tab_next`) al input map — RF-100
 
 ## Fase B: Menús principales
 

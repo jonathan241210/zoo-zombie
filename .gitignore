@@ -25,3 +25,7 @@ Thumbs.db
 CLAUDE.md
 CLAUDE.local.md
 .claude/
+
+# Paquete completo de iconos de Kenney (21 MB). Los iconos usados están en
+# godot_zoo-zombie/zoo-zombie-godot/assets/ui/glyphs/ junto con su licencia.
+assets/kenney_input-prompts_*/
