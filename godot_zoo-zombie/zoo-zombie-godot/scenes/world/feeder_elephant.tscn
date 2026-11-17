@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/feeder.gd" id="1_feeder"]
+[ext_resource type="PackedScene" path="res://assets/models/props/elephant_feeder.glb" id="2_model"]
+[ext_resource type="Script" path="res://scripts/components/interactable.gd" id="3_interactable"]
+
+[sub_resource type="SphereShape3D" id="reach"]
+radius = 3.2
+
+[sub_resource type="BoxShape3D" id="body"]
+size = Vector3(1.84, 0.74, 0.82)
+
+[node name="Feeder" type="Node3D"]
+script = ExtResource("1_feeder")
+eat_offset = Vector3(0, 0, 1.7)
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+
+[node name="Interactable" type="Area3D" parent="."]
+script = ExtResource("3_interactable")
+prompt_key = "PROMPT_FEED"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactable"]
+position = Vector3(0, 1, 0)
+shape = SubResource("reach")
+
+[node name="Body" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
+position = Vector3(0, 0.37, 0)
+shape = SubResource("body")

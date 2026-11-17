@@ -1,0 +1,30 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/pickups/food_crate.gd" id="1_crate"]
+[ext_resource type="PackedScene" path="res://assets/models/props/food_crate.glb" id="2_model"]
+[ext_resource type="Script" path="res://scripts/components/interactable.gd" id="3_interactable"]
+
+[sub_resource type="SphereShape3D" id="reach"]
+radius = 1.4
+
+[sub_resource type="BoxShape3D" id="body"]
+size = Vector3(0.6, 0.4, 0.4)
+
+[node name="FoodCrate" type="Node3D"]
+script = ExtResource("1_crate")
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+
+[node name="Interactable" type="Area3D" parent="."]
+script = ExtResource("3_interactable")
+prompt_key = "PROMPT_PICK_UP"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactable"]
+position = Vector3(0, 0.4, 0)
+shape = SubResource("reach")
+
+[node name="Body" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
+position = Vector3(0, 0.2, 0)
+shape = SubResource("body")

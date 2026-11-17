@@ -16,6 +16,11 @@ func get_zombie_spawns() -> Array[Marker3D]:
 	return _markers_in("Markers/ZombieSpawns")
 
 
+## Feeder position authored for an enclosure (Markers/Enclosures/<name>/FeederAnchor).
+func get_feeder_anchor(enclosure_name: String) -> Marker3D:
+	return get_node_or_null("Markers/Enclosures/%s/FeederAnchor" % enclosure_name) as Marker3D
+
+
 ## Returns the map mesh node for an enclosure (e.g. "REC_ESTANQUE_1"), or null.
 func find_map_node(node_name: String) -> Node3D:
 	return map.find_child(node_name, true, false) as Node3D

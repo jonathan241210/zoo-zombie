@@ -33,16 +33,18 @@ No existe ningún sistema: ni movimiento, armas, enemigos, navegación, vida, es
 
 | Objeto | Posición (x, y) | Tamaño | Uso en el juego |
 |---|---|---|---|
-| `REC_RECINTO_RUSTICO_M4_DIAGONAL` | (22.9, -41.2) | 18 × 17 m | **Recinto de la jirafa** |
-| `REC_RECINTO_RUSTICO_M2_CENTRO_NORTE` | (11.3, 29.3) | 18 × 9 m | **Recinto del elefante** |
-| `REC_ESTANQUE_1` | (24.3, 21.7) | 10 × 10 m | Refugio |
-| `REC_RECINTO_RUSTICO_M5_CENTRO_SUR` | (19.2, 5.5) | 18 × 8 m | Refugio |
+| `REC_HEX_CENTRAL` | (-11.2, -3.2) | 16 × 14 m | **Recinto de la jirafa** (hexágono abierto) |
+| `REC_RECINTO_ESTE` | (52.5, 12.9) | 14 × 10 m | **Recinto del elefante** (jaula abierta con alberca) |
 | `REC_RECINTO_NORTE_CENTRAL` | (16.8, -31.3) | 11 × 8 m | Refugio |
+| `REC_JAULA_NORTE_2` | (-47.7, 3.3) | 10 × 6 m | Refugio |
+| `REC_HEX_SUR_5` | (-10.0, -55.3) | 12 × 10 m | Refugio |
 | `EST_CAFETERIA` | (19.3, -8.7) | 11 × 9 m | Aparición del jugador |
 | `EST_ENTRADA_PORTICO` | (-9.8, 64.4) | 18 × 3 m | Candidato para aparición de zombis |
 | `EST_VETERINARIA`, `EST_ADMINISTRACION`, `EST_TIENDA`, `EST_KIOSCO_ESTE`, `EST_MIRADOR_ESTE`, `EST_SANITARIOS_*` | varias | — | Candidatos para puntos de cajas de alimento |
 
-La distancia entre la jirafa y el elefante es de ~71 m. Los refugios quedan en la franja central, entre los dos recintos y cerca de la cafetería.
+La distancia entre la jirafa y el elefante es de ~66 m.
+
+> Los recintos `REC_RECINTO_RUSTICO_M*` son **galpones cerrados** (paredes sólidas y techo de ~3.2 m), así que no sirven para animales visibles. Se descubrió en la Fase 3 y se cambió a recintos abiertos (spec D-02, D-06, S-01).
 
 ### 1.4 Modelos descargados (`assets/models/`)
 
@@ -229,6 +231,14 @@ Lecciones del pipeline (ya resueltas en `lib/`):
 - Los modelos de Sketchfab vienen envueltos en cadenas de nodos vacíos con escalas que se compensan (×34 y ×0.01). Se eliminan solo los vacíos **por encima** del esqueleto. Los de abajo se conservan porque pueden ser piezas unidas a huesos o animadas, como la escopeta y su corredera.
 - La verificación visual se hace **en Godot** con `tools/preview_model.gd`, porque el ida y vuelta por Blender no es confiable para revisar esqueletos.
 
+**Resultado de la Fase 3 (2026-11-17):**
+
+- **Recintos:** `Enclosure` se construye en tiempo de ejecución a partir de la malla del mapa. Su contorno es la **envolvente convexa** de esa malla vista desde arriba, reducida 1.2 m, y coincide con la cerca en hexágonos y rectángulos. El suelo se mide con rayos verticales, porque la malla llega bajo tierra. Los puntos para deambular deben estar dentro del contorno, libres de obstáculos, a nivel del suelo (sin rocas ni vigas) y con línea libre desde el animal.
+- **Comederos:** se ubican con marcadores en el nivel (`Markers/Enclosures/<recinto>/FeederAnchor`), dentro de la cerca del lado del camino. El área de interacción, de 3.2 m, atraviesa la cerca para que el jugador alimente desde afuera.
+- **Interacción por proximidad** (`PlayerInteractor`), no por rayo: las cercas son mallas con colisión y bloquearían un rayo. Entre varios candidatos se elige el que la cámara mira.
+- **Viewmodel:** el GLB de brazos se importa en Godot a ~1/3 de su tamaño, por la escala negativa del esqueleto original. Se compensa en `player.tscn` con escala ×3 y una orientación calibrada con capturas. Las mallas del viewmodel no proyectan sombra.
+- Prueba de integración en `tests/integration/test_feeding_flow.gd` (recoger → cargar → alimentar).
+
 ### 3.4 Scripts de Blender
 
 ```
@@ -298,6 +308,7 @@ La Fase 5 puede avanzar en paralelo con la 3 y la 4.
 | Jirafa (9.9 MB) y elefante (8.3 MB) con texturas pesadas | Tamaño y memoria | Reducir texturas a 1024 px al prepararlos |
 | Animaciones de muerte y recarga hechas por código se ven rígidas | Calidad visual | Usar poses clave simples con buena curva (ease). Iterar con capturas por MCP |
 | Navmesh en un mapa grande, y zombis que atacan cercas | Zombis atorados | Puntos de ataque explícitos fuera de cada recinto y escena de prueba |
+| Animales que deambulan en línea recta y rozan rocas (Fase 3) | Visual: se detienen y cambian de rumbo | Hoy: barrido con el ancho del cuerpo y nuevo destino al atorarse. Mejora pendiente T-079: rutas con navmesh por recinto y evasión de obstáculos |
 | Animal escapado atorado en la geometría | Recaptura imposible | El animal usa el navmesh. Si queda atorado, se teletransporta al punto navegable más cercano |
 | Compatibilidad de GUT con Godot 4.7 | Sin tests automáticos | Comprobarlo en la Fase 1. La alternativa es gdUnit4 |
 

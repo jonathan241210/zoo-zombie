@@ -1,16 +1,39 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/game.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/levels/zoo_level.tscn" id="2_level"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="3_player"]
 [ext_resource type="Script" path="res://scripts/debug/perf_probe.gd" id="4_perf"]
+[ext_resource type="PackedScene" path="res://scenes/animals/giraffe.tscn" id="5_giraffe"]
+[ext_resource type="PackedScene" path="res://scenes/animals/elephant.tscn" id="6_elephant"]
+[ext_resource type="Script" path="res://scripts/world/enclosure_registry.gd" id="7_registry"]
+[ext_resource type="Resource" path="res://config/enclosure_config.tres" id="8_enclosure_config"]
+[ext_resource type="Script" path="res://scripts/world/food_crate_director.gd" id="9_crates"]
+[ext_resource type="Resource" path="res://config/food_crate_config.tres" id="10_crate_config"]
+[ext_resource type="PackedScene" path="res://scenes/pickups/food_crate.tscn" id="11_crate"]
+[ext_resource type="PackedScene" path="res://scenes/ui/interaction_prompt.tscn" id="12_prompt"]
 
 [node name="Game" type="Node3D"]
 script = ExtResource("1_game")
+animal_scenes = Array[PackedScene]([ExtResource("5_giraffe"), ExtResource("6_elephant")])
 
 [node name="ZooLevel" parent="." instance=ExtResource("2_level")]
 
 [node name="Player" parent="." instance=ExtResource("3_player")]
+
+[node name="EnclosureRegistry" type="Node" parent="."]
+script = ExtResource("7_registry")
+config = ExtResource("8_enclosure_config")
+
+[node name="FoodCrateDirector" type="Node" parent="."]
+script = ExtResource("9_crates")
+config = ExtResource("10_crate_config")
+crate_scene = ExtResource("11_crate")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="InteractionPrompt" parent="HUD" node_paths=PackedStringArray("interactor") instance=ExtResource("12_prompt")]
+interactor = NodePath("../../Player/PlayerInteractor")
 
 [node name="PerfProbe" type="Node" parent="." node_paths=PackedStringArray("level", "player")]
 script = ExtResource("4_perf")

@@ -59,6 +59,20 @@ navigation_mesh = ExtResource("3_navmesh")
 position = Vector3(9, 1.6, 8.7)
 rotation = Vector3(0, -1.5708, 0)
 
+[node name="Enclosures" type="Node3D" parent="Markers"]
+
+[node name="REC_HEX_CENTRAL" type="Node3D" parent="Markers/Enclosures"]
+
+[node name="FeederAnchor" type="Marker3D" parent="Markers/Enclosures/REC_HEX_CENTRAL"]
+position = Vector3(-8, 1.5, -1.8)
+rotation = Vector3(0, -0.57, 0)
+
+[node name="REC_RECINTO_ESTE" type="Node3D" parent="Markers/Enclosures"]
+
+[node name="FeederAnchor" type="Marker3D" parent="Markers/Enclosures/REC_RECINTO_ESTE"]
+position = Vector3(54.23, 1.5, -7.7)
+rotation = Vector3(0, -2.82, 0)
+
 [node name="FoodCrateSpawns" type="Node3D" parent="Markers"]
 
 [node name="Veterinaria" type="Marker3D" parent="Markers/FoodCrateSpawns"]

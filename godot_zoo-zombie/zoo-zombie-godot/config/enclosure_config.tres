@@ -5,4 +5,4 @@
 [resource]
 script = ExtResource("1_script")
 max_integrity = 300.0
-refuge_enclosures = PackedStringArray("REC_ESTANQUE_1", "REC_RECINTO_RUSTICO_M5_CENTRO_SUR", "REC_RECINTO_NORTE_CENTRAL")
+refuge_enclosures = PackedStringArray("REC_RECINTO_NORTE_CENTRAL", "REC_JAULA_NORTE_2", "REC_HEX_SUR_5")

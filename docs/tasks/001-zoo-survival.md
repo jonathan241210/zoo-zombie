@@ -53,14 +53,14 @@ Convenciones:
 
 ## Fase 3: Alimentación y transporte de cajas
 
-- [ ] T-031 Crear `food_crate.tscn` + `food_crate.gd` (`Interactable`: recoger) — RF-11
-- [ ] T-032 Crear `food_crate_spawn.tscn` + coordinador de reaparición y máximo de cajas activas — RF-10, RF-13
-- [ ] T-033 Crear `PlayerCarry` con los estados `ARMED`/`CARRYING`, velocidad reducida y una sola caja — RF-04, RF-05, RF-12
-- [ ] T-034 Viewmodel de transporte: brazos ocultos y caja frente a la cámara con balanceo procedural al caminar — RF-03, RF-05
-- [ ] T-035 Crear `Feeder` (`Interactable`: alimentar si `CARRYING` y el animal está contenido) — RF-25
-- [ ] T-036 Crear `Enclosure` (sin daño todavía) + `EnclosureRegistry`; colocar a la jirafa, al elefante y sus comederos; paseo dentro del recinto — RF-20, RF-24
-- [ ] T-037 Hacer que la caja se pierda al morir el jugador — RF-14
-- [ ] T-038 Verificar — CA-01, CA-03
+- [x] T-031 Crear `food_crate.tscn` + `food_crate.gd` (`Interactable`: recoger) — RF-11
+- [x] T-032 Crear `food_crate_spawn.tscn` + coordinador de reaparición y máximo de cajas activas — RF-10, RF-13
+- [x] T-033 Crear `PlayerCarry` con los estados `ARMED`/`CARRYING`, velocidad reducida y una sola caja — RF-04, RF-05, RF-12
+- [x] T-034 Viewmodel de transporte: brazos ocultos y caja frente a la cámara con balanceo procedural al caminar — RF-03, RF-05
+- [x] T-035 Crear `Feeder` (`Interactable`: alimentar si `CARRYING` y el animal está contenido) — RF-25
+- [x] T-036 Crear `Enclosure` (sin daño todavía) + `EnclosureRegistry`; colocar a la jirafa, al elefante y sus comederos; paseo dentro del recinto — RF-20, RF-24
+- [x] T-037 Hacer que la caja se pierda al morir el jugador — RF-14
+- [x] T-038 Verificar — CA-01, CA-03
 
 ## Fase 4: Hambre, debilidad y muerte de los animales
 
@@ -86,7 +86,7 @@ Convenciones:
 
 ## Fase 6: IA de los zombis (cazadores) y muerte del jugador
 
-- [ ] T-060 Crear `zombie.tscn`: `CharacterBody3D` + `NavigationAgent3D` + `HealthComponent` + `Hurtbox`
+- [ ] T-060 Crear `zombie.tscn`: `CharacterBody3D` + `NavigationAgent3D` + `HealthComponent` + `Hurtbox`. Sincronizar la velocidad de las animaciones con el movimiento: el clip `walk` del zombi corresponde a ~0.55 m/s y `run` a ~1.95 m/s (medido), así que con 2.5 m/s hay que usar `run` o escalar la reproducción
 - [ ] T-061 Máquina de estados `IDLE`/`CHASE`/`ATTACK`/`HIT`/`DEAD`, con detección por radio y línea de visión — RF-63, RF-64
 - [ ] T-062 Ataque cuerpo a cuerpo, incluso cuando el jugador carga una caja — RF-65
 - [ ] T-063 Muerte, probabilidad de soltar munición y desaparición del cuerpo — RF-55, RF-66, RF-68
@@ -103,6 +103,7 @@ Convenciones:
 - [ ] T-075 Recaptura: el área interior de un refugio libre asigna el animal al recinto y le mueve el comedero — RF-34, RF-45
 - [ ] T-076 Zombificación: horda extra en la posición del animal muerto — RF-47, RF-75
 - [ ] T-077 Escena de prueba: recinto bajo ataque → escape → recaptura
+- [ ] T-079 Navegación de animales consciente del entorno: que busquen rutas alrededor de rocas, refugios y vigas (navmesh por recinto con su propio radio de agente + `NavigationAgent3D` con evasión), en lugar de caminar en línea recta y reintentar al atorarse. Se reutiliza para huir y seguir al jugador (petición del usuario, 2026-11-17)
 - [ ] T-078 Verificar — CA-04, CA-05, CA-06, CA-07
 
 ## Fase 8: Oleadas y temporizadores

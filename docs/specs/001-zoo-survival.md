@@ -80,7 +80,7 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 
 | ID | Requisito |
 |---|---|
-| RF-20 | Hay dos animales al inicio: **jirafa** en `REC_RECINTO_RUSTICO_M4_DIAGONAL` y **elefante** en `REC_RECINTO_RUSTICO_M2_CENTRO_NORTE`. Se podrán agregar más animales después. |
+| RF-20 | Hay dos animales al inicio: **jirafa** en `REC_HEX_CENTRAL` y **elefante** en `REC_RECINTO_ESTE`. Se podrán agregar más animales después. |
 | RF-21 | Cada animal tiene vida máxima, vida actual y un temporizador de inanición. |
 | RF-22 | Después de comer, el animal tiene un **periodo de gracia** configurable sin perder vida por hambre. Al terminar ese periodo, pierde vida de forma continua a una tasa configurable (vida por segundo). |
 | RF-23 | El temporizador de inanición corre durante **toda la partida**, aunque el animal esté escapado y aunque el jugador esté muerto. Solo se detiene en pausa. |
@@ -283,7 +283,7 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 | Parámetro | Valor |
 |---|---|
 | Integridad máxima | 300 |
-| Refugios disponibles | `REC_ESTANQUE_1`, `REC_RECINTO_RUSTICO_M5_CENTRO_SUR`, `REC_RECINTO_NORTE_CENTRAL` |
+| Refugios disponibles | `REC_RECINTO_NORTE_CENTRAL`, `REC_JAULA_NORTE_2`, `REC_HEX_SUR_5` |
 
 ### Cajas de alimento
 | Parámetro | Valor |
@@ -348,11 +348,11 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 | ID | Tema | Decisión | Estado |
 |---|---|---|---|
 | D-01 | Cámara | Primera persona | ✅ Confirmado |
-| D-02 | Recinto de la jirafa | `REC_RECINTO_RUSTICO_M4_DIAGONAL` | ✅ Confirmado |
+| D-02 | Recinto de la jirafa | `REC_HEX_CENTRAL` (hexágono abierto de 16×14 m). Reemplaza a M4, que resultó ser un galpón cerrado con techo de 3.2 m | ✅ Confirmado (2026-11-17) |
 | D-03 | Plataforma | PC, teclado y mouse + gamepad | ✅ Confirmado |
 | D-04 | Modelos | Se priorizan los descargados que ya tienen animaciones; lo que falte se hace con código | ✅ Confirmado |
 | D-05 | Animales | Jirafa y **elefante** (reemplaza al hipopótamo porque hay modelo animado). Se agregarán más después | ✅ Confirmado |
-| D-06 | Recinto del elefante | `REC_RECINTO_RUSTICO_M2_CENTRO_NORTE` | ✅ Confirmado |
+| D-06 | Recinto del elefante | `REC_RECINTO_ESTE` (jaula abierta de 14×10 m con alberca). Reemplaza a M2, también un galpón cerrado | ✅ Confirmado (2026-11-17) |
 | D-07 | Los zombis atacan recintos y animales | Sí. Recinto destruido → el animal escapa → se recaptura atrayéndolo con comida a un refugio | ✅ Confirmado |
 | D-08 | Muerte de un animal | Se zombifica (horda extra) y la partida sigue. Derrota solo si mueren ambos | ✅ Confirmado |
 | D-09 | Reparar recintos | No. Se usa otro recinto (refugio) | ✅ Confirmado |
@@ -362,6 +362,6 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 | D-13 | Punto de aparición del jugador | Junto a `EST_CAFETERIA` | ✅ Confirmado |
 | D-14 | Hacha | Arma secundaria ilimitada, con daño medio en arco | ✅ Confirmado |
 | D-15 | Munición en el mapa | Puntos aleatorios poco obvios, señalados con una luz | ✅ Confirmado |
-| S-01 | Refugios disponibles | `REC_ESTANQUE_1`, `REC_RECINTO_RUSTICO_M5_CENTRO_SUR` y `REC_RECINTO_NORTE_CENTRAL` (configurable) | Supuesto |
+| S-01 | Refugios disponibles | `REC_RECINTO_NORTE_CENTRAL`, `REC_JAULA_NORTE_2` y `REC_HEX_SUR_5` (configurable). Todos son recintos abiertos | ✅ Confirmado (2026-11-17) |
 | S-02 | Roles de los zombis | Cazador / destructor, con proporción configurable por oleada | Supuesto |
 | S-03 | La atracción con comida es automática | El animal sigue al jugador si este carga una caja dentro del radio de atracción. No requiere pulsar ningún botón | Supuesto |

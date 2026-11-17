@@ -1,12 +1,20 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_controller"]
 [ext_resource type="Resource" path="res://config/player_config.tres" id="2_config"]
 [ext_resource type="Script" path="res://scripts/components/health_component.gd" id="3_health"]
+[ext_resource type="Script" path="res://scripts/player/player_carry.gd" id="4_carry"]
+[ext_resource type="Script" path="res://scripts/player/player_interactor.gd" id="5_interactor"]
+[ext_resource type="Script" path="res://scripts/player/view_model.gd" id="6_viewmodel"]
+[ext_resource type="PackedScene" path="res://assets/models/weapons/fp_arms_shotgun.glb" id="7_arms"]
+[ext_resource type="PackedScene" path="res://assets/models/props/food_crate.glb" id="8_crate"]
 
 [sub_resource type="CapsuleShape3D" id="capsule"]
 radius = 0.35
 height = 1.8
+
+[sub_resource type="SphereShape3D" id="reach"]
+radius = 0.5
 
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
@@ -27,7 +35,28 @@ current = true
 near = 0.05
 far = 400.0
 
-[node name="ViewModel" type="Node3D" parent="Head/Camera3D"]
+[node name="ViewModel" type="Node3D" parent="Head/Camera3D" node_paths=PackedStringArray("carry", "player")]
+script = ExtResource("6_viewmodel")
+carry = NodePath("../../../PlayerCarry")
+player = NodePath("../../..")
+
+[node name="Arms" parent="Head/Camera3D/ViewModel" instance=ExtResource("7_arms")]
+transform = Transform3D(-2.0765, -0.01658, 2.1652, 0.2964, 2.9695, 0.307, -2.1449, 0.42641, -2.0537, 0.26391, -0.65188, -1.2439)
+
+[node name="Crate" parent="Head/Camera3D/ViewModel" instance=ExtResource("8_crate")]
+transform = Transform3D(1, 0, 0, 0, 0.98877, 0.149438, 0, -0.149438, 0.98877, 0, -0.62, -0.78)
+visible = false
 
 [node name="HealthComponent" type="Node" parent="."]
 script = ExtResource("3_health")
+
+[node name="PlayerCarry" type="Node" parent="."]
+script = ExtResource("4_carry")
+
+[node name="PlayerInteractor" type="Area3D" parent="." node_paths=PackedStringArray("camera")]
+script = ExtResource("5_interactor")
+camera = NodePath("../Head/Camera3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerInteractor"]
+position = Vector3(0, 1, 0)
+shape = SubResource("reach")
