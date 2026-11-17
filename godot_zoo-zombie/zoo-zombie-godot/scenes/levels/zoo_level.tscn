@@ -1,0 +1,106 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/zoo_level.gd" id="1_level"]
+[ext_resource type="PackedScene" path="res://assets/models/map/zoo_map.glb" id="2_map"]
+[ext_resource type="NavigationMesh" path="res://assets/models/map/zoo_navmesh.res" id="3_navmesh"]
+
+[sub_resource type="ProceduralSkyMaterial" id="sky_mat"]
+sky_top_color = Color(0.36, 0.42, 0.5, 1)
+sky_horizon_color = Color(0.62, 0.6, 0.55, 1)
+ground_bottom_color = Color(0.2, 0.18, 0.16, 1)
+ground_horizon_color = Color(0.62, 0.6, 0.55, 1)
+sun_angle_max = 20.0
+
+[sub_resource type="Sky" id="sky"]
+sky_material = SubResource("sky_mat")
+
+[sub_resource type="Environment" id="env"]
+background_mode = 2
+sky = SubResource("sky")
+ambient_light_source = 3
+reflected_light_source = 2
+tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0.55, 0.56, 0.55, 1)
+fog_density = 0.006
+fog_sky_affect = 0.4
+
+[sub_resource type="NavigationMesh" id="navmesh_placeholder"]
+geometry_parsed_geometry_type = 1
+geometry_collision_mask = 1
+cell_size = 0.25
+cell_height = 0.25
+agent_height = 1.75
+agent_radius = 0.5
+agent_max_climb = 0.25
+agent_max_slope = 40.0
+
+[node name="ZooLevel" type="Node3D"]
+script = ExtResource("1_level")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-0.9, -0.6, 0)
+light_color = Color(1, 0.94, 0.85, 1)
+light_energy = 1.1
+shadow_enabled = true
+directional_shadow_max_distance = 80.0
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = ExtResource("3_navmesh")
+
+[node name="ZooMap" parent="NavigationRegion3D" instance=ExtResource("2_map")]
+
+[node name="Markers" type="Node3D" parent="."]
+
+[node name="PlayerSpawn" type="Marker3D" parent="Markers"]
+position = Vector3(9, 1.6, 8.7)
+rotation = Vector3(0, -1.5708, 0)
+
+[node name="FoodCrateSpawns" type="Node3D" parent="Markers"]
+
+[node name="Veterinaria" type="Marker3D" parent="Markers/FoodCrateSpawns"]
+position = Vector3(-53.8, 1.6, 54.2)
+
+[node name="Administracion" type="Marker3D" parent="Markers/FoodCrateSpawns"]
+position = Vector3(-14.7, 1.6, -29.4)
+
+[node name="Tienda" type="Marker3D" parent="Markers/FoodCrateSpawns"]
+position = Vector3(0.35, 1.6, -46.4)
+
+[node name="KioscoEste" type="Marker3D" parent="Markers/FoodCrateSpawns"]
+position = Vector3(31.9, 1.6, -16.6)
+
+[node name="MiradorEste" type="Marker3D" parent="Markers/FoodCrateSpawns"]
+position = Vector3(31.2, 1.6, 4.4)
+
+[node name="SanitariosSur" type="Marker3D" parent="Markers/FoodCrateSpawns"]
+position = Vector3(-45, 1.6, 71.8)
+
+[node name="ZombieSpawns" type="Node3D" parent="Markers"]
+
+[node name="NorthGate" type="Marker3D" parent="Markers/ZombieSpawns"]
+position = Vector3(-9.5, 1.6, -73.3)
+
+[node name="North" type="Marker3D" parent="Markers/ZombieSpawns"]
+position = Vector3(10.6, 1.6, -65.8)
+
+[node name="NorthEast" type="Marker3D" parent="Markers/ZombieSpawns"]
+position = Vector3(60.9, 1.6, -21.8)
+
+[node name="East" type="Marker3D" parent="Markers/ZombieSpawns"]
+position = Vector3(82.0, 1.6, 0.0)
+
+[node name="South" type="Marker3D" parent="Markers/ZombieSpawns"]
+position = Vector3(7.6, 1.6, 86.4)
+
+[node name="SouthWest" type="Marker3D" parent="Markers/ZombieSpawns"]
+position = Vector3(-60.5, 1.6, 83.1)
+
+[node name="West" type="Marker3D" parent="Markers/ZombieSpawns"]
+position = Vector3(-71.2, 1.6, 10.0)
+
+[node name="NorthWest" type="Marker3D" parent="Markers/ZombieSpawns"]
+position = Vector3(-53.5, 1.6, -44.5)

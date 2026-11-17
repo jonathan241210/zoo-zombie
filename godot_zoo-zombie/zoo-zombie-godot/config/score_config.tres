@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ScoreConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/score_config.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+zombie_kill = 25
+recapture = 200
+ammo_pickup = 0
+player_death_penalty = 100
+animal_death_penalty = 300

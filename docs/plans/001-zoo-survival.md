@@ -44,7 +44,7 @@ No existe ningún sistema: ni movimiento, armas, enemigos, navegación, vida, es
 
 La distancia entre la jirafa y el elefante es de ~71 m. Los refugios quedan en la franja central, entre los dos recintos y cerca de la cafetería.
 
-### 1.4 Modelos descargados (`assets/modelos/`)
+### 1.4 Modelos descargados (`assets/models/`)
 
 | Archivo | Rig | Animaciones incluidas | Uso |
 |---|---|---|---|
@@ -202,6 +202,14 @@ Todo esto lo hace un script por modelo: `blender_zoo-zombie/scripts/prepare/prep
 4. **Colisiones:** con los sufijos de importación de Godot (`-col`, `-colonly`, `-convcolonly`) en mallas simplificadas. El pasto no lleva colisión.
 5. Hornear el navmesh en `zoo_level.tscn`.
 6. **Coordenadas:** Blender (x, y, z) → Godot (x, z, −y). El exportador glTF lo hace automáticamente.
+
+**Resultado de la Fase 1 (2026-11-17):**
+
+- `export_map.py` exporta el mapa a `assets/models/map/zoo_map.glb` (19.6 MB). Además de lo descrito arriba, **reemplaza los colores procedurales** (ruido + rampa de color, que glTF no puede exportar) por el color de viewport de cada material (22 materiales), y **reduce los árboles** sin romper sus mallas compartidas. Así el mapa baja de ~1.01 M a ~606 000 triángulos.
+- Las colisiones y la vegetación se resuelven **en Godot** con `scripts/import/zoo_map_post_import.gd`, no con sufijos en Blender, para no modificar el `.blend`. Hay 163 colisionadores (trimesh para terreno, estructuras, recintos y cercas; convexos para detalles; cilindros para troncos), y **757 plantas se convierten en 24 `MultiMeshInstance3D`**.
+- Navmesh horneado con `tools/bake_navmesh.gd`: 2 542 polígonos, agente de radio 0.5 m. El área caminable sigue la cerca perimetral irregular del zoológico.
+- `tools/validate_level.gd` comprueba que cada marcador esté sobre el suelo, libre de colisiones y sobre el navmesh. Los puntos de aparición de zombis se recolocaron junto al borde interior de la cerca. El punto "SouthEast" se descartó porque quedaba a 20 m de la jirafa. Quedan 8 puntos, todos a 36 m o más de los recintos.
+- **Rendimiento** (`-- --perf`, 1920×1080, Apple M3): 120 FPS de promedio, mínimo 113, ~1 060 draw calls. El límite lo pone la frecuencia de la pantalla. CA-15 se cumple.
 
 ### 3.4 Scripts de Blender
 

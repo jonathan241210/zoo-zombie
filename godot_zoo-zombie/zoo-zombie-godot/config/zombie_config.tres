@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ZombieConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/zombie_config.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+max_health = 100.0
+walk_speed = 2.5
+run_speed = 4.0
+damage_to_player = 10.0
+damage_to_animal = 8.0
+damage_to_enclosure = 15.0
+attack_interval = 1.2
+attack_range = 1.6
+detection_radius = 25.0
+breaker_aggro_radius = 6.0
+ammo_drop_chance = 0.35
+ammo_drop_amount = 4
+ammo_drop_lifetime = 30.0
+corpse_lifetime = 8.0

@@ -17,22 +17,22 @@ Convenciones:
 
 - [x] T-001 Analizar el repositorio: motor, mapa, modelos y sistemas existentes (plan §1)
 - [x] T-002 Escribir la spec, el plan, las tareas, la constitución y `AGENTS.md`
-- [ ] T-003 Renombrar `assets/modelos`, `assets/texturas` y `assets/audio` a inglés (`models`, `textures`, `audio`) según la regla de idioma
-- [ ] T-004 Crear la estructura de carpetas del proyecto Godot (plan §2.2)
-- [ ] T-005 Configurar el input map con teclado/mouse y gamepad, sin salto (plan §2.6) — RF-01
-- [ ] T-006 [P] Crear el autoload `EventBus` con todas las señales globales (plan §2.3)
-- [ ] T-007 [P] Crear el autoload `GameManager`: estados de la partida, tiempo, estadísticas, animales vivos y reinicio — RF-49, RF-93
-- [ ] T-008 [P] Crear las clases de datos `Resource` y sus `.tres` con los valores de la spec §6 — CA-13
-- [ ] T-009 [P] Crear el componente `HealthComponent`, con pruebas
-- [ ] T-010 [P] Crear el componente `Interactable`
-- [ ] T-011 Instalar y validar GUT (o gdUnit4) con Godot 4.7 y ejecutar una prueba headless
-- [ ] T-012 Script `export_map.py`: exportar el mapa a GLB excluyendo las colecciones auxiliares (plan §3.3)
-- [ ] T-013 Agregar colisiones simplificadas al mapa (sufijos `-col` / `-colonly`)
-- [ ] T-014 Optimizar la vegetación: el pasto pasa a `MultiMeshInstance3D` y los árboles y arbustos se instancian
-- [ ] T-015 Crear `zoo_level.tscn`: mapa, iluminación, entorno, navmesh y marcadores (jugador en la cafetería, cajas, zombis, recintos y refugios)
-- [ ] T-016 Crear `player.tscn`: `CharacterBody3D` en primera persona con caminar, correr y mirar — RF-01, RF-06
-- [ ] T-017 Crear `game.tscn` (escena raíz) y definirla como escena principal
-- [ ] T-018 Verificar: recorrer el mapa completo y medir FPS — CA-14 (parcial), CA-15
+- [x] T-003 Renombrar `assets/modelos`, `assets/texturas` y `assets/audio` a inglés (`models`, `textures`, `audio`) según la regla de idioma
+- [x] T-004 Crear la estructura de carpetas del proyecto Godot (plan §2.2)
+- [x] T-005 Configurar el input map con teclado/mouse y gamepad, sin salto (plan §2.6) — RF-01
+- [x] T-006 [P] Crear el autoload `EventBus` con todas las señales globales (plan §2.3)
+- [x] T-007 [P] Crear el autoload `GameManager`: estados de la partida, tiempo, estadísticas, animales vivos y reinicio — RF-49, RF-93
+- [x] T-008 [P] Crear las clases de datos `Resource` y sus `.tres` con los valores de la spec §6 — CA-13
+- [x] T-009 [P] Crear el componente `HealthComponent`, con pruebas
+- [x] T-010 [P] Crear el componente `Interactable`
+- [x] T-011 Instalar y validar GUT (o gdUnit4) con Godot 4.7 y ejecutar una prueba headless (GUT 9.7.1)
+- [x] T-012 Script `export_map.py`: exportar el mapa a GLB excluyendo las colecciones auxiliares (plan §3.3)
+- [x] T-013 Agregar colisiones simplificadas al mapa (script de post-importación de Godot `zoo_map_post_import.gd`)
+- [x] T-014 Optimizar la vegetación: el pasto pasa a `MultiMeshInstance3D` y los árboles y arbustos se instancian
+- [x] T-015 Crear `zoo_level.tscn`: mapa, iluminación, entorno, navmesh y marcadores (jugador en la cafetería, cajas, zombis, recintos y refugios)
+- [x] T-016 Crear `player.tscn`: `CharacterBody3D` en primera persona con caminar, correr y mirar — RF-01, RF-06
+- [x] T-017 Crear `game.tscn` (escena raíz) y definirla como escena principal
+- [x] T-018 Verificar: recorrer el mapa completo y medir FPS — CA-14 (parcial), CA-15
 
 ## Fase 2: Modelos y animaciones
 

@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="AnimalConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/animal_config.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+animal_id = &"giraffe"
+display_name_key = "ANIMAL_GIRAFFE"
+home_enclosure = "REC_RECINTO_RUSTICO_M4_DIAGONAL"
+max_health = 100.0
+grace_period = 30.0
+starvation_damage_per_second = 0.8
+heal_per_feeding = 50.0
+weak_threshold = 0.3
+walk_speed = 2.0
+run_speed = 6.5
+tired_speed = 1.2
+max_stamina = 100.0
+stamina_drain_per_second = 15.0
+stamina_regen_per_second = 10.0
+tired_recovery_ratio = 0.5
+lure_radius = 8.0
+follow_max_radius = 15.0
+follow_distance = 2.5
+feed_score = 150
+death_horde_size = 6

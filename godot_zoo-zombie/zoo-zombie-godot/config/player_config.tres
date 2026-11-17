@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="PlayerConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/player_config.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+max_health = 100.0
+walk_speed = 4.5
+sprint_speed = 7.0
+carry_speed = 3.2
+acceleration = 12.0
+deceleration = 14.0
+eye_height = 1.65
+mouse_sensitivity = 0.0025
+stick_sensitivity = 3.0
+stick_deadzone = 0.15
+pitch_limit_degrees = 85.0
+fov = 80.0
+interact_distance = 2.5
+weapon_switch_time = 0.4
+respawn_delay = 3.0

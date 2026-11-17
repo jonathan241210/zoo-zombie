@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WaveConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/wave_config.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+duration = 120.0
+total_zombies = 10
+spawn_interval = 8.0
+max_alive = 6
+breaker_ratio = 0.2
+speed_multiplier = 1.0
+health_multiplier = 1.0
+damage_multiplier = 1.0

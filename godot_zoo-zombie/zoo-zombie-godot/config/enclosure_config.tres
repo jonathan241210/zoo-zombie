@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="EnclosureConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enclosure_config.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+max_integrity = 300.0
+refuge_enclosures = PackedStringArray("REC_ESTANQUE_1", "REC_RECINTO_RUSTICO_M5_CENTRO_SUR", "REC_RECINTO_NORTE_CENTRAL")
