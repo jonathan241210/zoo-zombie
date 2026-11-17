@@ -1,0 +1,286 @@
+# Plan técnico 001: Supervivencia en el zoológico
+
+**Estado:** Borrador, pendiente de aprobación · **Versión:** 0.2 · **Fecha:** 2026-11-16
+**Spec:** [`specs/001-zoo-survival.md`](../specs/001-zoo-survival.md) · **Tareas:** [`tasks/001-zoo-survival.md`](../tasks/001-zoo-survival.md)
+
+---
+
+## 1. Análisis del proyecto actual (Fase 1)
+
+Revisión hecha el 2026-11-16.
+
+### 1.1 Motor y herramientas
+
+| Elemento | Estado |
+|---|---|
+| Motor | **Godot 4.7.2** (Steam), renderizador Forward+, física **Jolt** |
+| Proyecto Godot | `godot_zoo-zombie/zoo-zombie-godot/`: recién creado, solo tiene `project.godot` e `icon.svg` |
+| Blender | **5.3.0** (Steam) |
+| MCP | Blender (`mcp-for-blender` 2.0) y Godot (`@coding-solo/godot-mcp`) conectados |
+
+### 1.2 Sistemas existentes en Godot
+
+No existe ningún sistema: ni movimiento, armas, enemigos, navegación, vida, escenas, scripts ni ADR previos. La arquitectura se define desde cero en este plan.
+
+### 1.3 Mapa: `blender_zoo-zombie/mapacompleto_2_sin_entorno.blend`
+
+- **Tamaño:** ~166 × 177 m (X de -76.6 a 89.8, Y de -92.6 a 84.2), altura máxima de 11.6 m. Unidades métricas, escala 1.0.
+- **Objetos:** 980 (935 mallas, 33 textos, 9 curvas, 2 cámaras, 1 luz).
+- **Triángulos:** ~998 000 en total, de los cuales **~630 000 son vegetación** (500 mechones de pasto, 151 arbustos y 106 árboles). **Hay que optimizar** (ver 3.2).
+- **Colecciones:** `01_BASE_TERRENO`, `03_CAMINOS`, `04_VEGETACION`, `05_ESTRUCTURAS`, `06_RECINTOS` (16 recintos), `06D_HABITAT_DESIERTO`, `06Z_RECINTOS_ANTERIORES_OCULTOS` (ocultos), `07_DETALLES`, `08_PERIMETRO` y `10_ILUMINACION`.
+- **Materiales:** colores planos, sin texturas de imagen.
+- **Ubicaciones clave** (coordenadas de Blender, Z arriba):
+
+| Objeto | Posición (x, y) | Tamaño | Uso en el juego |
+|---|---|---|---|
+| `REC_RECINTO_RUSTICO_M4_DIAGONAL` | (22.9, -41.2) | 18 × 17 m | **Recinto de la jirafa** |
+| `REC_RECINTO_RUSTICO_M2_CENTRO_NORTE` | (11.3, 29.3) | 18 × 9 m | **Recinto del elefante** |
+| `REC_ESTANQUE_1` | (24.3, 21.7) | 10 × 10 m | Refugio |
+| `REC_RECINTO_RUSTICO_M5_CENTRO_SUR` | (19.2, 5.5) | 18 × 8 m | Refugio |
+| `REC_RECINTO_NORTE_CENTRAL` | (16.8, -31.3) | 11 × 8 m | Refugio |
+| `EST_CAFETERIA` | (19.3, -8.7) | 11 × 9 m | Aparición del jugador |
+| `EST_ENTRADA_PORTICO` | (-9.8, 64.4) | 18 × 3 m | Candidato para aparición de zombis |
+| `EST_VETERINARIA`, `EST_ADMINISTRACION`, `EST_TIENDA`, `EST_KIOSCO_ESTE`, `EST_MIRADOR_ESTE`, `EST_SANITARIOS_*` | varias | — | Candidatos para puntos de cajas de alimento |
+
+La distancia entre la jirafa y el elefante es de ~71 m. Los refugios quedan en la franja central, entre los dos recintos y cerca de la cafetería.
+
+### 1.4 Modelos descargados (`assets/modelos/`)
+
+| Archivo | Rig | Animaciones incluidas | Uso |
+|---|---|---|---|
+| `girafa_animada.glb` (9.9 MB) | ✅ | `01_Idle_Ruminating` 8 s, `02_Walk` 4.1 s, `03_Run_Gallop` 1.8 s, `04_Eat_Browsing` 10 s, `05_Attack_Kick` 6 s | **Jirafa**. Faltan **weak** y **death** |
+| `elefante_animado.glb` (8.3 MB) | ✅ | `01_Idle` 10 s, `02_Walk` 3.6 s, `03_Run` 1.7 s, `04_Eating` 10 s, `05_Attack` 6 s | **Elefante**. Faltan **weak** y **death** |
+| `animation_zombie_2.glb` (3.0 MB) | ✅ | `idle01/02`, `walk01/02`, `run`, `attack01/02`, `damage`, `death`, `down`, `caution`, `eat`, `on_all_four_*` | **Zombi**. Completo |
+| `brazo_escopeta.glb` (1.4 MB) | ✅ | `D_Escopeta` (disparo), `E_Escopeta` (sacar), `P_Escopeta` (pose), `E_Caja` / `P_Caja` (sostener caja), `E_Agarrar` (agarrar) y otras herramientas | **Brazos en primera persona**. Falta **reload** |
+| `escopeta.glb` | ❌ | — | Escopeta estática: sirve como prop o pickup |
+| `hacha.glb` (3.5 MB) | ❌ | — | **Hacha** (arma secundaria). Va sujeta a la mano del rig de brazos; el golpe usa `E_Martillo` |
+| `brazos_ametralladora.glb` | ✅ | `Draw`, `Fire`, `Reload`, `Reload_Empty`, `Holster` | Reservado para un arma futura. Sirve como referencia para la animación de recarga |
+| `zombie_dog_animation.glb` | ✅ | `idle`, `walk`, `run`, `attack 3`, `hit 2`, `Jump Edit` | Reservado para un enemigo futuro |
+| `mad_zombie.glb` | ❌ | — | Ya no se usa: lo reemplaza `animation_zombie_2` |
+| `low_poly_animals.glb` | ❌ | — | Ya no se usa: solo como referencia |
+
+**Animaciones faltantes y cómo se resuelven:**
+
+| Animación | Solución |
+|---|---|
+| Jirafa y elefante: `weak` | En Godot: `idle` o `walk` con `speed_scale` bajo + cabeza baja por `SkeletonModifier3D` o un Tween de hueso |
+| Jirafa y elefante: `death` | En Blender, por script: una acción nueva sobre el rig existente (caer de lado y quedar quieto) que se exporta en el mismo GLB |
+| Brazos: `reload` | En Blender, por script: una acción nueva sobre el rig de `brazo_escopeta` (bajar el arma, bombear la corredera y volver). Alternativa: un Tween en Godot |
+
+---
+
+## 2. Arquitectura propuesta
+
+### 2.1 Principios aplicados
+
+- **Composición por componentes:** vida, interacción, hurtbox y resistencia son nodos reutilizables.
+- **Datos separados de la lógica:** todo valor de balance vive en `Resource` personalizados (`.tres`).
+- **Comunicación por señales:** un autoload `EventBus` reúne los eventos globales del juego.
+- **Máquinas de estado simples** (`enum` + `match`) para el jugador, los zombis y los animales.
+- **Lógica pura separada de los nodos**, para poder probarla: `AnimalNeeds`, `Stamina`, `AmmoState` y `WaveSchedule`.
+- **GDScript con tipado estático**, `class_name` en los scripts reutilizables.
+
+### 2.2 Estructura del proyecto Godot
+
+```
+zoo-zombie-godot/
+├── project.godot
+├── addons/                      # third-party plugins (e.g. GUT for tests)
+├── assets/
+│   ├── models/{animals,zombies,weapons,props,map}/   # game-ready .glb
+│   ├── audio/{sfx,music}/
+│   └── ui/
+├── config/                      # balance data (.tres)
+│   ├── player_config.tres
+│   ├── shotgun_config.tres
+│   ├── axe_config.tres
+│   ├── ammo_spawn_config.tres
+│   ├── zombie_config.tres
+│   ├── enclosure_config.tres
+│   ├── animals/{giraffe_config.tres, elephant_config.tres}
+│   ├── food_crate_config.tres
+│   ├── score_config.tres
+│   └── waves/{wave_1.tres, wave_2.tres, wave_3.tres}
+├── scenes/
+│   ├── main/game.tscn           # root: level + player + managers + HUD
+│   ├── levels/zoo_level.tscn    # map + navmesh + markers
+│   ├── player/player.tscn
+│   ├── weapons/shotgun_viewmodel.tscn
+│   ├── enemies/zombie.tscn
+│   ├── animals/{animal.tscn, giraffe.tscn, elephant.tscn}
+│   ├── world/{enclosure.tscn, feeder_giraffe.tscn, feeder_elephant.tscn,
+│   │          food_crate_spawn.tscn, zombie_spawn.tscn}
+│   ├── pickups/{food_crate.tscn, ammo_pickup.tscn}
+│   ├── ui/{hud.tscn, objective_marker.tscn, end_screen.tscn, pause_menu.tscn}
+│   └── tests/                   # one sandbox scene per system
+├── scripts/
+│   ├── autoload/{event_bus.gd, game_manager.gd}
+│   ├── components/{health_component.gd, interactable.gd, hurtbox.gd, stamina.gd}
+│   ├── data/                    # Resource classes (*_config.gd, wave_config.gd)
+│   ├── player/{player_controller.gd, player_interactor.gd, player_carry.gd}
+│   ├── weapons/{weapon_manager.gd, shotgun.gd, ammo_state.gd, axe.gd}
+│   ├── enemies/{zombie.gd, zombie_target_selector.gd, zombie_spawner.gd}
+│   ├── animals/{animal.gd, animal_needs.gd, animal_lure.gd}
+│   ├── world/{enclosure.gd, enclosure_registry.gd, feeder.gd, food_crate_spawn.gd}
+│   ├── pickups/{food_crate.gd, ammo_pickup.gd, ammo_spawn_point.gd, ammo_spawn_director.gd}
+│   ├── systems/{wave_manager.gd, wave_schedule.gd, score_manager.gd}
+│   └── ui/{hud.gd, objective_marker.gd, end_screen.gd, pause_menu.gd}
+└── tests/                       # GUT unit tests
+```
+
+### 2.3 Autoloads
+
+| Autoload | Responsabilidad |
+|---|---|
+| `EventBus` | Solo declara señales globales: `zombie_killed`, `animal_fed(animal_id)`, `animal_state_changed(animal_id, state)`, `animal_escaped(animal_id)`, `animal_recaptured(animal_id, enclosure)`, `animal_died(animal_id, position)`, `enclosure_damaged(enclosure)`, `enclosure_destroyed(enclosure)`, `player_died`, `player_respawned`, `wave_started(index)`, `wave_break_started(index)`, `game_won(stats)`, `game_lost(stats)`, `ammo_changed(mag, reserve)`, `score_changed(score)`, `zombie_count_changed(alive, pending)` |
+| `GameManager` | Estado global de la partida (`PLAYING`, `PAUSED`, `WON`, `LOST`), tiempo, estadísticas, animales vivos (derrota cuando son 0) y reinicio |
+
+`WaveManager`, `ScoreManager` y `EnclosureRegistry` son nodos dentro de `game.tscn`. Su ciclo de vida queda atado a la partida y reiniciar es solo recargar la escena.
+
+### 2.4 Componentes reutilizables
+
+| Componente | Tipo base | Uso |
+|---|---|---|
+| `HealthComponent` | `Node` | Vida actual y máxima, `take_damage()`, `heal()`, señales `health_changed` y `died`. Lo usan el jugador, los zombis, los animales **y los recintos** (como integridad) |
+| `Interactable` | `Area3D` | Zona de interacción con `prompt_text`, `can_interact(player)` e `interact(player)`. Lo usan la caja de alimento y el comedero |
+| `Hurtbox` | `Area3D` | Recibe golpes y los pasa al `HealthComponent` |
+| `Stamina` | `RefCounted` (lógica pura) | Gasto, recuperación y umbral de cansancio. Lo usan los animales escapados (y en el futuro, la carrera del jugador) |
+
+### 2.5 Sistemas
+
+| Sistema | Diseño |
+|---|---|
+| **Jugador** | `CharacterBody3D` + `Camera3D` + "ViewModel" (instancia de `brazo_escopeta.glb`). `PlayerInteractor` busca el `Interactable` más cercano frente a la cámara. `PlayerCarry` maneja `ARMED` y `CARRYING`: en `CARRYING` reproduce `P_Caja`, oculta la escopeta y bloquea el disparo |
+| **Armas** | `WeaponManager` en el jugador: arma equipada (escopeta / hacha), cambio con animación y bloqueo en `CARRYING`. Recuerda el arma activa para restaurarla después de alimentar |
+| **Hacha** | Golpe cuerpo a cuerpo con `ShapeCast3D` (o una consulta de esfera) frente a la cámara, filtrada por el ángulo del arco. Se ordena por distancia y se aplica a un máximo de N zombis. Cadencia con `Timer` y retroceso por impulso en el zombi. El viewmodel sujeta `hacha.glb` al hueso de la mano y reproduce `E_Martillo` |
+| **Escopeta** | Hitscan con N rayos (`intersect_ray`) con dispersión. `AmmoState` (lógica pura) guarda cargador y reserva. Animaciones `D_Escopeta` (disparo), `E_Escopeta` (sacar) y `reload` (nueva). Retroceso de cámara con `Tween` |
+| **Zombis** | `CharacterBody3D` + `NavigationAgent3D` con avoidance + `HealthComponent` + `Hurtbox`. Estados `IDLE`, `CHASE`, `ATTACK`, `HIT` y `DEAD`. `ZombieTargetSelector` decide el objetivo según su rol: un **cazador** persigue al jugador; un **destructor** va al recinto ocupado más cercano y cambia al jugador si recibe daño o si el jugador se acerca. Cualquier zombi prioriza a un animal escapado si está dentro de su radio de detección |
+| **Navegación** | `NavigationRegion3D` con navmesh horneado a partir de las colisiones del mapa. Las cercas de los recintos son obstáculos, y los zombis atacan la cerca desde el borde exterior |
+| **Recintos** | `Enclosure` (`Node3D`) con: `HealthComponent` (integridad), un área interior (`Area3D`) que detecta la llegada del animal, el punto de anclaje del comedero, puntos de paseo y puntos de ataque exteriores para los zombis. `EnclosureRegistry` lleva la lista de recintos, su ocupante y si están intactos o destruidos, y responde "¿cuál es el refugio libre más cercano?" |
+| **Animales** | `Animal` (`CharacterBody3D` + `NavigationAgent3D`) + `AnimalNeeds` (hambre: gracia, pérdida de vida y umbral de debilidad) + `Stamina` + `AnimalLure`. Estados: `CONTAINED_IDLE`, `CONTAINED_WALK`, `EATING`, `WEAK`, `FLEEING`, `TIRED`, `FOLLOWING`, `DEAD`. Al morir emite `animal_died(id, position)` |
+| **Recaptura** | `AnimalLure` revisa la distancia al jugador y si está `CARRYING` → `FOLLOWING`. El área interior de un refugio libre detecta la entrada → `EnclosureRegistry.assign(animal, enclosure)` → el comedero del animal se mueve al anclaje del nuevo recinto → `animal_recaptured` |
+| **Zombificación** | `ZombieSpawner` escucha `animal_died` y genera la horda extra en esa posición, respetando el máximo de vivos. Los zombis que no caben se encolan |
+| **Comederos** | Un `Feeder` por animal, con un `Interactable` que acepta la caja si el jugador está `CARRYING` y el animal está contenido. El de la jirafa es elevado y el del elefante es bajo |
+| **Cajas** | `FoodCrateSpawn` (marcador) + coordinador de reaparición y máximo de cajas activas |
+| **Munición** | `AmmoPickup` (`Area3D`) que se recoge al contacto. Hay dos fuentes: lo que sueltan los zombis (según su probabilidad) y `AmmoSpawnDirector`, que reparte cajas al azar entre los marcadores `AmmoSpawnPoint` del nivel (activas a la vez, reaparición y un punto distinto al anterior). Las cajas del mapa llevan una `OmniLight3D` con pulso (Tween de `light_energy`) y un material emisivo para que se distingan a distancia |
+| **Oleadas** | `WaveManager` + `WaveSchedule` (lógica pura del cronograma). `ZombieSpawner` aplica el intervalo, el máximo de vivos, la proporción de destructores y los multiplicadores. Los zombis vivos persisten entre oleadas |
+| **Puntuación** | `ScoreManager` escucha al `EventBus` y aplica `ScoreConfig`, sin bajar de 0 |
+| **HUD** | `CanvasLayer` que solo escucha señales. Muestra una tarjeta por animal (vida, integridad del recinto y estado) y marcadores en pantalla hacia los animales escapados y los refugios libres |
+
+### 2.6 Input map
+
+Acciones (en inglés) con teclado/mouse y gamepad: `move_forward`, `move_back`, `move_left`, `move_right`, `look_up`, `look_down`, `look_left`, `look_right`, `sprint`, `fire`, `reload`, `switch_weapon`, `weapon_1`, `weapon_2`, `interact` y `pause`. El HUD detecta el último dispositivo usado para mostrar el icono correcto.
+
+---
+
+## 3. Pipeline de assets
+
+### 3.1 Flujo general
+
+```
+Descarga (assets/models/) ──► Blender (escala, animaciones faltantes, limpieza) ──► GLB ──► zoo-zombie-godot/assets/models/
+Script procedural (blender_zoo-zombie/scripts/) ────────────────────────────────────────► GLB ──┘
+```
+
+Ver [ADR-0001](../decisions/0001-pipeline-de-assets.md).
+
+### 3.2 Preparación de los modelos descargados
+
+1. Importar el GLB en Blender, normalizar la escala a metros reales (jirafa ~5 m, elefante ~3.2 m, zombi ~1.8 m) y el origen a nivel del suelo.
+2. Renombrar las acciones a nombres estándar en inglés: `idle`, `walk`, `run`, `eat`, `weak`, `death`, `attack`, `hit`, `fire`, `reload`, `draw` y `carry`.
+3. Agregar las acciones faltantes (sección 1.4) por script.
+4. Eliminar lo que no se usa (en los brazos, las animaciones de otras herramientas) para reducir el tamaño.
+5. Exportar a `zoo-zombie-godot/assets/models/...`.
+
+Todo esto lo hace un script por modelo: `blender_zoo-zombie/scripts/prepare/prepare_<model>.py`. Así es reproducible.
+
+### 3.3 Importación y optimización del mapa
+
+1. Con `export_map.py`, exportar las colecciones jugables a GLB, **excluyendo** `00_AUXILIAR_CAMARA_LUZ`, `06Z_RECINTOS_ANTERIORES_OCULTOS`, las curvas `GUIA_*` y las luces.
+2. Convertir los textos (`FONT`) a malla.
+3. **Vegetación:** el pasto se reemplaza por `MultiMeshInstance3D`. Los árboles y arbustos se instancian a partir de pocas mallas únicas.
+4. **Colisiones:** con los sufijos de importación de Godot (`-col`, `-colonly`, `-convcolonly`) en mallas simplificadas. El pasto no lleva colisión.
+5. Hornear el navmesh en `zoo_level.tscn`.
+6. **Coordenadas:** Blender (x, y, z) → Godot (x, z, −y). El exportador glTF lo hace automáticamente.
+
+### 3.4 Scripts de Blender
+
+```
+blender_zoo-zombie/
+├── mapacompleto_2_sin_entorno.blend
+└── scripts/
+    ├── lib/{materials.py, mesh_utils.py, anim_utils.py, export_utils.py}
+    ├── prepare/                # downloaded models → game-ready GLB
+    │   ├── prepare_giraffe.py  # scale, rename actions, add weak/death
+    │   ├── prepare_elephant.py
+    │   ├── prepare_zombie.py
+    │   └── prepare_fp_arms.py  # strip unused tools, add reload
+    ├── models/                 # procedural, one script per model
+    │   ├── food_crate.py
+    │   ├── ammo_box.py
+    │   ├── giraffe_feeder.py
+    │   └── elephant_feeder.py
+    └── export/export_map.py
+```
+
+**Cómo se ejecutan:**
+
+- **Desde Blender:** pestaña *Scripting* → abrir el script → *Run Script*.
+- **Sin interfaz:**
+  ```bash
+  "<ruta a Blender>" -b --python blender_zoo-zombie/scripts/models/food_crate.py -- --output godot_zoo-zombie/zoo-zombie-godot/assets/models/props/food_crate.glb
+  ```
+- **Por MCP:** el agente ejecuta el script en el Blender abierto y revisa el resultado con capturas.
+
+---
+
+## 4. Fases de implementación
+
+> Ajustes respecto a la propuesta original:
+> - La **Fase 1** incluye la **base técnica**: jugador en primera persona y mapa importado. Sin eso no se puede probar ninguna fase siguiente.
+> - La **Fase 2** pasa a ser "preparar los modelos descargados", porque ya existen modelos animados y no hace falta modelar desde cero.
+> - Se agrega una **fase nueva (7)** para recintos destructibles, escape y recaptura. Depende de que los zombis ya existan. Por eso hay 10 fases.
+
+| Fase | Contenido | Entregable verificable | Depende de |
+|---|---|---|---|
+| **1** | Análisis ✅ + base técnica: carpetas, input map, `EventBus`, `GameManager`, clases de datos, mapa con colisiones y navmesh, jugador en primera persona | Caminar por el zoológico en primera persona a 60 FPS | — |
+| **2** | Modelos: preparar jirafa, elefante, zombi y brazos; animaciones faltantes; comederos, cajas y munición procedurales | Todos los GLB en Godot con sus animaciones | 1 |
+| **3** | Cajas de alimento, transporte (`ARMED`/`CARRYING`), comederos e interacción | Recoger una caja y alimentar a un animal; no se puede disparar mientras se carga | 1, 2 |
+| **4** | Hambre, debilidad y muerte de los animales; derrota si mueren ambos | Los animales se debilitan y mueren si no se les alimenta | 3 |
+| **5** | Escopeta, hacha, cambio de arma, munición soltada y munición repartida en el mapa | Disparar, golpear, cambiar de arma y encontrar munición | 1, 2 |
+| **6** | IA de zombis (cazadores): navegación, persecución, ataque y muerte; muerte y reaparición del jugador | Los zombis persiguen y atacan, y mueren con la escopeta | 5 |
+| **7** | Recintos destructibles, zombis destructores, escape (huida y resistencia), atracción con comida, refugios y zombificación | Ciclo completo: recinto destruido → escape → recaptura | 4, 6 |
+| **8** | Oleadas, temporizadores y aparición | 3 oleadas con descanso y dificultad creciente | 7 |
+| **9** | HUD, marcadores, puntuación, pantallas de victoria y derrota, pausa | Partida completa de inicio a fin | 3–8 |
+| **10** | Integración, balance, pruebas y optimización | Cumple todos los CA de la spec | 1–9 |
+
+La Fase 5 puede avanzar en paralelo con la 3 y la 4.
+
+## 5. Estrategia de pruebas
+
+- **Pruebas unitarias (GUT):** cubren la lógica pura: `HealthComponent`, `AnimalNeeds`, `Stamina`, `AmmoState`, `WaveSchedule`, `ScoreManager` y la elección de refugio de `EnclosureRegistry`. Se ejecutan en modo headless.
+- **Escenas de prueba** (`scenes/tests/`): una por sistema. Por ejemplo, un zombi contra un recinto, o un animal escapado con zombis cerca.
+- **Pruebas manuales por fase:** checklist con los criterios de aceptación de la spec.
+- **Rendimiento:** monitor de Godot en el mapa completo con 16 zombis.
+
+## 6. Riesgos
+
+| Riesgo | Impacto | Mitigación |
+|---|---|---|
+| Mapa de ~1 M de triángulos | FPS bajos | MultiMesh y reducción de la vegetación |
+| Los modelos animados vienen de distintos autores | Estilos visuales distintos | Ajustar los materiales a la paleta común; aceptar diferencias menores |
+| Jirafa (9.9 MB) y elefante (8.3 MB) con texturas pesadas | Tamaño y memoria | Reducir texturas a 1024 px al prepararlos |
+| Animaciones de muerte y recarga hechas por código se ven rígidas | Calidad visual | Usar poses clave simples con buena curva (ease). Iterar con capturas por MCP |
+| Navmesh en un mapa grande, y zombis que atacan cercas | Zombis atorados | Puntos de ataque explícitos fuera de cada recinto y escena de prueba |
+| Animal escapado atorado en la geometría | Recaptura imposible | El animal usa el navmesh. Si queda atorado, se teletransporta al punto navegable más cercano |
+| Compatibilidad de GUT con Godot 4.7 | Sin tests automáticos | Comprobarlo en la Fase 1. La alternativa es gdUnit4 |
+
+## 7. Decisiones técnicas
+
+| ID | Decisión | Registro |
+|---|---|---|
+| ADR-0001 | Pipeline de assets: GLB, descargas en `assets/`, modelos listos para el juego dentro del proyecto Godot | [`0001-pipeline-de-assets.md`](../decisions/0001-pipeline-de-assets.md) |
+| — | Primera persona, PC con teclado/mouse y gamepad | Spec D-01, D-03 |
+| — | Elefante en lugar de hipopótamo (hay modelo animado) | Spec D-05 |
+| — | Disparo hitscan (raycast) | Este plan, 2.5 |
+| — | Jolt Physics (ya configurado) | `project.godot` |
