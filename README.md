@@ -8,8 +8,8 @@ Videojuego 3D de un zoológico infestado de zombies, desarrollado con **Blender*
 |---|---|
 | `blender_zoo-zombie/` | Archivos `.blend` (mapa del zoológico y modelos propios) |
 | `godot_zoo-zombie/zoo-zombie-godot/` | Proyecto de Godot 4.7 |
-| `assets/modelos/` | Modelos 3D descargados (`.glb`, `.fbx`, `.obj`) |
-| `assets/texturas/` | Texturas e imágenes |
+| `assets/models/` | Modelos 3D descargados (`.glb`, `.fbx`, `.obj`) |
+| `assets/textures/` | Texturas e imágenes |
 | `assets/audio/` | Música y efectos de sonido |
 | `docs/` | Documentación: constitución, specs SDD, decisiones (ADR) y guías |
 

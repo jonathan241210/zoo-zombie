@@ -8,7 +8,7 @@ Inventario de modelos 3D y audio: qué hay, qué se usa, qué falta y cómo se r
 - **Prioridad:** modelos que **ya traen rig y animaciones**.
 - **Estilo:** low-poly o estilizado, para combinar con el mapa.
 - **Licencia:** CC0, CC-BY o una que permita uso en videojuegos. Anota autor y fuente en el registro de abajo.
-- **Dónde guardarlos:** `assets/models/` (la descarga original, sin modificar). Hoy la carpeta se llama `assets/modelos/`; se renombra en la tarea T-003.
+- **Dónde guardarlos:** `assets/models/` (la descarga original, sin modificar).
 
 ## Inventario actual
 
