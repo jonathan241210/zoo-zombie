@@ -1,0 +1,24 @@
+# macOS
+.DS_Store
+
+# Godot 4
+.godot/
+.import/
+export/
+*.translation
+export_presets.cfg
+.mono/
+data_*/
+mono_crash.*.json
+
+# Blender: copias de seguridad automáticas (.blend1, .blend2, ...)
+*.blend[0-9]
+*.blend[0-9][0-9]
+# Excepción: el mapa actual solo existe como .blend1
+!blender_zoo-zombie/mapacompleto_RESPALDO_2_sin_entorno.blend1
+
+# Editores / sistema
+.vscode/
+.idea/
+*.tmp
+Thumbs.db
