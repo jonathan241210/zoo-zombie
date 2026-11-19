@@ -21,12 +21,14 @@ func _process(delta: float) -> void:
 	if _refresh_elapsed < 1.0 / maxf(config.update_frequency, 1.0):
 		return
 	_refresh_elapsed = 0.0
-	for animal: Animal in _indicators.keys():
-		var indicator: AnimalHealthIndicator = _indicators[animal]
-		if not is_instance_valid(animal):
+	# Untyped key: a freed animal cannot be assigned to a typed variable.
+	for key: Variant in _indicators.keys():
+		var indicator: AnimalHealthIndicator = _indicators[key]
+		if not is_instance_valid(key):
 			indicator.queue_free()
-			_indicators.erase(animal)
+			_indicators.erase(key)
 			continue
+		var animal := key as Animal
 		var in_range := animal.global_position.distance_to(player.global_position) <= config.visible_distance
 		var should_show := in_range and not animal.health.is_dead
 		indicator.visible = should_show
