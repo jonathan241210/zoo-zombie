@@ -67,11 +67,12 @@ func _update_layout() -> void:
 	var scale_factor := viewport_size.y / 1080.0
 	var side := config.size_at_1080 * scale_factor
 	var margin := config.margin_at_1080 * scale_factor
-	var position := Vector2(viewport_size.x - side - margin, margin)
-	_map_texture.position = position
-	_map_texture.size = Vector2(side, side)
-	_overlay.position = position
-	_overlay.size = Vector2(side, side)
+	var origin := Vector2(viewport_size.x - side - margin, margin)
+	# Positioned by code: anchor both to the top-left so setting the size is allowed.
+	for control: Control in [_map_texture, _overlay]:
+		control.set_anchors_preset(Control.PRESET_TOP_LEFT)
+		control.position = origin
+		control.size = Vector2(side, side)
 	_overlay.queue_redraw()
 
 

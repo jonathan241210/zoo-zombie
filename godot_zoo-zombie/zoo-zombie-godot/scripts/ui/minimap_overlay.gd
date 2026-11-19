@@ -69,8 +69,8 @@ func _draw_player(center: Vector2, heading: float) -> void:
 
 
 func _draw_north(center: Vector2, radius: float, angle: float) -> void:
-	var position := center + _direction(angle) * (radius - 17.0)
-	draw_string(ThemeDB.fallback_font, position + Vector2(0.0, 5.0), "N",
+	var label_position := center + _direction(angle) * (radius - 17.0)
+	draw_string(ThemeDB.fallback_font, label_position + Vector2(0.0, 5.0), "N",
 		HORIZONTAL_ALIGNMENT_CENTER, 24.0, 14, config.north_color)
 
 
