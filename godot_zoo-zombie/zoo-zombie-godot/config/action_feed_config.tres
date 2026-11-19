@@ -8,6 +8,7 @@ message_duration = 2.5
 fade_time = 0.4
 max_visible = 4
 repeat_cooldown = 2.0
+alert_cooldown = 10.0
 font_size = 20
 vertical_position = 0.82
 positive_color = Color(0.55, 0.95, 0.5, 1)

@@ -73,6 +73,24 @@ rotation = Vector3(0, -0.57, 0)
 position = Vector3(54.23, 1.5, -7.7)
 rotation = Vector3(0, -2.82, 0)
 
+[node name="REC_RECINTO_NORTE_CENTRAL" type="Node3D" parent="Markers/Enclosures"]
+
+[node name="FeederAnchor" type="Marker3D" parent="Markers/Enclosures/REC_RECINTO_NORTE_CENTRAL"]
+position = Vector3(15.45, 1.5, 27.73)
+rotation = Vector3(0, 0.113, 0)
+
+[node name="REC_JAULA_NORTE_2" type="Node3D" parent="Markers/Enclosures"]
+
+[node name="FeederAnchor" type="Marker3D" parent="Markers/Enclosures/REC_JAULA_NORTE_2"]
+position = Vector3(-44.47, 1.5, -2.94)
+rotation = Vector3(0, -1.898, 0)
+
+[node name="REC_HEX_SUR_5" type="Node3D" parent="Markers/Enclosures"]
+
+[node name="FeederAnchor" type="Marker3D" parent="Markers/Enclosures/REC_HEX_SUR_5"]
+position = Vector3(-8.44, 1.5, 52.13)
+rotation = Vector3(0, -0.209, 0)
+
 [node name="FoodCrateSpawns" type="Node3D" parent="Markers"]
 
 [node name="Veterinaria" type="Marker3D" parent="Markers/FoodCrateSpawns"]

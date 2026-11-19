@@ -36,7 +36,14 @@ func attach(owner_animal: Animal, enclosure: Enclosure) -> void:
 	else:
 		global_position = enclosure.global_position
 	visible = true
+	interactable.enabled = true
 	set_filled(false)
+
+
+## RF-33: while its animal is escaped the feeder is hidden and cannot be used.
+func detach() -> void:
+	visible = false
+	interactable.enabled = false
 
 
 func set_filled(filled: bool) -> void:

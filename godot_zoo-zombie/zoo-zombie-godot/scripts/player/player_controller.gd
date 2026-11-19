@@ -21,6 +21,7 @@ var _death_tween: Tween
 
 func _ready() -> void:
 	assert(config != null, "PlayerController needs a PlayerConfig")
+	add_to_group(&"player")
 	health.reset(config.max_health)
 	health.died.connect(_on_died)
 	head.position.y = config.eye_height

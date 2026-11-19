@@ -27,6 +27,10 @@ extends Resource
 @export var stamina_regen_per_second: float = 10.0
 ## Stamina ratio to stop being tired.
 @export var tired_recovery_ratio: float = 0.5
+## An escaped animal runs away from zombies closer than this (RF-40).
+@export var flee_radius: float = 12.0
+## Meters an escaping animal runs past its broken fence before roaming freely.
+@export var exit_distance: float = 3.0
 @export var lure_radius: float = 8.0
 @export var follow_max_radius: float = 15.0
 @export var follow_distance: float = 2.5

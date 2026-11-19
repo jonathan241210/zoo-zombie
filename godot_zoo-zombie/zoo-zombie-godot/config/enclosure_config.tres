@@ -5,4 +5,9 @@
 [resource]
 script = ExtResource("1_script")
 max_integrity = 300.0
+attack_point_count = 8
+attack_point_offset = 1.0
+recapture_radius = 3.0
+destroyed_sink_ratio = 0.85
+destroyed_sink_time = 1.2
 refuge_enclosures = PackedStringArray("REC_RECINTO_NORTE_CENTRAL", "REC_JAULA_NORTE_2", "REC_HEX_SUR_5")

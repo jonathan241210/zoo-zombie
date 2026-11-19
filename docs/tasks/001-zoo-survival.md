@@ -98,16 +98,16 @@ Convenciones:
 
 ## Fase 7: Recintos destructibles, escape y recaptura
 
-- [ ] T-070 Dar integridad (`HealthComponent`) a `Enclosure`, con puntos de ataque exteriores y estado destruido permanente — RF-30 a RF-32, RF-35
-- [ ] T-071 Crear `ZombieTargetSelector`: roles cazador / destructor, cambio de objetivo del destructor y prioridad sobre animales escapados — RF-60 a RF-62
-- [ ] T-072 Crear `Stamina` (lógica pura) con pruebas — RF-41, RF-42
-- [ ] T-073 Estados del animal escapado: `FLEEING` (huye de los zombis) y `TIRED` — RF-33, RF-40 a RF-43
-- [ ] T-074 Crear `AnimalLure`: seguir al jugador que carga una caja, con radio de atracción y radio máximo — RF-44
-- [ ] T-075 Recaptura: el área interior de un refugio libre asigna el animal al recinto y le mueve el comedero — RF-34, RF-45
-- [ ] T-076 Zombificación: horda extra en la posición del animal muerto — RF-47, RF-75
-- [ ] T-077 Escena de prueba: recinto bajo ataque → escape → recaptura
-- [ ] T-079 Navegación de animales consciente del entorno: que busquen rutas alrededor de rocas, refugios y vigas (navmesh por recinto con su propio radio de agente + `NavigationAgent3D` con evasión), en lugar de caminar en línea recta y reintentar al atorarse. Se reutiliza para huir y seguir al jugador (petición del usuario, 2026-11-17)
-- [ ] T-078 Verificar — CA-04, CA-05, CA-06, CA-07
+- [x] T-070 Dar integridad (`HealthComponent`) a `Enclosure`, con puntos de ataque exteriores y estado destruido permanente — RF-30 a RF-32, RF-35 (la cerca deja de colisionar y se hunde en el suelo; puntos de ataque sobre el navmesh fuera de la cerca)
+- [x] T-071 Crear `ZombieTargetSelector`: roles cazador / destructor, cambio de objetivo del destructor y prioridad sobre animales escapados — RF-60 a RF-62
+- [x] T-072 Crear `Stamina` (lógica pura) con pruebas — RF-41, RF-42 (`scripts/components/stamina.gd`, `tests/test_stamina.gd`)
+- [x] T-073 Estados del animal escapado: `FLEEING` (huye de los zombis) y `TIRED` — RF-33, RF-40 a RF-43 (también `ESCAPING` (sale por la cerca rota) y `LOOSE` (libre sin amenaza))
+- [x] T-074 Crear `AnimalLure`: seguir al jugador que carga una caja, con radio de atracción y radio máximo — RF-44 (integrado en `Animal` en lugar de un nodo `AnimalLure` aparte)
+- [x] T-075 Recaptura: el área interior de un refugio libre asigna el animal al recinto y le mueve el comedero — RF-34, RF-45 (el registro revisa cada 0.25 s si un animal que sigue al jugador llega a menos de `recapture_radius` de la cerca de un refugio libre; entonces queda adentro junto a ese punto. Se agregaron anclajes de comedero a los 3 refugios)
+- [x] T-076 Zombificación: horda extra en la posición del animal muerto — RF-47, RF-75
+- [x] T-077 Escena de prueba: recinto bajo ataque → escape → recaptura (como prueba de integración `tests/integration/test_escape_and_recapture.gd` sobre la partida real)
+- [x] T-079 Navegación de animales consciente del entorno: que busquen rutas alrededor de rocas, refugios y vigas (navmesh por recinto con su propio radio de agente + `NavigationAgent3D` con evasión), en lugar de caminar en línea recta y reintentar al atorarse. Se reutiliza para huir y seguir al jugador (petición del usuario, 2026-11-17) (parcial: el animal escapado usa `NavigationAgent3D` sobre el navmesh global para huir y seguir; el paseo dentro del recinto sigue con puntos libres y barrido de esfera)
+- [ ] T-078 Verificar — CA-04, CA-05, CA-06, CA-07 (automático en las pruebas de integración; falta la prueba del usuario jugando)
 
 ## Fase 8: Oleadas y temporizadores
 

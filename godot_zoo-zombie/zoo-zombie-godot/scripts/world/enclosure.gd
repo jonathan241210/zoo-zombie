@@ -2,7 +2,11 @@ class_name Enclosure
 extends Node3D
 ## A map enclosure that can hold one animal (spec 001 §5.4). Built at runtime from the
 ## map mesh with the same name (e.g. "REC_HEX_CENTRAL"); its interior bounds come from
-## that mesh. Integrity/destruction is added in phase 7.
+## that mesh. While occupied it has integrity (RF-30); zombies hit it from attack points
+## outside the fence and, at 0, it is destroyed for the rest of the match (RF-32): its
+## fence sinks into the ground and stops blocking, so the animal can escape.
+
+signal destroyed(enclosure: Enclosure)
 
 const INTERIOR_MARGIN := 1.2
 const POINT_ATTEMPTS := 32
@@ -23,6 +27,14 @@ var occupant: Node3D = null
 ## Fence outline seen from above (XZ, world space), shrunk by INTERIOR_MARGIN. Built
 ## from the convex hull of the map mesh, which matches hexagonal and rectangular pens.
 var outline: PackedVector2Array = PackedVector2Array()
+var config: EnclosureConfig
+## Integrity (RF-30). Named "HealthComponent" so zombies damage it like any target.
+var health: HealthComponent
+var is_destroyed := false
+
+var _map_node: Node3D = null
+var _colliders: Array[CollisionShape3D] = []
+var _attack_points: Array[Vector3] = []
 
 ## Top of the map mesh bounds, used to cast floor rays from above.
 var _top_y: float = 0.0
@@ -30,7 +42,17 @@ var _top_y: float = 0.0
 var _ground_y: float = NAN
 
 
-func setup(map_node: Node3D, anchor: Marker3D) -> void:
+func setup(map_node: Node3D, anchor: Marker3D, enclosure_config: EnclosureConfig = null,
+		colliders: Array[CollisionShape3D] = []) -> void:
+	config = enclosure_config if enclosure_config != null else EnclosureConfig.new()
+	_map_node = map_node
+	_colliders = colliders
+	health = HealthComponent.new()
+	health.name = "HealthComponent"
+	add_child(health)
+	health.reset(config.max_integrity)
+	health.damaged.connect(func(_amount: float, _source: Node) -> void: EventBus.enclosure_damaged.emit(self))
+	health.died.connect(_destroy)
 	map_name = map_node.name
 	name = "Enclosure_" + map_name
 	var bounds := _world_bounds(map_node)
@@ -49,6 +71,93 @@ func setup(map_node: Node3D, anchor: Marker3D) -> void:
 
 func is_free() -> bool:
 	return occupant == null
+
+
+## Zombies only attack enclosures that hold an animal and still stand (RF-31, RF-32).
+func can_be_attacked() -> bool:
+	return occupant != null and not is_destroyed
+
+
+## Free, intact enclosure that can receive an escaped animal (RF-34, RF-35).
+func can_receive_animal() -> bool:
+	return occupant == null and not is_destroyed
+
+
+## Horizontal distance from a point to the fence outline (0 when inside).
+func distance_to_outline(point: Vector3) -> float:
+	var p := Vector2(point.x, point.z)
+	if Geometry2D.is_point_in_polygon(p, outline):
+		return 0.0
+	var best := INF
+	for i in outline.size():
+		var closest := Geometry2D.get_closest_point_to_segment(p, outline[i], outline[(i + 1) % outline.size()])
+		best = minf(best, p.distance_to(closest))
+	return best
+
+
+## Points outside the fence, on the navmesh, where breaker zombies stand to hit it.
+func get_attack_points() -> Array[Vector3]:
+	if not _attack_points.is_empty():
+		return _attack_points
+	var grown := Geometry2D.offset_polygon(outline, INTERIOR_MARGIN + config.attack_point_offset)
+	if grown.is_empty():
+		return _attack_points
+	var ring: PackedVector2Array = grown[0]
+	var perimeter := 0.0
+	for i in ring.size():
+		perimeter += ring[i].distance_to(ring[(i + 1) % ring.size()])
+	var count := maxi(config.attack_point_count, 1)
+	var map_rid := get_world_3d().navigation_map
+	var ground := ground_height()
+	for k in count:
+		var point := _point_on_ring(ring, perimeter * k / count)
+		var world := Vector3(point.x, ground, point.y)
+		if NavigationServer3D.map_get_iteration_id(map_rid) > 0:
+			world = NavigationServer3D.map_get_closest_point(map_rid, world)
+		_attack_points.append(world)
+	return _attack_points
+
+
+## Nearest attack point to a position.
+func nearest_attack_point(from: Vector3) -> Vector3:
+	var best := global_position
+	var best_distance := INF
+	for point in get_attack_points():
+		var distance := point.distance_squared_to(from)
+		if distance < best_distance:
+			best_distance = distance
+			best = point
+	return best
+
+
+func _point_on_ring(ring: PackedVector2Array, distance: float) -> Vector2:
+	var travelled := 0.0
+	for i in ring.size():
+		var a := ring[i]
+		var b := ring[(i + 1) % ring.size()]
+		var length := a.distance_to(b)
+		if travelled + length >= distance and length > 0.0:
+			return a.lerp(b, (distance - travelled) / length)
+		travelled += length
+	return ring[0]
+
+
+## RF-32/RF-33: permanent destruction. The fence stops colliding and sinks into the
+## ground, then the registry releases the animal.
+func _destroy() -> void:
+	if is_destroyed:
+		return
+	is_destroyed = true
+	for shape in _colliders:
+		shape.set_deferred(&"disabled", true)
+	if _map_node != null:
+		var height := _top_y - ground_height()
+		var tween := create_tween()
+		tween.tween_property(_map_node, "position:y",
+			_map_node.position.y - height * config.destroyed_sink_ratio, config.destroyed_sink_time) \
+			.set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+	EventBus.enclosure_destroyed.emit(self)
+	destroyed.emit(self)
 
 
 ## Random walkable point inside the enclosure. When `from` is given, the straight line

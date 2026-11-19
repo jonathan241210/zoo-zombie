@@ -13,6 +13,8 @@ extends Node3D
 @onready var ammo_crates: AmmoSpawnDirector = $AmmoSpawnDirector
 @onready var zombies: ZombieSpawner = $ZombieSpawner
 
+var _horde_sizes: Dictionary = {}  # animal_id -> zombies in its zombification horde
+
 
 func _ready() -> void:
 	player.respawn_at(level.player_spawn.global_transform)
@@ -31,7 +33,10 @@ func _ready() -> void:
 	# Wired here: a NodePath from player.tscn to a node outside it cannot resolve.
 	(player.get_node("PlayerCarry") as PlayerCarry).food_crate_director = food_crates
 	ammo_crates.setup(level.get_ammo_spawns())
-	zombies.setup(level.get_zombie_spawns(), player)
+	zombies.setup(level.get_zombie_spawns(), player, enclosures)
+	for animal in animals:
+		_horde_sizes[animal.config.animal_id] = animal.config.death_horde_size
+	EventBus.animal_died.connect(_on_animal_died)
 	EventBus.player_died.connect(_on_player_died)
 
 
@@ -44,3 +49,8 @@ func _on_player_died() -> void:
 		return
 	player.respawn_at(level.player_spawn.global_transform)
 	EventBus.player_respawned.emit()
+
+
+## RF-47: a dead animal turns into an extra horde at its position.
+func _on_animal_died(animal_id: StringName, at: Vector3) -> void:
+	zombies.spawn_horde(at, int(_horde_sizes.get(animal_id, 0)))

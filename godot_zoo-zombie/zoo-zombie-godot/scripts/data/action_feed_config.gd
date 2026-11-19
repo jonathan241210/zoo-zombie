@@ -8,6 +8,8 @@ extends Resource
 @export var max_visible: int = 4
 ## The same message is not shown again before this many seconds.
 @export var repeat_cooldown: float = 2.0
+## Longer cooldown for repeated alerts such as "enclosure under attack".
+@export var alert_cooldown: float = 10.0
 @export var font_size: int = 20
 ## Fraction of the screen height where the stack is centered (below the crosshair).
 @export_range(0.0, 1.0) var vertical_position: float = 0.82

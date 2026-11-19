@@ -40,14 +40,21 @@ func _ready() -> void:
 		show_message(_animal_key("MSG_DIED", animal_id), Kind.DANGER))
 	EventBus.player_died.connect(func() -> void: show_message("MSG_PLAYER_DIED", Kind.DANGER))
 	EventBus.player_respawned.connect(func() -> void: show_message("MSG_PLAYER_RESPAWNED", Kind.INFO))
+	EventBus.enclosure_damaged.connect(_on_enclosure_damaged)
+	EventBus.animal_escaped.connect(func(animal_id: StringName) -> void:
+		show_message(_animal_key("MSG_ESCAPED", animal_id), Kind.DANGER))
+	EventBus.animal_state_changed.connect(_on_animal_state_changed)
+	EventBus.animal_recaptured.connect(func(animal_id: StringName, _enclosure: Node3D) -> void:
+		show_message(_animal_key("MSG_RECAPTURED", animal_id), Kind.POSITIVE))
 
 
 ## Shows a translated message unless the same one was shown less than
 ## `repeat_cooldown` seconds ago. Returns the label, or null when skipped.
-func show_message(key: String, kind: Kind, args: Dictionary = {}) -> Label:
+func show_message(key: String, kind: Kind, args: Dictionary = {}, cooldown: float = -1.0) -> Label:
 	var now := Time.get_ticks_msec() / 1000.0
 	var cooldown_key := key + str(args)
-	if _last_shown.has(cooldown_key) and now - float(_last_shown[cooldown_key]) < config.repeat_cooldown:
+	var wait := config.repeat_cooldown if cooldown < 0.0 else cooldown
+	if _last_shown.has(cooldown_key) and now - float(_last_shown[cooldown_key]) < wait:
 		return null
 	_last_shown[cooldown_key] = now
 	var text := tr(key)
@@ -85,6 +92,19 @@ func _on_weapon_empty(has_reserve: bool) -> void:
 func _on_action_blocked(reason: StringName) -> void:
 	if reason == &"weapons_while_carrying":
 		show_message("MSG_WEAPONS_BLOCKED", Kind.WARNING, {"key": _action_key(&"interact")})
+
+
+func _on_enclosure_damaged(enclosure: Node3D) -> void:
+	var holder := enclosure as Enclosure
+	if holder == null or holder.is_destroyed or not (holder.occupant is Animal):
+		return
+	var animal_id := (holder.occupant as Animal).config.animal_id
+	show_message(_animal_key("MSG_ENCLOSURE_ATTACKED", animal_id), Kind.WARNING, {}, config.alert_cooldown)
+
+
+func _on_animal_state_changed(animal_id: StringName, state: int) -> void:
+	if state == Animal.State.FOLLOWING:
+		show_message(_animal_key("MSG_FOLLOWING", animal_id), Kind.INFO, {}, config.alert_cooldown)
 
 
 func _on_weapon_changed(weapon_id: StringName) -> void:

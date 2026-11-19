@@ -99,3 +99,24 @@ func test_english_texts() -> void:
 	TranslationServer.set_locale("en")
 	EventBus.animal_fed.emit(&"elephant")
 	assert_has(feed.visible_texts(), "You fed the elephant")
+
+
+func test_phase_7_messages() -> void:
+	EventBus.animal_escaped.emit(&"giraffe")
+	EventBus.animal_state_changed.emit(&"elephant", Animal.State.FOLLOWING)
+	EventBus.animal_recaptured.emit(&"giraffe", null)
+	assert_has(feed.visible_texts(), "¡Cayó el recinto: la jirafa escapó!")
+	assert_has(feed.visible_texts(), "El elefante te sigue: llévalo a un refugio libre")
+	assert_has(feed.visible_texts(), "La jirafa está a salvo en un refugio")
+
+
+func test_enclosure_attack_alert_uses_long_cooldown() -> void:
+	var registry: EnclosureRegistry = game.get_node("EnclosureRegistry")
+	var home := registry.get_enclosure("REC_HEX_CENTRAL")
+	home.health.take_damage(1.0)
+	home.health.take_damage(1.0)
+	var count := 0
+	for text in feed.visible_texts():
+		if text == "¡Los zombis atacan el recinto de la jirafa!":
+			count += 1
+	assert_eq(count, 1)

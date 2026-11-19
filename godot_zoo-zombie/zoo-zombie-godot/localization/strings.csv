@@ -138,3 +138,15 @@ MSG_WEAPON_AXE,Hacha equipada,Axe equipped
 MSG_WEAPONS_BLOCKED,No puedes usar armas cargando comida (suéltala con {key}),You can't use weapons while carrying food (drop it with {key})
 MSG_PLAYER_DIED,Caíste. Reapareces en la cafetería…,You fell. Respawning at the cafeteria…
 MSG_PLAYER_RESPAWNED,De vuelta en la cafetería,Back at the cafeteria
+MSG_ENCLOSURE_ATTACKED,¡Los zombis atacan un recinto!,Zombies are attacking an enclosure!
+MSG_ENCLOSURE_ATTACKED_GIRAFFE,¡Los zombis atacan el recinto de la jirafa!,Zombies are attacking the giraffe's enclosure!
+MSG_ENCLOSURE_ATTACKED_ELEPHANT,¡Los zombis atacan el recinto del elefante!,Zombies are attacking the elephant's enclosure!
+MSG_ESCAPED,¡Un recinto cayó y el animal escapó!,An enclosure fell and the animal escaped!
+MSG_ESCAPED_GIRAFFE,¡Cayó el recinto: la jirafa escapó!,The enclosure fell: the giraffe escaped!
+MSG_ESCAPED_ELEPHANT,¡Cayó el recinto: el elefante escapó!,The enclosure fell: the elephant escaped!
+MSG_FOLLOWING,El animal te sigue: llévalo a un refugio libre,The animal follows you: lead it to a free refuge
+MSG_FOLLOWING_GIRAFFE,La jirafa te sigue: llévala a un refugio libre,The giraffe follows you: lead it to a free refuge
+MSG_FOLLOWING_ELEPHANT,El elefante te sigue: llévalo a un refugio libre,The elephant follows you: lead it to a free refuge
+MSG_RECAPTURED,El animal está a salvo en un refugio,The animal is safe in a refuge
+MSG_RECAPTURED_GIRAFFE,La jirafa está a salvo en un refugio,The giraffe is safe in a refuge
+MSG_RECAPTURED_ELEPHANT,El elefante está a salvo en un refugio,The elephant is safe in a refuge

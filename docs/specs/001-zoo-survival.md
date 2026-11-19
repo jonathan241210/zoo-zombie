@@ -292,6 +292,9 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 |---|---|
 | Integridad máxima | 300 |
 | Refugios disponibles | `REC_RECINTO_NORTE_CENTRAL`, `REC_JAULA_NORTE_2`, `REC_HEX_SUR_5` |
+| Puntos de ataque alrededor de la cerca / distancia afuera | 8 / 1.0 m |
+| Distancia a la cerca de un refugio para recapturar | 3.0 m |
+| Hundimiento del recinto destruido | 85 % de su altura en 1.2 s |
 
 ### Cajas de alimento
 | Parámetro | Valor |
@@ -381,6 +384,9 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 | D-11 | Zombis al terminar una oleada | Siguen activos en la siguiente | ✅ Confirmado |
 | D-12 | Salto | ~~El jugador no puede saltar~~ Reemplazada: el jugador **sí salta** (no cargando una caja). Ver spec 005 | ✅ Confirmado (2026-11-18) |
 | D-16 | Mensajes de acción | Mensajes breves que confirman las acciones del jugador y avisan de eventos de los animales (petición del usuario) | ✅ Confirmado (2026-11-19) |
+| D-17 | Recaptura | Basta con que el animal que sigue al jugador llegue a menos de 3 m de la cerca de un refugio libre: entra y queda contenido junto a ese punto. Así no depende de que los refugios tengan puerta | ⏳ Supuesto (validar jugando) |
+| D-18 | Recinto destruido | La cerca se hunde en el suelo y deja de bloquear, para que el animal pueda salir | ⏳ Supuesto (validar jugando) |
+| D-19 | Huida | Un animal escapado huye de zombis a menos de 12 m (`flee_radius`) | ⏳ Supuesto (validar jugando) |
 | D-13 | Punto de aparición del jugador | Junto a `EST_CAFETERIA` | ✅ Confirmado |
 | D-14 | Hacha | Arma secundaria ilimitada, con daño medio en arco | ✅ Confirmado |
 | D-15 | Munición en el mapa | Puntos aleatorios poco obvios, señalados con una luz | ✅ Confirmado |

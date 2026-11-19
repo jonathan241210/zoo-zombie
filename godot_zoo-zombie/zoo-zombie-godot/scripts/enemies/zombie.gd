@@ -1,11 +1,13 @@
 class_name Zombie
 extends CharacterBody3D
-## Hunter zombie (spec 001 RF-63 to RF-68, phase 6): detects the player by radius and line
-## of sight, follows the navmesh, attacks in melee (also while the player carries a crate),
+## Zombie (spec 001 RF-60 to RF-68): detects the player by radius and line of sight,
+## follows the navmesh, attacks in melee (also while the player carries a crate),
 ## staggers when hit, can be pushed back by the axe and leaves a body that disappears.
-## Roles (hunter/breaker) and animal targets are added in phase 7.
+## Its role decides the target through ZombieTargetSelector: hunters chase the player,
+## breakers hit the nearest occupied enclosure; any zombie attacks an escaped animal.
 
 enum State { IDLE, CHASE, ATTACK, HIT, DEAD }
+enum Role { HUNTER, BREAKER }
 
 signal state_changed(new_state: State)
 
@@ -25,10 +27,18 @@ var speed_multiplier := 1.0
 var damage_multiplier := 1.0
 
 var state: State = State.IDLE
-## Current target (the player for hunters).
+var role: Role = Role.HUNTER
+## A breaker that was hurt or approached by the player hunts the player (RF-61).
+var aggro_player := false
+## Current target: the player, an escaped animal or an enclosure.
 var target: Node3D = null
+var target_kind: ZombieTargetSelector.Kind = ZombieTargetSelector.Kind.PLAYER
 ## Zombies spawned during a wave already know where their target is (RF-63).
 var alerted := false
+## Chooses the target; null keeps the one given in setup() (tests).
+var selector: ZombieTargetSelector = null
+
+var _attack_point := Vector3.ZERO
 
 var _think_timer := 0.0
 var _attack_cooldown := 0.0
@@ -63,7 +73,14 @@ func _ready() -> void:
 ## Called by the spawner before or right after adding the zombie to the tree.
 func setup(new_target: Node3D, is_alerted: bool) -> void:
 	target = new_target
+	target_kind = ZombieTargetSelector.Kind.PLAYER
 	alerted = is_alerted
+
+
+## Gives the zombie its role and target selector (spawner).
+func set_ai(target_selector: ZombieTargetSelector, new_role: Role) -> void:
+	selector = target_selector
+	role = new_role
 
 
 ## Pushes the zombie (axe, RF-5A). `push` is the total displacement in meters.
@@ -90,12 +107,14 @@ func _physics_process(delta: float) -> void:
 	match state:
 		State.IDLE:
 			_stop()
-			if think and _target_alive() and (alerted or _can_detect()):
-				_enter_state(State.CHASE)
+			if think:
+				_retarget()
+				if _target_alive() and (target_kind != ZombieTargetSelector.Kind.PLAYER or alerted or _can_detect()):
+					_enter_state(State.CHASE)
 		State.CHASE:
 			_process_chase(delta, think)
 		State.ATTACK:
-			_process_attack(delta)
+			_process_attack(delta, think)
 		State.HIT:
 			_stop()
 			_hit_timer -= delta
@@ -111,23 +130,26 @@ func _physics_process(delta: float) -> void:
 
 
 func _process_chase(delta: float, think: bool) -> void:
+	if think:
+		_retarget()
 	if not _target_alive():
 		_enter_state(State.IDLE)
 		return
-	var distance := _flat_distance_to(target.global_position)
+	var goal := _goal_position()
+	var distance := _flat_distance_to(goal)
 	if distance <= config.attack_range:
 		_enter_state(State.ATTACK)
 		return
 	if think:
-		nav_agent.target_position = target.global_position
-		_has_line_of_sight = _line_of_sight_to(target)
+		nav_agent.target_position = goal
+		_has_line_of_sight = target_kind != ZombieTargetSelector.Kind.ENCLOSURE and _line_of_sight_to(target)
 	var speed := (config.run_speed if _has_line_of_sight else config.walk_speed) * speed_multiplier
 	var next := nav_agent.get_next_path_position()
 	var to_next := next - global_position
 	to_next.y = 0.0
 	if nav_agent.is_navigation_finished() or to_next.length() < 0.05:
 		# No path (e.g. off the navmesh): head straight for the target.
-		to_next = target.global_position - global_position
+		to_next = goal - global_position
 		to_next.y = 0.0
 	var direction := to_next.normalized()
 	var desired := direction * speed
@@ -140,17 +162,23 @@ func _process_chase(delta: float, think: bool) -> void:
 	_play(&"run", Vector2(velocity.x, velocity.z).length() / config.run_anim_speed)
 
 
-func _process_attack(delta: float) -> void:
+func _process_attack(delta: float, think: bool) -> void:
 	_stop()
+	if think:
+		_retarget()  # e.g. a breaker that was hurt switches to the player
+		if state != State.ATTACK:
+			return
 	if not _target_alive():
 		_attack_pending = false
 		_enter_state(State.IDLE)
 		return
+	# Face what is being hit (the fence centre for enclosures), but measure the reach to
+	# the goal (the attack point outside the fence for enclosures).
 	var to_target := target.global_position - global_position
 	to_target.y = 0.0
 	if to_target.length() > 0.01:
 		_turn_towards(to_target.normalized(), delta)
-	var distance := to_target.length()
+	var distance := _flat_distance_to(_goal_position())
 	_attack_cooldown -= delta
 	if _attack_pending:
 		_attack_hit_timer -= delta
@@ -170,8 +198,40 @@ func _process_attack(delta: float) -> void:
 
 func _hit_target() -> void:
 	var target_health := target.get_node_or_null("HealthComponent") as HealthComponent
-	if target_health != null:
-		target_health.take_damage(config.damage_to_player * damage_multiplier, self)
+	if target_health == null:
+		return
+	var damage := config.damage_to_player
+	match target_kind:
+		ZombieTargetSelector.Kind.ANIMAL:
+			damage = config.damage_to_animal
+		ZombieTargetSelector.Kind.ENCLOSURE:
+			damage = config.damage_to_enclosure
+	target_health.take_damage(damage * damage_multiplier, self)
+
+
+## Asks the selector for the current target (each think tick).
+func _retarget() -> void:
+	if selector == null:
+		return
+	var choice := selector.choose(self)
+	var node := choice["node"] as Node3D
+	if node == target and choice["kind"] == target_kind:
+		return
+	target = node
+	target_kind = choice["kind"]
+	if target_kind == ZombieTargetSelector.Kind.ENCLOSURE:
+		_attack_point = (target as Enclosure).nearest_attack_point(global_position)
+		alerted = true
+	if state == State.ATTACK:
+		_attack_pending = false
+		_enter_state(State.CHASE)
+
+
+## Where the zombie walks to: the attack point outside the fence for enclosures.
+func _goal_position() -> Vector3:
+	if target_kind == ZombieTargetSelector.Kind.ENCLOSURE:
+		return _attack_point
+	return target.global_position
 
 
 func _enter_state(new_state: State) -> void:
@@ -198,7 +258,9 @@ func _enter_state(new_state: State) -> void:
 func _on_damaged(_amount: float, source: Node) -> void:
 	if state == State.DEAD or health.is_dead:
 		return
-	# Being shot reveals the shooter (hunters already chase the player).
+	# Being hurt by the player makes a breaker hunt the player (RF-61).
+	if source is PlayerController:
+		aggro_player = true
 	if source is Node3D and target == null:
 		target = source as Node3D
 	alerted = true
@@ -225,13 +287,28 @@ func _maybe_drop_ammo() -> void:
 		return
 	var pickup := ammo_pickup_scene.instantiate() as AmmoPickup
 	pickup.configure(config.ammo_drop_amount, config.ammo_drop_lifetime)
-	get_parent().add_child.call_deferred(pickup)
-	pickup.set_deferred(&"global_position", global_position)
+	# Deferred (we are inside a physics callback); the scene may be gone by then.
+	_place_drop.call_deferred(pickup, get_parent(), global_position)
+
+
+## Untyped: `parent` may already be freed, and a freed object cannot be passed as Node.
+static func _place_drop(pickup: Variant, parent: Variant, at: Vector3) -> void:
+	if not is_instance_valid(pickup):
+		return
+	if not is_instance_valid(parent) or not (parent as Node).is_inside_tree():
+		(pickup as Node).free()
+		return
+	(parent as Node).add_child(pickup)
+	(pickup as Node3D).global_position = at
 
 
 func _target_alive() -> bool:
 	if not is_instance_valid(target):
 		return false
+	if target is Enclosure:
+		return (target as Enclosure).can_be_attacked()
+	if target is Animal and not (target as Animal).is_escaped():
+		return false  # recaptured or dead
 	var target_health := target.get_node_or_null("HealthComponent") as HealthComponent
 	return target_health == null or not target_health.is_dead
 
