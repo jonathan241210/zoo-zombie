@@ -15,4 +15,3 @@ fire_interval = 0.8
 reload_time = 2.5
 low_reserve_threshold = 6
 camera_recoil_degrees = 3.0
-draw_time = 0.4

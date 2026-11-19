@@ -11,4 +11,3 @@ max_targets = 2
 swing_interval = 0.9
 knockback = 1.0
 hit_delay = 0.35
-draw_time = 0.4

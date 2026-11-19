@@ -1,8 +1,9 @@
 class_name WeaponManager
 extends Node
 ## Equipped weapon (spec 001 RF-5B, RF-05): switches between the shotgun and the axe with
-## a short animation, and blocks switching while carrying a crate. The equipped weapon is
-## kept while carrying (the arm is hidden), so it comes back after feeding or dropping.
+## a short animation (PlayerConfig.weapon_switch_time) and blocks switching while carrying
+## a crate. The equipped weapon is kept while carrying (the arm is hidden), so it comes
+## back after feeding or dropping.
 
 signal weapon_switched(weapon: StringName)
 
@@ -42,14 +43,14 @@ func can_switch() -> bool:
 	return not is_switching and player.input_enabled and carry.can_use_weapons()
 
 
-## Starts switching; the new weapon becomes usable after its draw time.
+## Starts switching; the new weapon becomes usable after the switch time.
 func switch_to(weapon: StringName) -> bool:
 	if weapon == current or not can_switch():
 		return false
 	is_switching = true
 	shotgun.cancel_reload()
 	_activate(&"")
-	var duration := _draw_time(weapon)
+	var duration := player.config.weapon_switch_time
 	if view_model != null:
 		view_model.play_switch(weapon, duration)
 	if duration > 0.0:
@@ -74,7 +75,3 @@ func is_reserve_full() -> bool:
 func _activate(weapon: StringName) -> void:
 	shotgun.active = weapon == SHOTGUN
 	axe.active = weapon == AXE
-
-
-func _draw_time(weapon: StringName) -> float:
-	return axe.config.draw_time if weapon == AXE else shotgun.config.draw_time

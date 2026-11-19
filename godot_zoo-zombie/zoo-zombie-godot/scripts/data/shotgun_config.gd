@@ -19,5 +19,3 @@ extends Resource
 @export var low_reserve_threshold: int = 6
 ## Camera kick per shot.
 @export var camera_recoil_degrees: float = 3.0
-## Seconds to bring the shotgun up when switching to it (RF-5B).
-@export var draw_time: float = 0.4

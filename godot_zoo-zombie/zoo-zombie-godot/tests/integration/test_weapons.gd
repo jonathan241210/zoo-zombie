@@ -62,12 +62,12 @@ func test_switch_to_axe_and_back() -> void:
 	assert_true(weapons.is_switching)
 	assert_false(shotgun.active, "no weapon usable mid-switch")
 	assert_false(axe.active)
-	await wait_seconds(axe.config.draw_time + 0.1)
+	await wait_seconds(player.config.weapon_switch_time + 0.1)
 	assert_eq(weapons.current, WeaponManager.AXE)
 	assert_true(axe.active)
 	assert_signal_emitted_with_parameters(EventBus, "weapon_changed", [WeaponManager.AXE])
 	weapons.switch_to(WeaponManager.SHOTGUN)
-	await wait_seconds(shotgun.config.draw_time + 0.1)
+	await wait_seconds(player.config.weapon_switch_time + 0.1)
 	assert_true(shotgun.active)
 
 
@@ -82,7 +82,7 @@ func test_cannot_switch_or_swing_while_carrying() -> void:
 
 func test_axe_hits_nearest_targets_in_front_only() -> void:
 	weapons.switch_to(WeaponManager.AXE)
-	await wait_seconds(axe.config.draw_time + 0.1)
+	await wait_seconds(player.config.weapon_switch_time + 0.1)
 	var near := _dummy(Vector3(0.0, 0.0, -1.2))
 	var mid := _dummy(Vector3(0.6, 0.0, -1.6))
 	var far := _dummy(Vector3(-0.6, 0.0, -2.0))
@@ -101,7 +101,7 @@ func test_axe_hits_nearest_targets_in_front_only() -> void:
 
 func test_axe_respects_swing_interval() -> void:
 	weapons.switch_to(WeaponManager.AXE)
-	await wait_seconds(axe.config.draw_time + 0.1)
+	await wait_seconds(player.config.weapon_switch_time + 0.1)
 	assert_true(axe.can_swing())
 	axe.swing()
 	assert_false(axe.can_swing(), "slow weapon: wait between swings")
