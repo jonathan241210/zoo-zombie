@@ -26,6 +26,7 @@ const ANIM_BLEND := 0.3
 var state: State = State.IDLE
 var enclosure: Enclosure = null
 var feeder: Feeder = null
+var needs: AnimalNeeds
 
 var _target := Vector3.ZERO
 var _has_target := false
@@ -44,14 +45,21 @@ var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 func _ready() -> void:
 	assert(config != null, "Animal needs an AnimalConfig")
 	health.reset(config.max_health)
+	health.died.connect(_on_health_depleted)
+	needs = AnimalNeeds.new()
+	needs.configure(config)
 	for loop_name: StringName in [&"idle", &"walk", &"run", &"eat", &"weak"]:
 		if _animation.has_animation(loop_name):
 			_animation.get_animation(loop_name).loop_mode = Animation.LOOP_LINEAR
 	GameManager.register_animal(config.animal_id)
 	_enter_state(State.IDLE)
+	EventBus.animal_registered.emit(self)
 
 
 func _physics_process(delta: float) -> void:
+	var hunger_damage := needs.tick(delta)
+	if hunger_damage > 0.0:
+		health.take_damage(hunger_damage, self)
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
 	else:
@@ -102,11 +110,21 @@ func can_be_fed() -> bool:
 	return enclosure != null and state != State.DEAD
 
 
+func can_receive_damage_from(source: Node) -> bool:
+	if source is PlayerController and not config.player_damageable:
+		return false
+	return state != State.DEAD
+
+
 ## Feeding (RF-25): heal, notify, walk to the feeder and play the eat animation.
 func feed() -> bool:
 	if not can_be_fed():
 		return false
-	health.heal(config.heal_per_feeding)
+	if health.current_health < health.max_health:
+		health.heal(config.heal_per_feeding)
+	needs.feed()
+	if feeder != null and is_instance_valid(feeder):
+		feeder.set_filled(true)
 	fed.emit()
 	EventBus.animal_fed.emit(config.animal_id)
 	_enter_state(State.EATING)
@@ -135,6 +153,19 @@ func _enter_state(new_state: State) -> void:
 			_play(&"death")
 	state_changed.emit(state)
 	EventBus.animal_state_changed.emit(config.animal_id, state)
+
+
+func _on_health_depleted() -> void:
+	if state == State.DEAD:
+		return
+	_enter_state(State.DEAD)
+	EventBus.animal_died.emit(config.animal_id, global_position)
+	if feeder != null and is_instance_valid(feeder):
+		feeder.queue_free()
+	var despawn_delay := maxf(config.death_despawn_delay, 0.0)
+	if _animation.has_animation(&"death"):
+		despawn_delay = maxf(despawn_delay, _animation.get_animation(&"death").length)
+	get_tree().create_timer(despawn_delay, false).timeout.connect(queue_free)
 
 
 func _pick_wander_target() -> void:

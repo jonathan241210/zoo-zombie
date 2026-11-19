@@ -18,6 +18,7 @@ signal zombie_killed(zombie: Node3D)
 signal zombie_count_changed(alive: int, pending: int)
 
 # --- Animals ---
+signal animal_registered(animal: Node3D)
 signal animal_fed(animal_id: StringName)
 signal animal_state_changed(animal_id: StringName, state: int)
 signal animal_escaped(animal_id: StringName)

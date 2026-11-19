@@ -1,7 +1,7 @@
 # Spec 003: Minimapa del HUD
 
-**Estado:** Borrador, pendiente de aprobación · **Versión:** 0.1 · **Fecha:** 2026-11-18
-**Plan:** `plans/003-minimap.md` (aún no existe) · **Tareas:** `tasks/003-minimap.md` (aún no existe)
+**Estado:** Fases A y B1 aprobadas por solicitud del usuario · **Versión:** 0.3 · **Fecha:** 2026-11-18
+**Plan:** [`plans/003-minimap.md`](../plans/003-minimap.md) · **Tareas:** [`tasks/003-minimap.md`](../tasks/003-minimap.md)
 **Depende de:** [`specs/001-zoo-survival.md`](001-zoo-survival.md) y [`specs/002-menus-and-onboarding.md`](002-menus-and-onboarding.md)
 
 ---
@@ -44,7 +44,7 @@ Esta spec **amplía** los requisitos RF-46 y RF-104 de la spec 001 (marcadores h
 
 | ID | Elemento | Icono y comportamiento |
 |---|---|---|
-| RF-10 | **Jirafa** y **elefante** | Icono propio de cada animal, siempre visible en el minimapa. El color indica el estado: normal, **débil**, **escapado** y **muerto** (gris). |
+| RF-10 | **Jirafa** y **elefante** | Un punto distinto por animal, en su posición actual y siempre visible dentro del radio del minimapa. El color distingue jirafa y elefante; si muere, el punto pasa a gris. Los estados débil y escapado se añadirán cuando esos estados existan en el sistema de animales. |
 | RF-11 | **Recintos ocupados** | Contorno del recinto. Parpadea en rojo si está **bajo ataque** (RF-103 de la spec 001). Se oscurece si está destruido. |
 | RF-12 | **Refugios libres** | Icono de refugio en cada refugio libre e intacto. Solo se resaltan mientras haya un animal escapado. |
 | RF-13 | **Cajas de alimento** | Icono de caja en cada caja activa. |
@@ -79,7 +79,7 @@ Esta spec **amplía** los requisitos RF-46 y RF-104 de la spec 001 (marcadores h
 |---|---|
 | RF-40 | En **Configuración > Gameplay y accesibilidad** (RF-73 de la spec 002) se puede: mostrar u ocultar el minimapa, cambiar forma, rotación, tamaño (pequeño / mediano / grande), zoom inicial, y activar o no el objetivo guiado y la línea guía. |
 | RF-41 | Los iconos no dependen solo del color: cada tipo tiene una **forma distinta**, para jugadores con daltonismo. |
-| RF-42 | Las nuevas acciones (**mapa completo**, **cambiar zoom del minimapa**) aparecen en la pantalla de **Controles** y se pueden reasignar (RF-61 de la spec 002). |
+| RF-42 | Las nuevas acciones (**mapa completo**, **cambiar zoom del minimapa**) aparecen en la pantalla informativa de **Controles** con sus teclas y botones predeterminados. No se reasignan (spec 002 RF-62). |
 | RF-43 | Todos los textos del minimapa y del mapa completo están en el archivo de traducción (español e inglés). |
 
 ## 4. Valores configurables
@@ -92,6 +92,8 @@ Se guardan en un recurso `.tres` (por ejemplo `MinimapConfig`), nunca escritos e
 | Rotación | Gira con el jugador |
 | Tamaño en pantalla | 220 px (a 1080p) |
 | Radio visible, zoom cercano / lejano | 40 m / 90 m |
+| Ángulo del cono de visión | 60° |
+| Radio visual de los puntos de animales | 6 px |
 | Radio de detección de zombis en el minimapa | 30 m |
 | Frecuencia de actualización | 20 Hz |
 | Tecla mapa completo / zoom | M / Z |

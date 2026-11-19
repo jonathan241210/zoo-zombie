@@ -1,6 +1,6 @@
 # Spec 001: Supervivencia en el zoológico
 
-**Estado:** Borrador, pendiente de aprobación · **Versión:** 0.2 · **Fecha:** 2026-11-16
+**Estado:** Fase 4 aprobada para implementación; resto del documento en borrador · **Versión:** 0.3 · **Fecha:** 2026-11-19
 **Plan:** [`plans/001-zoo-survival.md`](../plans/001-zoo-survival.md) · **Tareas:** [`tasks/001-zoo-survival.md`](../tasks/001-zoo-survival.md)
 
 ---
@@ -83,12 +83,14 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 |---|---|
 | RF-20 | Hay dos animales al inicio: **jirafa** en `REC_HEX_CENTRAL` y **elefante** en `REC_RECINTO_ESTE`. Se podrán agregar más animales después. |
 | RF-21 | Cada animal tiene vida máxima, vida actual y un temporizador de inanición. |
-| RF-22 | Después de comer, el animal tiene un **periodo de gracia** configurable sin perder vida por hambre. Al terminar ese periodo, pierde vida de forma continua a una tasa configurable (vida por segundo). |
+| RF-22 | La saciedad empieza llena al iniciar la partida y se reinicia después de comer. El animal tiene un **periodo de gracia** configurable sin perder vida por hambre; la saciedad baja de forma continua. Al terminar ese periodo, pierde vida de forma continua a una tasa configurable (vida por segundo). |
 | RF-23 | El temporizador de inanición corre durante **toda la partida**, aunque el animal esté escapado y aunque el jugador esté muerto. Solo se detiene en pausa. |
 | RF-24 | Cada animal tiene su propio **comedero**, que siempre está en el recinto donde el animal vive en ese momento. El de la jirafa es elevado, sobre un poste o soporte alto; el del elefante es bajo, a nivel del suelo. |
-| RF-25 | Si el jugador está **CARGANDO** cerca del comedero de un animal contenido, aparece la indicación "Alimentar (E)". Al interactuar: la caja se consume, el animal recupera vida (cantidad configurable, sin pasar del máximo), se reinicia su temporizador de inanición, se reproduce la animación de comer, se suman puntos y el jugador vuelve a **ARMADO**. |
+| RF-25 | Si el jugador está **CARGANDO** cerca del comedero de un animal contenido, aparece la indicación "Alimentar (E)". Al interactuar: la caja se consume; si al animal le falta vida, la recupera en la cantidad configurable sin exceder el máximo; si tiene la vida completa, no se cura. En ambos casos se reinicia la saciedad. Se reproduce la animación de comer, se suman puntos y el jugador vuelve a **ARMADO**. |
 | RF-26 | Un animal escapado **no se puede alimentar** hasta que vuelva a estar en un recinto. |
 | RF-27 | Cuando la vida del animal baja de un umbral configurable (% de vida), pasa al estado **DÉBIL**: animación propia, movimiento más lento y alerta en el HUD. |
+| RF-28 | El daño causado por armas del jugador no reduce la vida de la jirafa. La propiedad se configura por especie para permitir excepciones futuras. |
+| RF-29 | Al morir, el animal emite su señal de muerte, reproduce la animación y luego se elimina de la escena junto con su comedero. |
 
 ### 5.4 Recintos destructibles
 
@@ -117,7 +119,7 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 
 | ID | Requisito |
 |---|---|
-| RF-47 | Si un animal llega a 0 de vida, por hambre o por ataques, **muere** y **se zombifica**: aparece una horda extra de zombis (cantidad configurable) en su posición. |
+| RF-47 | Si un animal llega a 0 de vida, por hambre o por ataques, **muere** y **se zombifica**: aparece una horda extra de zombis (cantidad configurable) en su posición. La señal y la posición se publican antes de eliminar al animal tras su animación de muerte (RF-29). |
 | RF-48 | La muerte de un animal resta puntos (penalización configurable) y deja ese animal fuera del resto de la partida. |
 | RF-49 | Si mueren **ambos** animales, la partida termina en **derrota**. |
 
@@ -268,10 +270,12 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 | Parámetro | Jirafa | Elefante |
 |---|---|---|
 | Vida máxima | 100 | 140 |
+| Daño de armas del jugador | No | Sí |
 | Periodo de gracia tras comer | 30 s | 30 s |
 | Pérdida de vida tras la gracia | 0.8 /s | 0.8 /s |
 | Vida recuperada por caja | 50 | 60 |
 | Umbral de debilidad | 30 % | 30 % |
+| Desaparición tras muerte | Al terminar la animación; 2.25 s de respaldo | 2.25 s de respaldo |
 | Velocidad caminando / corriendo / cansado | 2.0 / 6.5 / 1.2 m/s | 1.8 / 5.5 / 1.0 m/s |
 | Resistencia máxima | 100 | 100 |
 | Gasto de resistencia al correr / recuperación | 15 /s / 10 /s | 18 /s / 8 /s |
@@ -330,6 +334,10 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 - **CA-11:** Los zombis rodean obstáculos para llegar a su objetivo y atacan al jugador aunque cargue una caja.
 - **CA-12:** La munición se agota y se repone con la que sueltan los zombis y con las cajas del mapa. Nunca supera la reserva máxima. Las cajas del mapa aparecen en puntos aleatorios y se distinguen por su luz.
 - **CA-16:** El hacha se puede usar sin límite, golpea hasta 2 zombis por golpe con el daño configurado y no se puede usar mientras se carga una caja.
+- **CA-17:** La jirafa no pierde vida cuando recibe perdigones de la escopeta del jugador.
+- **CA-18:** Con vida incompleta, alimentar cura y reinicia la saciedad; con la vida completa, solo reinicia la saciedad.
+- **CA-19:** La barra amarilla de saciedad baja continuamente durante el periodo configurable; al llegar a cero empieza la pérdida de vida a la tasa configurada.
+- **CA-20:** Al llegar a cero de vida, el animal emite el evento de muerte, termina su animación y desaparecen tanto el animal como su comedero.
 - **CA-13:** Todos los valores de la sección 6 se pueden cambiar en recursos `.tres` sin tocar el código.
 - **CA-14:** El juego se puede jugar completo tanto con teclado y mouse como con gamepad.
 - **CA-15:** El juego mantiene 60 FPS a 1080p en la máquina de desarrollo (Mac) con el máximo de zombis vivos.

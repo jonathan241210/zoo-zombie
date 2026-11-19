@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/game.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/levels/zoo_level.tscn" id="2_level"]
@@ -13,6 +13,9 @@
 [ext_resource type="PackedScene" path="res://scenes/pickups/food_crate.tscn" id="11_crate"]
 [ext_resource type="PackedScene" path="res://scenes/ui/interaction_prompt.tscn" id="12_prompt"]
 [ext_resource type="PackedScene" path="res://scenes/ui/player_status_hud.tscn" id="13_status_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/menus/pause_menu.tscn" id="14_pause_menu"]
+[ext_resource type="PackedScene" path="res://scenes/ui/minimap.tscn" id="15_minimap"]
+[ext_resource type="PackedScene" path="res://scenes/ui/animal_health_hud.tscn" id="16_animal_health_hud"]
 
 [node name="Game" type="Node3D"]
 script = ExtResource("1_game")
@@ -37,9 +40,19 @@ crate_scene = ExtResource("11_crate")
 player = NodePath("../../Player")
 shotgun = NodePath("../../Player/Shotgun")
 
+[node name="AnimalHealthHud" parent="HUD" node_paths=PackedStringArray("player") instance=ExtResource("16_animal_health_hud")]
+player = NodePath("../../Player")
+
+[node name="Minimap" parent="HUD" node_paths=PackedStringArray("player", "level") instance=ExtResource("15_minimap")]
+player = NodePath("../../Player")
+level = NodePath("../../ZooLevel")
+
 [node name="InteractionPrompt" parent="HUD" node_paths=PackedStringArray("interactor", "carry") instance=ExtResource("12_prompt")]
 interactor = NodePath("../../Player/PlayerInteractor")
 carry = NodePath("../../Player/PlayerCarry")
+
+[node name="PauseMenu" parent="HUD" node_paths=PackedStringArray("player") instance=ExtResource("14_pause_menu")]
+player = NodePath("../../Player")
 
 [node name="PerfProbe" type="Node" parent="." node_paths=PackedStringArray("level", "player")]
 script = ExtResource("4_perf")

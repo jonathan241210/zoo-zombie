@@ -1,6 +1,6 @@
 extends Node
 ## Tracks the last used input device and resolves input icons / text labels per action.
-## Reads the CURRENT InputMap, so remapped actions update automatically.
+## Reads the CURRENT InputMap so the controls screen reflects the configured bindings.
 ## Icons: Kenney "Input Prompts" (CC0) under res://assets/ui/glyphs/{keyboard,xbox,playstation}/.
 ## Missing PNGs are not an error: get_glyph() returns null and get_label() gives text.
 
@@ -117,6 +117,53 @@ func get_label(action: StringName) -> String:
 	if event is InputEventJoypadMotion:
 		return _axis_label(event as InputEventJoypadMotion)
 	return String(action)
+
+
+## Returns every keyboard/mouse or gamepad binding for a read-only controls list.
+func get_binding_label(action: StringName, gamepad: bool) -> String:
+	if not InputMap.has_action(action):
+		return "—"
+	var labels := PackedStringArray()
+	for event in InputMap.action_get_events(action):
+		var is_pad := event is InputEventJoypadButton or event is InputEventJoypadMotion
+		if is_pad != gamepad:
+			continue
+		var label := _binding_event_label(event)
+		if not label.is_empty() and not labels.has(label):
+			labels.append(label)
+	return " / ".join(labels) if not labels.is_empty() else "—"
+
+
+func _binding_event_label(event: InputEvent) -> String:
+	if event is InputEventKey:
+		var key := event as InputEventKey
+		var code := key.physical_keycode if key.physical_keycode != KEY_NONE else key.keycode
+		return OS.get_keycode_string(code)
+	if event is InputEventMouseButton:
+		match (event as InputEventMouseButton).button_index:
+			MOUSE_BUTTON_LEFT: return "LMB"
+			MOUSE_BUTTON_RIGHT: return "RMB"
+			MOUSE_BUTTON_MIDDLE: return "MMB"
+			MOUSE_BUTTON_WHEEL_UP: return "Wheel Up"
+			MOUSE_BUTTON_WHEEL_DOWN: return "Wheel Down"
+			_: return "Mouse %d" % (event as InputEventMouseButton).button_index
+	if event is InputEventJoypadButton:
+		var entry: Array = JOY_BUTTONS.get((event as InputEventJoypadButton).button_index, [])
+		if entry.is_empty():
+			return "Button %d" % (event as InputEventJoypadButton).button_index
+		return "%s / %s" % [entry[2], entry[3]]
+	if event is InputEventJoypadMotion:
+		return _binding_axis_label(event as InputEventJoypadMotion)
+	return ""
+
+
+func _binding_axis_label(event: InputEventJoypadMotion) -> String:
+	match event.axis:
+		JOY_AXIS_LEFT_X, JOY_AXIS_LEFT_Y: return "Left Stick"
+		JOY_AXIS_RIGHT_X, JOY_AXIS_RIGHT_Y: return "Right Stick"
+		JOY_AXIS_TRIGGER_LEFT: return "LT / L2"
+		JOY_AXIS_TRIGGER_RIGHT: return "RT / R2"
+		_: return "Axis %d" % event.axis
 
 
 func _event_for_current_device(action: StringName) -> InputEvent:

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="MinimapConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/minimap_config.gd" id="1_config"]
+
+[resource]
+script = ExtResource("1_config")
+viewport_resolution = 256
+size_at_1080 = 220.0
+margin_at_1080 = 24.0
+near_radius = 40.0
+far_radius = 90.0
+update_frequency = 20.0
+camera_height = 250.0
+player_cone_degrees = 60.0
+rotate_map_with_player = true
+player_color = Color(0.95, 0.86, 0.42, 1)
+cone_color = Color(0.95, 0.86, 0.42, 0.18)
+border_color = Color(0.92, 0.82, 0.42, 1)
+north_color = Color(1, 1, 1, 1)

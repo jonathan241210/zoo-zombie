@@ -8,24 +8,45 @@ extends Node3D
 ## Where the animal stands to eat, in local space (inside the enclosure).
 @export var eat_offset: Vector3 = Vector3(0.0, 0.0, 1.6)
 
+enum State { EMPTY, FULL }
+
+signal state_changed(new_state: State)
+
 var animal: Animal = null
+var state: State = State.EMPTY
 
 @onready var interactable: Interactable = $Interactable
+@onready var _empty_contents: Node3D = get_node_or_null("Model/ContentsEmpty") as Node3D
+@onready var _full_contents: Node3D = get_node_or_null("Model/ContentsFull") as Node3D
 
 
 func _ready() -> void:
 	interactable.prompt_key = prompt_key
 	interactable.validator = _can_feed
 	interactable.interacted.connect(_on_interacted)
+	_sync_visual_state()
 
 
 func attach(owner_animal: Animal, enclosure: Enclosure) -> void:
 	animal = owner_animal
+	if not animal.needs.satiety_depleted.is_connected(_on_satiety_depleted):
+		animal.needs.satiety_depleted.connect(_on_satiety_depleted)
 	if enclosure.has_feeder_anchor:
 		global_transform = enclosure.feeder_anchor
 	else:
 		global_position = enclosure.global_position
 	visible = true
+	set_filled(false)
+
+
+func set_filled(filled: bool) -> void:
+	var next_state := State.FULL if filled else State.EMPTY
+	if state == next_state:
+		_sync_visual_state()
+		return
+	state = next_state
+	_sync_visual_state()
+	state_changed.emit(state)
 
 
 func get_eat_position() -> Vector3:
@@ -41,6 +62,17 @@ func _on_interacted(interactor: Node) -> void:
 	var carry := _carry_of(interactor)
 	if carry != null and carry.consume():
 		animal.feed()
+
+
+func _on_satiety_depleted() -> void:
+	set_filled(false)
+
+
+func _sync_visual_state() -> void:
+	if _empty_contents != null:
+		_empty_contents.visible = state == State.EMPTY
+	if _full_contents != null:
+		_full_contents.visible = state == State.FULL
 
 
 static func _carry_of(interactor: Node) -> PlayerCarry:

@@ -70,3 +70,11 @@ Convenciones:
 
 - [x] T-D34 Mostrar vida actual/máxima del jugador y cargador/reserva en `PlayerStatusHud`, escuchando salud y munición — RF-50
 - [ ] T-D35 Verificar visualmente la vida y la munición en juego — RF-50
+
+## Alcance adicional aprobado: corrección de Soltar y vida/saciedad de animales
+
+- [x] T-D36 Permitir que el respaldo `drop()` corra cuando el interactable enfocado rechaza la interacción — RF-01, RF-05
+- [x] T-D37 Añadir `AnimalHealthHudConfig` con radio, dimensiones y colores para vida/saciedad — RF-60 a RF-64
+- [x] T-D38 Añadir filas individuales cercanas, con corazón, nombre, relleno verde y borde amarillo dibujado aparte — RF-60 a RF-63
+- [x] T-D39 Conectar el color del borde a `AnimalNeeds.satiety_changed`, independiente de la vida — RF-64
+- [ ] T-D40 Verificar visualmente Soltar, distancia, varias filas, cambios de vida y respuesta del borde a la saciedad — CA-01, CA-02, CA-12 a CA-15

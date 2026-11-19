@@ -92,7 +92,28 @@ ACTION_SWITCH_WEAPON,Cambiar arma,Switch weapon
 ACTION_SHOTGUN,Escopeta,Shotgun
 ACTION_AXE,Hacha,Axe
 ACTION_PAUSE,Pausa,Pause
+ACTION_MOVE_FORWARD,Avanzar,Move forward
+ACTION_MOVE_BACK,Retroceder,Move backward
+ACTION_MOVE_LEFT,Moverse a la izquierda,Move left
+ACTION_MOVE_RIGHT,Moverse a la derecha,Move right
+ACTION_JUMP,Saltar,Jump
+ACTION_WEAPON_1,Equipar arma 1,Equip weapon 1
+ACTION_WEAPON_2,Equipar arma 2,Equip weapon 2
+ACTION_MENU_UP,Navegar arriba,Menu up
+ACTION_MENU_DOWN,Navegar abajo,Menu down
+ACTION_MENU_LEFT,Navegar a la izquierda,Menu left
+ACTION_MENU_RIGHT,Navegar a la derecha,Menu right
+ACTION_MENU_TAB_PREV,Pestaña anterior,Previous tab
+ACTION_MENU_TAB_NEXT,Pestaña siguiente,Next tab
+MENU_TITLE,Zoo Zombie,Zoo Zombie
+MENU_PAUSED,Pausa,Paused
+CONTROLS_ACTION,Acción,Action
+CONTROLS_KEYBOARD,Teclado / mouse,Keyboard / mouse
+CONTROLS_GAMEPAD,Gamepad,Gamepad
+BIND_MOUSE_MOVEMENT,Movimiento del mouse,Mouse movement
+BIND_RIGHT_STICK,Stick derecho,Right stick
 ACTION_UI_ACCEPT,Aceptar,Accept
 ACTION_UI_BACK,Volver,Back
 ACTION_UI_TAB_PREV,Pestaña anterior,Previous tab
 ACTION_UI_TAB_NEXT,Pestaña siguiente,Next tab
+ACTION_MINIMAP_ZOOM,Cambiar zoom del minimapa,Toggle minimap zoom

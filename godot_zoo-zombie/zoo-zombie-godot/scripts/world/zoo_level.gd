@@ -35,3 +35,12 @@ func _markers_in(path: String) -> Array[Marker3D]:
 		if child is Marker3D:
 			result.append(child)
 	return result
+
+
+func _ready() -> void:
+	# Visual layer 2 is reserved for the static zoo map so the minimap viewport can
+	# render the environment without drawing moving actors a second time.
+	for visual: VisualInstance3D in map.find_children("*", "VisualInstance3D", true, false):
+		visual.layers = 1 << 1
+	if map is VisualInstance3D:
+		(map as VisualInstance3D).layers = 1 << 1

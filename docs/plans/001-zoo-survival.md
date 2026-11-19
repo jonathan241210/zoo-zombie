@@ -1,6 +1,6 @@
 # Plan técnico 001: Supervivencia en el zoológico
 
-**Estado:** Borrador, pendiente de aprobación · **Versión:** 0.2 · **Fecha:** 2026-11-16
+**Estado:** Fase 4 aprobada para implementación; resto del plan en borrador · **Versión:** 0.3 · **Fecha:** 2026-11-19
 **Spec:** [`specs/001-zoo-survival.md`](../specs/001-zoo-survival.md) · **Tareas:** [`tasks/001-zoo-survival.md`](../tasks/001-zoo-survival.md)
 
 ---
@@ -169,6 +169,12 @@ zoo-zombie-godot/
 | **Oleadas** | `WaveManager` + `WaveSchedule` (lógica pura del cronograma). `ZombieSpawner` aplica el intervalo, el máximo de vivos, la proporción de destructores y los multiplicadores. Los zombis vivos persisten entre oleadas |
 | **Puntuación** | `ScoreManager` escucha al `EventBus` y aplica `ScoreConfig`, sin bajar de 0 |
 | **HUD** | `CanvasLayer` que solo escucha señales. Muestra una tarjeta por animal (vida, integridad del recinto y estado) y marcadores en pantalla hacia los animales escapados y los refugios libres |
+
+En la Fase 4, `AnimalNeeds` mantiene el temporizador de saciedad independiente de `HealthComponent`. Empieza lleno para dar el periodo inicial configurable. Alimentar cura solo si la vida está por debajo del máximo, pero siempre reinicia la saciedad. Al agotarse la saciedad, `AnimalNeeds` aplica daño gradual. La interfaz usa el borde amarillo de la barra como lectura de saciedad (intenso lleno, apagado vacío); el relleno verde sigue la vida.
+
+El comedero expone `State.EMPTY` al iniciar, `State.FULL` después de alimentarlo y vuelve a `EMPTY` al agotarse la saciedad. Sus señales son el contrato que consumirá la entrega visual de la spec 006; los modelos actuales aún contienen comida estática.
+
+La escopeta consulta `Animal.can_receive_damage_from(source)` antes de aplicar daño. La configuración de la jirafa desactiva el daño del jugador. Al morir se emite `animal_died` antes de comenzar el retraso de desaparición; el evento conserva la posición para zombificación futura.
 
 ### 2.6 Input map
 

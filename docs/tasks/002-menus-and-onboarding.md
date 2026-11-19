@@ -30,8 +30,8 @@ Convenciones: `[ ]` pendiente · `[x]` hecha · `[P]` paralelizable. **Ninguna f
 - [ ] T-C01 Crear `settings_menu.tscn` con pestañas Graphics, Audio, Controls y Gameplay, y widgets reutilizables — RF-70 a RF-73
 - [ ] T-C02 Confirmación con reversión a los 10 s para los cambios de pantalla — RF-74
 - [ ] T-C03 Botón "Restaurar valores por defecto" por pestaña — RF-75
-- [ ] T-C04 Crear el autoload `InputRemapper`: reasignar, detectar conflictos, intercambiar, restaurar y persistir, con pruebas — RF-61 a RF-63
-- [ ] T-C05 Crear `controls_menu.tscn`: tabla teclado/gamepad con iconos y botones de reasignación — RF-60
+- [x] T-C04 Crear `controls_menu.tscn`: tabla informativa de todas las acciones con asignaciones de teclado/mouse y gamepad, iconos y descripciones — RF-60, RF-62
+- [x] T-C05 Conectar la pantalla de controles desde el menú principal y el menú de pausa — RF-61
 - [ ] T-C06 Aplicar sensibilidad, invertir Y, FOV, vibración e intensidad del retroceso en el jugador de la 001 — RF-72, RF-73
 - [ ] T-C07 Verificar — CA-05, CA-06
 

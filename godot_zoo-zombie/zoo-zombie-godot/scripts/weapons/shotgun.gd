@@ -83,10 +83,16 @@ func _on_carry_state_changed(state: PlayerCarry.State) -> void:
 
 
 func _can_use() -> bool:
-	return is_instance_valid(player) and player.input_enabled and carry.can_use_weapons()
+	return is_instance_valid(player) and is_instance_valid(carry) \
+		and is_instance_valid(camera) and player.input_enabled and carry.can_use_weapons()
 
 
 func _fire_pellet() -> void:
+	if not is_instance_valid(camera) or not is_instance_valid(player):
+		return
+	var world := camera.get_world_3d()
+	if world == null:
+		return
 	var spread := deg_to_rad(config.spread_degrees)
 	var direction := -camera.global_basis.z
 	direction = (direction + camera.global_basis.x * randf_range(-spread, spread) \
@@ -95,20 +101,26 @@ func _fire_pellet() -> void:
 		camera.global_position + direction * config.max_range)
 	query.exclude = [player.get_rid()]
 	query.collide_with_areas = true
-	var result := camera.get_world_3d().direct_space_state.intersect_ray(query)
+	var result := world.direct_space_state.intersect_ray(query)
 	if result.is_empty():
 		return
-	var target := result["collider"] as Node
-	var health := _find_health(target)
-	if health != null:
-		health.take_damage(config.damage_per_pellet, player)
-		hit_confirmed.emit(target)
+	var collider: Object = result.get("collider")
+	var target := collider as Node
+	if is_instance_valid(target):
+		var health := _find_health(target)
+		if is_instance_valid(health):
+			health.take_damage(config.damage_per_pellet, player)
+			hit_confirmed.emit(target)
 	_spawn_impact(result["position"], result["normal"])
 
 
 func _find_health(target: Node) -> HealthComponent:
+	if not is_instance_valid(target):
+		return null
 	var current: Node = target
-	while current != null:
+	while is_instance_valid(current):
+		if current is Animal and not (current as Animal).can_receive_damage_from(player):
+			return null
 		if current is HealthComponent:
 			return current as HealthComponent
 		var component := current.get_node_or_null("HealthComponent") as HealthComponent
@@ -119,6 +131,11 @@ func _find_health(target: Node) -> HealthComponent:
 
 
 func _spawn_impact(point: Vector3, normal: Vector3) -> void:
+	if not is_instance_valid(player):
+		return
+	var tree := player.get_tree()
+	if tree == null or tree.current_scene == null:
+		return
 	var marker := MeshInstance3D.new()
 	var mesh := SphereMesh.new()
 	mesh.radius = 0.035
@@ -128,7 +145,7 @@ func _spawn_impact(point: Vector3, normal: Vector3) -> void:
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.albedo_color = Color(1.0, 0.48, 0.12)
 	marker.material_override = material
-	player.get_tree().current_scene.add_child(marker)
+	tree.current_scene.add_child(marker)
 	marker.global_position = point + normal * 0.025
 	var tween := marker.create_tween()
 	tween.tween_property(marker, "scale", Vector3.ZERO, 0.22)

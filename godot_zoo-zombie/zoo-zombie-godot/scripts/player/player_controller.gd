@@ -32,10 +32,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		var motion := event as InputEventMouseMotion
 		_apply_look(-motion.relative.x * config.mouse_sensitivity,
 			-motion.relative.y * config.mouse_sensitivity)
-	elif event.is_action_pressed("pause"):
-		# Temporary until the pause menu exists (spec 002): release/recapture the mouse.
-		set_mouse_captured(not _is_mouse_captured())
-	elif event is InputEventMouseButton and event.is_pressed() and not _is_mouse_captured():
+	elif (event is InputEventMouseButton and event.is_pressed()
+		and not _is_mouse_captured() and not get_tree().paused):
 		set_mouse_captured(true)
 
 

@@ -1,6 +1,6 @@
 # Spec 002: Menús, configuración e instrucciones
 
-**Estado:** Borrador, pendiente de aprobación · **Versión:** 0.2 · **Fecha:** 2026-11-17
+**Estado:** Borrador, pendiente de aprobación · **Versión:** 0.3 · **Fecha:** 2026-11-18
 **Plan:** [`plans/002-menus-and-onboarding.md`](../plans/002-menus-and-onboarding.md) · **Tareas:** [`tasks/002-menus-and-onboarding.md`](../tasks/002-menus-and-onboarding.md)
 **Depende de:** [`specs/001-zoo-survival.md`](001-zoo-survival.md)
 
@@ -13,7 +13,7 @@ Todo lo que rodea a la partida y le explica al jugador **qué hacer y cómo hace
 - Menú principal, menú de pausa y pantallas de carga y créditos.
 - Configuración de gráficos, audio, controles y accesibilidad.
 - Pantalla de **Cómo jugar**, con las reglas del juego: animales, comida, recintos, armas y oleadas.
-- Pantalla de **controles**, con las teclas y botones de cada acción y la opción de reasignarlos.
+- Pantalla de **controles** para consultar todas las teclas y botones que usa el juego. En esta versión es informativa: no permite reasignar controles.
 - **Instrucciones dentro del juego**: un briefing antes de empezar, consejos contextuales la primera vez que ocurre algo y anuncios de oleada.
 
 El objetivo es que un jugador nuevo entienda el dilema central (**combatir, alimentar o rescatar**) en sus primeros minutos, sin leer un manual.
@@ -103,10 +103,9 @@ Estos requisitos amplían el RF-103 de la spec 001.
 
 | ID | Requisito |
 |---|---|
-| RF-60 | La pantalla **Controles** muestra la tabla de acciones con dos columnas: teclado/mouse y gamepad. Cada fila tiene icono y descripción (sección 7). |
-| RF-61 | Permite **reasignar** cualquier acción de juego, por separado para teclado/mouse y gamepad: seleccionar la acción, pulsar la nueva tecla o botón, confirmar. |
-| RF-62 | Si la tecla nueva ya está asignada a otra acción, se avisa y se ofrece intercambiarlas. |
-| RF-63 | Hay un botón **Restaurar valores por defecto**. Las acciones de menú (aceptar, volver) no se pueden dejar sin asignar. |
+| RF-60 | La pantalla **Controles** muestra todas las acciones de juego y menú en una tabla con columnas de teclado/mouse y gamepad; cada fila incluye descripción e iconos (sección 7). |
+| RF-61 | Se puede abrir la pantalla **Controles** desde el menú principal y desde el menú de pausa. |
+| RF-62 | La pantalla es informativa: muestra las asignaciones actuales, pero no permite reasignar teclas ni botones. La reasignación queda fuera de alcance por ahora. |
 | RF-64 | Los iconos de controles en todo el juego (HUD, consejos, menús) se actualizan con la asignación actual y el último dispositivo usado (teclado, Xbox o PlayStation). |
 
 ### 4.8 Configuración
@@ -115,7 +114,7 @@ Estos requisitos amplían el RF-103 de la spec 001.
 |---|---|
 | RF-70 | **Gráficos:** modo de ventana (ventana / pantalla completa / sin bordes), resolución, VSync, límite de FPS (30 / 60 / 120 / sin límite), calidad de sombras (baja / media / alta), escala de renderizado (50–100 %), antialiasing (apagado / FXAA / MSAA 2x) y brillo. |
 | RF-71 | **Audio:** volumen general, música, efectos, interfaz; silenciar al perder el foco de la ventana. |
-| RF-72 | **Controles:** sensibilidad del mouse, sensibilidad del stick, invertir eje Y (por separado para mouse y stick), campo de visión (FOV, 70–100°), vibración del control (sí/no) y acceso a la pantalla de reasignación. |
+| RF-72 | **Controles:** sensibilidad del mouse, sensibilidad del stick, invertir eje Y (por separado para mouse y stick), campo de visión (FOV, 70–100°), vibración del control (sí/no) y acceso a la pantalla informativa de controles. |
 | RF-73 | **Gameplay y accesibilidad:** consejos activados (sí/no), reiniciar consejos, tamaño de los textos de la interfaz (100 / 125 / 150 %), intensidad del movimiento de cámara al disparar (retroceso, 0–100 %), mira visible (sí/no) e idioma (**Español** por defecto / English). |
 | RF-74 | Los cambios se aplican **al momento**. Los cambios de pantalla (resolución o modo de ventana) piden confirmación y se revierten solos a los 10 s si no se confirman. |
 | RF-75 | La configuración se **guarda** en el equipo del jugador y se carga al abrir el juego. Hay un botón **Restaurar valores por defecto** por pestaña. |
@@ -213,8 +212,8 @@ Los textos van en el archivo de traducción, en español (principal) y en inglé
 - **CA-02:** El briefing aparece al iniciar la partida, se puede cerrar y da paso a la cuenta regresiva y la oleada 1.
 - **CA-03:** Cada consejo de la sección 6.1 aparece una sola vez, en su evento. Al desactivar los consejos no aparece ninguno. Al reiniciarlos vuelven a aparecer.
 - **CA-04:** Los anuncios de las oleadas 1, 2 y 3 (final) y del descanso aparecen con su texto y su cuenta regresiva.
-- **CA-05:** Al reasignar una tecla, el cambio funciona en el juego y se ve en los iconos del HUD y de los consejos. Al reiniciar el juego la asignación se conserva.
-- **CA-06:** Los cambios de gráficos, audio y controles se aplican al momento y se conservan al reiniciar el juego.
+- **CA-05:** La pantalla Controles se abre desde el menú principal y la pausa y muestra todas las acciones, teclas y botones actualmente usados. No ofrece controles de reasignación.
+- **CA-06:** Los cambios de gráficos, audio y ajustes de sensibilidad se aplican al momento y se conservan al reiniciar el juego.
 - **CA-07:** La pausa detiene los temporizadores de hambre y de oleada.
 - **CA-08:** **Cómo jugar** cubre todas las mecánicas de la spec 001: objetivo, animales, recintos, armas, oleadas, puntuación y HUD.
 - **CA-09:** Los créditos coinciden con el registro de licencias de `docs/assets.md`.

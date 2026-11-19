@@ -9,6 +9,8 @@ extends Resource
 ## Initial enclosure node name in the map.
 @export var home_enclosure: String = "REC_HEX_CENTRAL"
 @export var max_health: float = 100.0
+## Whether direct attacks from the player can damage this animal.
+@export var player_damageable: bool = true
 ## Seconds without hunger damage after eating.
 @export var grace_period: float = 30.0
 @export var starvation_damage_per_second: float = 0.8
@@ -38,3 +40,5 @@ extends Resource
 @export var idle_time_max: float = 8.0
 ## Extra zombies spawned when it dies.
 @export var death_horde_size: int = 6
+## Fallback delay before removing the animal after its death animation starts.
+@export var death_despawn_delay: float = 2.25

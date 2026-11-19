@@ -64,11 +64,14 @@ Convenciones:
 
 ## Fase 4: Hambre, debilidad y muerte de los animales
 
-- [ ] T-040 Crear `AnimalNeeds` (lógica pura): gracia, pérdida de vida y umbral de debilidad, con pruebas — RF-21, RF-22, RF-27
-- [ ] T-041 Máquina de estados del animal (estados contenidos, `EATING`, `WEAK`, `DEAD`) integrada con `HealthComponent` — RF-27
-- [ ] T-042 Hacer que el temporizador corra toda la partida y solo se pause con el juego en pausa — RF-23
-- [ ] T-043 Al morir, emitir `animal_died(id, position)`; `GameManager` declara derrota si mueren ambos — RF-47 (señal), RF-48, RF-49
-- [ ] T-044 Verificar — CA-02, CA-07 (parcial)
+- [x] T-040 Crear `AnimalNeeds` con saciedad completa inicial, vaciado continuo y daño gradual al agotarse — RF-21 a RF-23
+- [x] T-041 Integrar alimentación: curar solo con vida incompleta y reiniciar siempre la saciedad — RF-25
+- [x] T-042 Pausar el temporizador al pausar la partida y emitir cambios para el HUD — RF-23, RF-108
+- [x] T-043 Emitir la muerte antes de eliminar el animal y su comedero tras la animación; `GameManager` actualiza la derrota — RF-29, RF-47 a RF-49
+- [ ] T-044 Implementar y verificar el estado `WEAK`, animación y movimiento más lento — RF-27
+- [x] T-045 Impedir que la escopeta del jugador dañe a la jirafa — RF-28
+- [x] T-046 Publicar estados `EMPTY` / `FULL` del comedero para conectar las visuales — spec 006
+- [ ] T-047 Verificación manual: hambre, curación, daño gradual, inmunidad y desaparición — CA-17 a CA-20
 
 ## Fase 5: Combate, escopeta y munición
 
