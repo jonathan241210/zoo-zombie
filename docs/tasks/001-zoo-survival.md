@@ -75,17 +75,17 @@ Convenciones:
 
 ## Fase 5: Combate, escopeta y munición
 
-- [ ] T-050 Crear `AmmoState` (lógica pura) con pruebas — RF-51, CA-12
+- [x] T-050 Crear `AmmoState` (lógica pura) con pruebas — RF-51, CA-12 (`tests/test_ammo_state.gd`)
 - [x] T-051 Crear `shotgun.gd`: hitscan con N perdigones, dispersión, alcance y cadencia — RF-50, RF-54
 - [x] T-052 Recarga procedural con Tween y duración configurable — RF-52
-- [ ] T-053 Agregar feedback: fogonazo, retroceso de cámara, sonido e impacto — RF-53 (falta integrar audio; no hay SFX de escopeta en assets/audio)
+- [x] T-053 Agregar feedback: fogonazo, retroceso de cámara, sonido e impacto — RF-53 (sonido provisional generado con `tools/generate_sfx.py`)
 - [x] T-054 Bloquear el disparo y la recarga en `CARRYING` — RF-05
-- [ ] T-055 Crear `ammo_pickup.tscn`: recogida automática hasta el máximo y desaparición por tiempo — RF-56, RF-57
-- [ ] T-056 Crear `WeaponManager`: cambio entre escopeta y hacha, bloqueo en `CARRYING` y restaurar el arma después de alimentar — RF-5B, RF-05
-- [ ] T-057 Crear `axe.gd`: golpe en arco, máximo de zombis por golpe, cadencia, retroceso y feedback — RF-5A, RF-5C
-- [ ] T-058 Colocar 15 marcadores `AmmoSpawnPoint` en lugares poco obvios del mapa — RF-59
-- [ ] T-059 Crear `AmmoSpawnDirector`: selección aleatoria, cajas activas, reaparición en otro punto, y luz con pulso y material emisivo — RF-58, RF-59
-- [ ] T-05A Verificar — CA-12 (parcial), CA-16
+- [x] T-055 Crear `ammo_pickup.tscn`: recogida automática hasta el máximo y desaparición por tiempo — RF-56, RF-57 (los cartuchos que no caben se quedan en la caja)
+- [x] T-056 Crear `WeaponManager`: cambio entre escopeta y hacha, bloqueo en `CARRYING` y restaurar el arma después de alimentar — RF-5B, RF-05
+- [x] T-057 Crear `axe.gd`: golpe en arco, máximo de zombis por golpe, cadencia, retroceso y feedback — RF-5A, RF-5C (golpe procedural en el viewmodel; el retroceso llama a `apply_knockback()` del objetivo, que el zombi implementa en la Fase 6)
+- [x] T-058 Colocar 15 marcadores `AmmoSpawnPoint` en lugares poco obvios del mapa — RF-59 (`Markers/AmmoSpawns`, validados con rayos de suelo y sin choques con estructuras)
+- [x] T-059 Crear `AmmoSpawnDirector`: selección aleatoria, cajas activas, reaparición en otro punto, y luz con pulso y material emisivo — RF-58, RF-59
+- [ ] T-05A Verificar — CA-12 (parcial), CA-16 (automático en `tests/integration/test_weapons.gd` y `tests/test_ammo_spawn_director.gd`; falta la prueba del usuario jugando)
 
 ## Fase 6: IA de los zombis (cazadores) y muerte del jugador
 

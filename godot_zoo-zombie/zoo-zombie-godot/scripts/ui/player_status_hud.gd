@@ -1,6 +1,7 @@
 class_name PlayerStatusHud
 extends Control
-## Player health and shotgun ammunition indicators (spec 001 RF-100, RF-109).
+## Player health and ammunition indicators (spec 001 RF-100, RF-109). With the axe
+## equipped the ammo reads as infinite.
 
 @export var player: PlayerController
 @export var shotgun: Shotgun
@@ -9,10 +10,13 @@ extends Control
 @onready var _health_bar: ProgressBar = %HealthBar
 @onready var _ammo_label: Label = %AmmoLabel
 
+var _weapon: StringName = WeaponManager.SHOTGUN
+
 
 func _ready() -> void:
 	player.health.health_changed.connect(_on_health_changed)
 	EventBus.ammo_changed.connect(_on_ammo_changed)
+	EventBus.weapon_changed.connect(_on_weapon_changed)
 	_on_health_changed(player.health.current_health, player.health.max_health)
 	_on_ammo_changed(shotgun.ammo.magazine, shotgun.ammo.reserve)
 
@@ -24,4 +28,12 @@ func _on_health_changed(current: float, maximum: float) -> void:
 
 
 func _on_ammo_changed(magazine: int, reserve: int) -> void:
-	_ammo_label.text = "%s  %d / %d" % [tr("HUD_AMMO"), magazine, reserve]
+	if _weapon == WeaponManager.AXE:
+		_ammo_label.text = "%s  ∞" % tr("HUD_AMMO")
+	else:
+		_ammo_label.text = "%s  %d / %d" % [tr("HUD_AMMO"), magazine, reserve]
+
+
+func _on_weapon_changed(weapon_id: StringName) -> void:
+	_weapon = weapon_id
+	_on_ammo_changed(shotgun.ammo.magazine, shotgun.ammo.reserve)

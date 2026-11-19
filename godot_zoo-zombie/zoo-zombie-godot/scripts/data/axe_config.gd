@@ -13,3 +13,7 @@ extends Resource
 @export var swing_interval: float = 0.9
 ## Meters pushed back.
 @export var knockback: float = 1.0
+## Seconds into the swing animation when the blade connects.
+@export var hit_delay: float = 0.35
+## Seconds to bring the axe up when switching to it (RF-5B).
+@export var draw_time: float = 0.4

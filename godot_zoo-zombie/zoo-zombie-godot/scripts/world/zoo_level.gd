@@ -12,6 +12,11 @@ func get_food_crate_spawns() -> Array[Marker3D]:
 	return _markers_in("Markers/FoodCrateSpawns")
 
 
+## Candidate points for map ammo crates, in non-obvious spots (RF-58, RF-59).
+func get_ammo_spawns() -> Array[Marker3D]:
+	return _markers_in("Markers/AmmoSpawns")
+
+
 func get_zombie_spawns() -> Array[Marker3D]:
 	return _markers_in("Markers/ZombieSpawns")
 

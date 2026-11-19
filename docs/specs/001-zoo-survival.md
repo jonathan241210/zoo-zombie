@@ -242,12 +242,13 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 | Zombis máximos por golpe | 2 |
 | Tiempo entre golpes | 0.9 s |
 | Retroceso en los zombis | 1.0 m |
-| Tiempo para cambiar de arma | 0.4 s |
+| Tiempo para cambiar de arma | 0.4 s (cada arma tiene el suyo: `draw_time`) |
+| Momento del impacto dentro del golpe | 0.35 s |
 
 ### Munición en el mapa
 | Parámetro | Valor |
 |---|---|
-| Puntos candidatos | 15 (se definen en la Fase 5 recorriendo el mapa) |
+| Puntos candidatos | 15 (marcadores `Markers/AmmoSpawns` del nivel: detrás de edificios, junto a bancas, en esquinas de recintos y dentro del kiosco) |
 | Cajas activas a la vez | 4 |
 | Cartuchos por caja | 6 |
 | Tiempo de reaparición tras recogerla | 45 s |

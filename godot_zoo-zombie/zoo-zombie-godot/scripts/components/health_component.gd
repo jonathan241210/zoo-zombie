@@ -59,3 +59,21 @@ func heal(amount: float) -> float:
 
 func get_ratio() -> float:
 	return current_health / max_health if max_health > 0.0 else 0.0
+
+
+## Finds the health pool a weapon hit should damage: walks up from the hit collider to
+## the first node that is (or has a child named) HealthComponent. Returns null when an
+## ancestor refuses damage from `source` via `can_receive_damage_from(source)`, e.g. the
+## giraffe against player weapons (RF-28).
+static func find_for_hit(target: Node, source: Node) -> HealthComponent:
+	var current: Node = target
+	while is_instance_valid(current):
+		if current.has_method(&"can_receive_damage_from") and not current.call(&"can_receive_damage_from", source):
+			return null
+		if current is HealthComponent:
+			return current as HealthComponent
+		var component := current.get_node_or_null("HealthComponent") as HealthComponent
+		if component != null:
+			return component
+		current = current.get_parent()
+	return null

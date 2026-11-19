@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/game.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/levels/zoo_level.tscn" id="2_level"]
@@ -16,6 +16,9 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/menus/pause_menu.tscn" id="14_pause_menu"]
 [ext_resource type="PackedScene" path="res://scenes/ui/minimap.tscn" id="15_minimap"]
 [ext_resource type="PackedScene" path="res://scenes/ui/animal_health_hud.tscn" id="16_animal_health_hud"]
+[ext_resource type="Script" path="res://scripts/pickups/ammo_spawn_director.gd" id="17_ammo_director"]
+[ext_resource type="Resource" path="res://config/ammo_spawn_config.tres" id="18_ammo_config"]
+[ext_resource type="PackedScene" path="res://scenes/pickups/ammo_pickup.tscn" id="19_ammo_pickup"]
 
 [node name="Game" type="Node3D"]
 script = ExtResource("1_game")
@@ -33,6 +36,11 @@ config = ExtResource("8_enclosure_config")
 script = ExtResource("9_crates")
 config = ExtResource("10_crate_config")
 crate_scene = ExtResource("11_crate")
+
+[node name="AmmoSpawnDirector" type="Node" parent="."]
+script = ExtResource("17_ammo_director")
+config = ExtResource("18_ammo_config")
+pickup_scene = ExtResource("19_ammo_pickup")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 

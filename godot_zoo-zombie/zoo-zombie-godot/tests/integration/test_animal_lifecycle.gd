@@ -69,10 +69,9 @@ func test_player_weapons_do_not_hurt_the_giraffe() -> void:
 	# CA-17 (RF-28): the shotgun finds no health pool on the giraffe.
 	var giraffe := _animal(&"giraffe")
 	var elephant := _animal(&"elephant")
-	var shotgun := player.find_children("*", "Shotgun", true, false)[0] as Shotgun
 	assert_false(giraffe.can_receive_damage_from(player))
-	assert_null(shotgun._find_health(giraffe))
-	assert_not_null(shotgun._find_health(elephant), "the exception is per species")
+	assert_null(HealthComponent.find_for_hit(giraffe, player))
+	assert_not_null(HealthComponent.find_for_hit(elephant, player), "the exception is per species")
 
 
 func test_death_emits_then_removes_animal_and_feeder() -> void:

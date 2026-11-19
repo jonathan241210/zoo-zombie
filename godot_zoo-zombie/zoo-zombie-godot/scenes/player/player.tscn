@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_controller"]
 [ext_resource type="Resource" path="res://config/player_config.tres" id="2_config"]
@@ -11,6 +11,13 @@
 [ext_resource type="Script" path="res://scripts/weapons/shotgun.gd" id="9_shotgun"]
 [ext_resource type="Resource" path="res://config/shotgun_config.tres" id="10_shotgun_config"]
 [ext_resource type="PackedScene" path="res://scenes/pickups/food_crate.tscn" id="11_food_crate"]
+[ext_resource type="Script" path="res://scripts/weapons/axe.gd" id="12_axe"]
+[ext_resource type="Resource" path="res://config/axe_config.tres" id="13_axe_config"]
+[ext_resource type="Script" path="res://scripts/weapons/weapon_manager.gd" id="14_weapons"]
+[ext_resource type="PackedScene" path="res://assets/models/weapons/axe.glb" id="15_axe_model"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/shotgun_fire.wav" id="16_fire_sfx"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/axe_swing.wav" id="17_swing_sfx"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/axe_hit.wav" id="18_hit_sfx"]
 
 [sub_resource type="CapsuleShape3D" id="capsule"]
 radius = 0.35
@@ -42,6 +49,8 @@ far = 400.0
 script = ExtResource("6_viewmodel")
 carry = NodePath("../../../PlayerCarry")
 player = NodePath("../../..")
+axe_scene = ExtResource("15_axe_model")
+axe_grip_transform = Transform3D(0.55, 0, 0, 0, 0.55, 0, 0, 0, 0.55, 0, 0, 0)
 
 [node name="Arms" parent="Head/Camera3D/ViewModel" instance=ExtResource("7_arms")]
 transform = Transform3D(-2.0765, -0.01658, 2.1652, 0.2964, 2.9695, 0.307, -2.1449, 0.42641, -2.0537, 0.26391, -0.65188, -1.2439)
@@ -63,6 +72,25 @@ config = ExtResource("10_shotgun_config")
 player = NodePath("..")
 carry = NodePath("../PlayerCarry")
 camera = NodePath("../Head/Camera3D")
+view_model = NodePath("../Head/Camera3D/ViewModel")
+fire_sound = ExtResource("16_fire_sfx")
+
+[node name="Axe" type="Node" parent="." node_paths=PackedStringArray("player", "carry", "camera", "view_model")]
+script = ExtResource("12_axe")
+config = ExtResource("13_axe_config")
+player = NodePath("..")
+carry = NodePath("../PlayerCarry")
+camera = NodePath("../Head/Camera3D")
+view_model = NodePath("../Head/Camera3D/ViewModel")
+swing_sound = ExtResource("17_swing_sfx")
+hit_sound = ExtResource("18_hit_sfx")
+
+[node name="WeaponManager" type="Node" parent="." node_paths=PackedStringArray("shotgun", "axe", "carry", "player", "view_model")]
+script = ExtResource("14_weapons")
+shotgun = NodePath("../Shotgun")
+axe = NodePath("../Axe")
+carry = NodePath("../PlayerCarry")
+player = NodePath("..")
 view_model = NodePath("../Head/Camera3D/ViewModel")
 
 [node name="PlayerInteractor" type="Area3D" parent="." node_paths=PackedStringArray("camera")]

@@ -86,6 +86,7 @@ zoozombie/
 ├── godot_zoo-zombie/
 │   └── zoo-zombie-godot/      ← proyecto Godot (project.godot)
 ├── assets/                    ← descargas originales (fuente), antes de importarlas al juego
+├── tools/                     ← utilidades de línea de comandos (p. ej. generar sonidos provisionales)
 └── docs/
     ├── constitution.md        ← principios del proyecto
     ├── assets.md              ← lista de modelos/audio necesarios y sus licencias

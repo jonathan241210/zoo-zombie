@@ -19,7 +19,7 @@ Inventario de modelos 3D y audio: qué hay, qué se usa, qué falta y cómo se r
 | `animation_zombie_2.glb` | ✅ | idle, walk, run, attack, damage, death y más | **Zombi** → `zombies/zombie.glb` | — |
 | `brazo_escopeta.glb` | ✅ | disparo, sacar arma, sostener caja, agarrar y otras | **Brazos en primera persona** (un solo brazo) → `weapons/fp_arms_shotgun.glb` | `reload` (por código en Godot, Fase 5) |
 | `escopeta.glb` | ❌ | — | Prop o pickup de la escopeta | — |
-| `hacha.glb` | ❌ | — | **Hacha** (arma secundaria) | Golpe: se reutiliza `E_Martillo` de los brazos |
+| `hacha.glb` | ❌ | — | **Hacha** (arma secundaria) | Golpe procedural por código (`E_Martillo` saca el brazo de la cámara) |
 | `brazos_ametralladora.glb` | ✅ | draw, fire, reload, holster | Reservado para un arma futura | — |
 | `zombie_dog_animation.glb` | ✅ | idle, walk, run, attack, hit, jump | Reservado para un enemigo futuro | — |
 | `mad_zombie.glb` | ❌ | — | Sin uso (lo reemplaza `animation_zombie_2`) | — |
@@ -35,7 +35,9 @@ Inventario de modelos 3D y audio: qué hay, qué se usa, qué falta y cómo se r
 | Comedero de elefante (bajo) | `blender_zoo-zombie/scripts/models/elephant_feeder.py` | Diseño específico del juego |
 | `death` de la jirafa y del elefante | `blender_zoo-zombie/scripts/prepare/prepare_giraffe.py` y `prepare_elephant.py` | No viene en la descarga |
 | `weak` de la jirafa y del elefante | `blender_zoo-zombie/scripts/prepare/prepare_giraffe.py` y `prepare_elephant.py` | No viene en la descarga |
-| `reload` de la escopeta | En Godot por código (Tween), Fase 5 | No viene en la descarga |
+| `reload` de la escopeta | En Godot por código (Tween), `scripts/weapons/shotgun.gd` | No viene en la descarga |
+| Golpe del hacha | En Godot por código (Tween), `scripts/player/view_model.gd` | `E_Martillo` saca el brazo de la cámara |
+| Sonidos provisionales: `shotgun_fire`, `axe_swing`, `axe_hit` y `ammo_pickup` (`assets/audio/sfx/` del proyecto Godot) | `tools/generate_sfx.py` (síntesis con la biblioteca estándar de Python, semilla fija) | No había SFX; son obra propia sin licencia de terceros y se pueden reemplazar por grabaciones |
 
 ## Opcional (para más adelante)
 

@@ -11,6 +11,10 @@ signal hit_confirmed(target: Node)
 @export var carry: PlayerCarry
 @export var camera: Camera3D
 @export var view_model: Node3D
+@export var fire_sound: AudioStream
+
+## Set by the WeaponManager: only the equipped weapon reads input.
+var active := true
 
 var ammo: AmmoState
 var is_reloading: bool = false
@@ -28,7 +32,7 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	if not player.input_enabled:
+	if not active or not player.input_enabled:
 		return
 	if Input.is_action_pressed(&"fire"):
 		fire()
@@ -45,6 +49,7 @@ func fire() -> bool:
 	_play_animation(&"shotgun_fire")
 	_apply_recoil()
 	_flash_muzzle()
+	Sfx.play(player, fire_sound)
 	for pellet_index in config.pellets_per_shot:
 		_fire_pellet()
 	_publish_ammo()
@@ -71,6 +76,14 @@ func reload() -> bool:
 	return true
 
 
+## Adds shells to the reserve (pickups, RF-56). Returns how many fit.
+func add_ammo(amount: int) -> int:
+	var added := ammo.add_reserve(amount)
+	if added > 0:
+		_publish_ammo()
+	return added
+
+
 func cancel_reload() -> void:
 	if is_reloading:
 		_reload_generation += 1
@@ -83,7 +96,7 @@ func _on_carry_state_changed(state: PlayerCarry.State) -> void:
 
 
 func _can_use() -> bool:
-	return is_instance_valid(player) and is_instance_valid(carry) \
+	return active and is_instance_valid(player) and is_instance_valid(carry) \
 		and is_instance_valid(camera) and player.input_enabled and carry.can_use_weapons()
 
 
@@ -107,49 +120,11 @@ func _fire_pellet() -> void:
 	var collider: Object = result.get("collider")
 	var target := collider as Node
 	if is_instance_valid(target):
-		var health := _find_health(target)
+		var health := HealthComponent.find_for_hit(target, player)
 		if is_instance_valid(health):
 			health.take_damage(config.damage_per_pellet, player)
 			hit_confirmed.emit(target)
-	_spawn_impact(result["position"], result["normal"])
-
-
-func _find_health(target: Node) -> HealthComponent:
-	if not is_instance_valid(target):
-		return null
-	var current: Node = target
-	while is_instance_valid(current):
-		if current is Animal and not (current as Animal).can_receive_damage_from(player):
-			return null
-		if current is HealthComponent:
-			return current as HealthComponent
-		var component := current.get_node_or_null("HealthComponent") as HealthComponent
-		if component != null:
-			return component
-		current = current.get_parent()
-	return null
-
-
-func _spawn_impact(point: Vector3, normal: Vector3) -> void:
-	if not is_instance_valid(player):
-		return
-	var tree := player.get_tree()
-	if tree == null or tree.current_scene == null:
-		return
-	var marker := MeshInstance3D.new()
-	var mesh := SphereMesh.new()
-	mesh.radius = 0.035
-	mesh.height = 0.07
-	marker.mesh = mesh
-	var material := StandardMaterial3D.new()
-	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	material.albedo_color = Color(1.0, 0.48, 0.12)
-	marker.material_override = material
-	tree.current_scene.add_child(marker)
-	marker.global_position = point + normal * 0.025
-	var tween := marker.create_tween()
-	tween.tween_property(marker, "scale", Vector3.ZERO, 0.22)
-	tween.tween_callback(marker.queue_free)
+	HitEffects.spawn_impact(player, result["position"], result["normal"])
 
 
 func _apply_recoil() -> void:

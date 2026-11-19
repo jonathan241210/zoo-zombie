@@ -93,6 +93,53 @@ position = Vector3(31.2, 1.6, 4.4)
 [node name="SanitariosSur" type="Marker3D" parent="Markers/FoodCrateSpawns"]
 position = Vector3(-45, 1.6, 71.8)
 
+[node name="AmmoSpawns" type="Node3D" parent="Markers"]
+
+[node name="CafeteriaBack" type="Marker3D" parent="Markers/AmmoSpawns"]
+position = Vector3(24.9, 1.5, 15.2)
+
+[node name="AdministracionBack" type="Marker3D" parent="Markers/AmmoSpawns"]
+position = Vector3(-25.6, 1.5, -37.0)
+
+[node name="KioscoEsteInside" type="Marker3D" parent="Markers/AmmoSpawns"]
+position = Vector3(37.75, 1.65, -19.75)
+
+[node name="MiradorEsteCorner" type="Marker3D" parent="Markers/AmmoSpawns"]
+position = Vector3(44.0, 1.5, 11.0)
+
+[node name="SanitariosNorteBack" type="Marker3D" parent="Markers/AmmoSpawns"]
+position = Vector3(-46.9, 1.5, -30.5)
+
+[node name="SanitariosSurBack" type="Marker3D" parent="Markers/AmmoSpawns"]
+position = Vector3(-48.1, 1.5, 73.6)
+
+[node name="VeterinariaSide" type="Marker3D" parent="Markers/AmmoSpawns"]
+position = Vector3(-65.5, 1.5, 59.7)
+
+[node name="TaquillaABack" type="Marker3D" parent="Markers/AmmoSpawns"]
+position = Vector3(-17.9, 1.5, -61.2)
+
+[node name="TiendaSide" type="Marker3D" parent="Markers/AmmoSpawns"]
+position = Vector3(4.5, 1.5, -50.0)
+
+[node name="BancaMiradorSur" type="Marker3D" parent="Markers/AmmoSpawns"]
+position = Vector3(28.3, 1.5, 22.2)
+
+[node name="BancaSur" type="Marker3D" parent="Markers/AmmoSpawns"]
+position = Vector3(-7.4, 1.5, 69.0)
+
+[node name="BancaEntrada" type="Marker3D" parent="Markers/AmmoSpawns"]
+position = Vector3(-19.6, 1.5, -48.3)
+
+[node name="JaulaNorteCorner" type="Marker3D" parent="Markers/AmmoSpawns"]
+position = Vector3(-54.4, 1.5, 2.4)
+
+[node name="RecintoEsteCorner" type="Marker3D" parent="Markers/AmmoSpawns"]
+position = Vector3(62.3, 1.5, -3.9)
+
+[node name="InfoExplanadaBack" type="Marker3D" parent="Markers/AmmoSpawns"]
+position = Vector3(-29.2, 1.5, 12.9)
+
 [node name="ZombieSpawns" type="Node3D" parent="Markers"]
 
 [node name="NorthGate" type="Marker3D" parent="Markers/ZombieSpawns"]
