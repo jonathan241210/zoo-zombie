@@ -89,12 +89,12 @@ Convenciones:
 
 ## Fase 6: IA de los zombis (cazadores) y muerte del jugador
 
-- [ ] T-060 Crear `zombie.tscn`: `CharacterBody3D` + `NavigationAgent3D` + `HealthComponent` + `Hurtbox`. Sincronizar la velocidad de las animaciones con el movimiento: el clip `walk` del zombi corresponde a ~0.55 m/s y `run` a ~1.95 m/s (medido), así que con 2.5 m/s hay que usar `run` o escalar la reproducción
-- [ ] T-061 Máquina de estados `IDLE`/`CHASE`/`ATTACK`/`HIT`/`DEAD`, con detección por radio y línea de visión — RF-63, RF-64
-- [ ] T-062 Ataque cuerpo a cuerpo, incluso cuando el jugador carga una caja — RF-65
-- [ ] T-063 Muerte, probabilidad de soltar munición y desaparición del cuerpo — RF-55, RF-66, RF-68
-- [ ] T-064 Muerte y reaparición del jugador en la cafetería con penalización — RF-80 a RF-83
-- [ ] T-065 Verificar — CA-08, CA-11
+- [x] T-060 Crear `zombie.tscn`: `CharacterBody3D` + `NavigationAgent3D` + `HealthComponent` + `Hurtbox`. Sincronizar la velocidad de las animaciones con el movimiento: el clip `walk` del zombi corresponde a ~0.55 m/s y `run` a ~1.95 m/s (medido), así que con 2.5 m/s hay que usar `run` o escalar la reproducción (`scenes/enemies/zombie.tscn`; modelo girado 180° porque mira a +Z; persigue con `run` escalado a la velocidad real. Sin `Hurtbox` aparte: los perdigones y el hacha golpean la cápsula del cuerpo)
+- [x] T-061 Máquina de estados `IDLE`/`CHASE`/`ATTACK`/`HIT`/`DEAD`, con detección por radio y línea de visión — RF-63, RF-64 (detección cada `think_interval`; los zombis de oleada aparecen ya alertados)
+- [x] T-062 Ataque cuerpo a cuerpo, incluso cuando el jugador carga una caja — RF-65
+- [x] T-063 Muerte, probabilidad de soltar munición y desaparición del cuerpo — RF-55, RF-66, RF-68 (el cuerpo deja de bloquear y desaparece tras `corpse_lifetime`; también recibe `apply_knockback()` del hacha)
+- [x] T-064 Muerte y reaparición del jugador en la cafetería con penalización — RF-80 a RF-83 (cámara cae al suelo; la penalización de puntaje llega con `ScoreManager` en T-090)
+- [ ] T-065 Verificar — CA-08, CA-11 (automático en `tests/integration/test_zombies.gd`; falta la prueba del usuario jugando. Mientras no haya oleadas, `ZombieSpawner.test_zombie_count = 4` en `game.tscn` crea zombis al empezar)
 
 ## Fase 7: Recintos destructibles, escape y recaptura
 

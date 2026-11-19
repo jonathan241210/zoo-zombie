@@ -12,6 +12,7 @@ var input_enabled: bool = true
 
 var _coyote_timer: float = 0.0
 var _jump_buffer_timer: float = 0.0
+var _death_tween: Tween
 
 @onready var head: Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
@@ -100,8 +101,11 @@ func get_target_speed(move_input: Vector2) -> float:
 
 ## Places the player at a spawn point with full health (used at start and on respawn).
 func respawn_at(spawn: Transform3D) -> void:
+	if _death_tween != null and _death_tween.is_valid():
+		_death_tween.kill()
 	global_transform = Transform3D(Basis(Vector3.UP, spawn.basis.get_euler().y), spawn.origin)
-	head.rotation.x = 0.0
+	head.rotation = Vector3.ZERO
+	head.position.y = config.eye_height
 	velocity = Vector3.ZERO
 	health.reset(config.max_health)
 	input_enabled = true
@@ -132,4 +136,10 @@ func _apply_look(yaw: float, pitch: float) -> void:
 func _on_died() -> void:
 	input_enabled = false
 	velocity = Vector3.ZERO
+	# The camera drops to the ground and rolls to the side (RF-80).
+	_death_tween = create_tween().set_parallel()
+	_death_tween.tween_property(head, "position:y", 0.35, 0.6) \
+		.set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+	_death_tween.tween_property(head, "rotation:z", deg_to_rad(70.0), 0.6) \
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	EventBus.player_died.emit()

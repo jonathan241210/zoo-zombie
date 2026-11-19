@@ -25,3 +25,14 @@ extends Resource
 @export var ammo_drop_lifetime: float = 30.0
 ## Seconds before the body is removed.
 @export var corpse_lifetime: float = 8.0
+## Seconds into the attack animation when the blow lands.
+@export var attack_hit_delay: float = 0.55
+## Seconds a zombie staggers after taking damage.
+@export var hit_stun_time: float = 0.35
+## Max turn rate (degrees per second).
+@export var turn_speed_degrees: float = 360.0
+## Ground speed (m/s) the walk/run clips were authored for; playback scales to match.
+@export var walk_anim_speed: float = 0.55
+@export var run_anim_speed: float = 1.95
+## Seconds between path and sight updates (performance).
+@export var think_interval: float = 0.25

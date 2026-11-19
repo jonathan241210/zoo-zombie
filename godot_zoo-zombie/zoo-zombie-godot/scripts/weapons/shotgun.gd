@@ -119,12 +119,18 @@ func _fire_pellet() -> void:
 		return
 	var collider: Object = result.get("collider")
 	var target := collider as Node
+	var hit_body := false
 	if is_instance_valid(target):
 		var health := HealthComponent.find_for_hit(target, player)
 		if is_instance_valid(health):
 			health.take_damage(config.damage_per_pellet, player)
 			hit_confirmed.emit(target)
-	HitEffects.spawn_impact(player, result["position"], result["normal"])
+			hit_body = true
+	# Red spark on bodies (zombies), orange on the world (RF-53).
+	if hit_body:
+		HitEffects.spawn_impact(player, result["position"], result["normal"], Color(0.7, 0.04, 0.04), 0.05)
+	else:
+		HitEffects.spawn_impact(player, result["position"], result["normal"])
 
 
 func _apply_recoil() -> void:

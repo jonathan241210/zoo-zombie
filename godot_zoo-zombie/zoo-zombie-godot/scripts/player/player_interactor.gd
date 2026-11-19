@@ -63,6 +63,9 @@ func _physics_process(_delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not event.is_action_pressed(&"interact"):
 		return
+	var controller := _player as PlayerController
+	if controller != null and not controller.input_enabled:
+		return  # dead or in a menu
 	if focused != null and is_instance_valid(focused) and focused.interact(_player):
 		get_viewport().set_input_as_handled()
 		return
