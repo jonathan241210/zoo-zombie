@@ -6,8 +6,12 @@ extends EditorScenePostImport
 ## - Terrain, structures, enclosures, fences and props get static colliders on the
 ##   "world" layer so the player collides and the navmesh can be baked from them.
 ## Blender object names are preserved by the glTF importer, so we classify by prefix.
+## MultiMesh instance data lives in the RenderingServer, so a headless import (dummy
+## renderer) saves it empty. The transforms are also stored as node metadata
+## (INSTANCE_TRANSFORMS_META) and ZooLevel re-applies them at runtime.
 
 const WORLD_LAYER := 1
+const INSTANCE_TRANSFORMS_META := &"instance_transforms"
 
 ## Prefixes merged into MultiMesh instances.
 const VEGETATION_PREFIXES: Array[String] = ["ARBOL_", "ARBUSTO_", "PASTO_Mechon"]
@@ -107,6 +111,9 @@ func _build_vegetation(instances: Array[MeshInstance3D], scene: Node, colliders:
 		var mm_instance := MultiMeshInstance3D.new()
 		mm_instance.name = "MM_" + String(group_names[mesh]).rstrip("0123456789_")
 		mm_instance.multimesh = multimesh
+		var stored: Array[Transform3D] = []
+		stored.assign(transforms)
+		mm_instance.set_meta(INSTANCE_TRANSFORMS_META, stored)
 		if not cast_shadows[mesh]:
 			mm_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(mm_instance, true)

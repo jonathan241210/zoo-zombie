@@ -43,9 +43,24 @@ func _markers_in(path: String) -> Array[Marker3D]:
 
 
 func _ready() -> void:
+	_restore_vegetation()
 	# Visual layer 2 is reserved for the static zoo map so the minimap viewport can
 	# render the environment without drawing moving actors a second time.
 	for visual: VisualInstance3D in map.find_children("*", "VisualInstance3D", true, false):
 		visual.layers = 1 << 1
 	if map is VisualInstance3D:
 		(map as VisualInstance3D).layers = 1 << 1
+
+
+## Re-applies vegetation instance transforms saved as metadata by the map post-import
+## script; a headless import leaves the MultiMesh buffers empty (all trees invisible).
+func _restore_vegetation() -> void:
+	for node: MultiMeshInstance3D in map.find_children("*", "MultiMeshInstance3D", true, false):
+		if node.multimesh == null or not node.has_meta(&"instance_transforms"):
+			continue
+		var transforms: Array = node.get_meta(&"instance_transforms")
+		var multimesh := node.multimesh
+		if multimesh.instance_count != transforms.size():
+			multimesh.instance_count = transforms.size()
+		for i in transforms.size():
+			multimesh.set_instance_transform(i, transforms[i])
