@@ -68,10 +68,10 @@ Convenciones:
 - [x] T-041 Integrar alimentación: curar solo con vida incompleta y reiniciar siempre la saciedad — RF-25
 - [x] T-042 Pausar el temporizador al pausar la partida y emitir cambios para el HUD — RF-23, RF-108
 - [x] T-043 Emitir la muerte antes de eliminar el animal y su comedero tras la animación; `GameManager` actualiza la derrota — RF-29, RF-47 a RF-49
-- [ ] T-044 Implementar y verificar el estado `WEAK`, animación y movimiento más lento — RF-27
+- [x] T-044 Implementar y verificar el estado `WEAK`, animación y movimiento más lento — RF-27 (modificador sobre los estados de movimiento: `is_weak`, `weak_speed_multiplier`, animación `weak` en reposo, señal `animal_weak_changed` y alerta roja «Débil» en la fila de vida del HUD)
 - [x] T-045 Impedir que la escopeta del jugador dañe a la jirafa — RF-28
 - [x] T-046 Publicar estados `EMPTY` / `FULL` del comedero para conectar las visuales — spec 006
-- [ ] T-047 Verificación manual: hambre, curación, daño gradual, inmunidad y desaparición — CA-17 a CA-20
+- [ ] T-047 Verificación manual: hambre, curación, daño gradual, inmunidad y desaparición — CA-17 a CA-20 (cubierto por `tests/integration/test_animal_lifecycle.gd`; falta la revisión visual del usuario en el juego)
 
 ## Fase 5: Combate, escopeta y munición
 

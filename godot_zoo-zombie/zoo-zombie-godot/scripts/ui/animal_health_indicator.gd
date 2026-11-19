@@ -1,12 +1,14 @@
 class_name AnimalHealthIndicator
 extends HBoxContainer
 ## Compact heart and green health bar with a separate, time-worn yellow outline.
+## While the animal is weak (RF-27) the fill turns red and a "Weak" label appears.
 
 var animal: Animal
 var config: AnimalHealthHudConfig
 
 var _health_bar: ProgressBar
 var _frame: Control
+var _weak_label: Label
 var _border_color: Color
 
 
@@ -53,9 +55,19 @@ func _ready() -> void:
 	_health_bar.add_theme_stylebox_override("fill", _make_style(config.health_fill_color))
 	_frame.add_child(_health_bar)
 
+	_weak_label = Label.new()
+	_weak_label.text = tr("ANIMAL_STATUS_WEAK")
+	_weak_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_weak_label.add_theme_color_override("font_color", config.weak_fill_color)
+	_weak_label.add_theme_font_size_override("font_size", 13)
+	_weak_label.visible = false
+	add_child(_weak_label)
+
 	if animal != null:
 		animal.health.health_changed.connect(_on_health_changed)
 		animal.needs.satiety_changed.connect(_on_satiety_changed)
+		animal.weak_changed.connect(_on_weak_changed)
+		_on_weak_changed(animal.is_weak)
 		_on_health_changed(animal.health.current_health, animal.health.max_health)
 		_on_satiety_changed(animal.needs.satiety_ratio(), animal.needs.satiety_remaining)
 
@@ -64,6 +76,12 @@ func _on_satiety_changed(ratio: float, _seconds_remaining: float) -> void:
 	_border_color = config.satiety_empty_border_color.lerp(
 		config.satiety_full_border_color, clampf(ratio, 0.0, 1.0))
 	_frame.queue_redraw()
+
+
+func _on_weak_changed(is_weak: bool) -> void:
+	_weak_label.visible = is_weak
+	var fill := config.weak_fill_color if is_weak else config.health_fill_color
+	_health_bar.add_theme_stylebox_override("fill", _make_style(fill))
 
 
 func _draw_border() -> void:

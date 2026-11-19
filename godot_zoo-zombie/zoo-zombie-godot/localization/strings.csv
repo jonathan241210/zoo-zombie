@@ -76,6 +76,7 @@ PROMPT_FEED,Alimentar,Feed
 PROMPT_DROP,Soltar,Drop
 ANIMAL_GIRAFFE,Jirafa,Giraffe
 ANIMAL_ELEPHANT,Elefante,Elephant
+ANIMAL_STATUS_WEAK,Débil,Weak
 WAVE_LABEL,Oleada,Wave
 HUD_SCORE,Puntaje,Score
 HUD_TIME,Tiempo,Time

@@ -17,6 +17,8 @@ extends Resource
 @export var heal_per_feeding: float = 50.0
 ## Health ratio below which the animal is weak.
 @export var weak_threshold: float = 0.3
+## Movement speed multiplier while weak (RF-27).
+@export var weak_speed_multiplier: float = 0.5
 @export var walk_speed: float = 2.0
 @export var run_speed: float = 6.5
 @export var tired_speed: float = 1.2

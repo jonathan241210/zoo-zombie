@@ -275,6 +275,7 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 | Pérdida de vida tras la gracia | 0.8 /s | 0.8 /s |
 | Vida recuperada por caja | 50 | 60 |
 | Umbral de debilidad | 30 % | 30 % |
+| Velocidad al estar débil (multiplicador) | 0.5 | 0.5 |
 | Desaparición tras muerte | Al terminar la animación; 2.25 s de respaldo | 2.25 s de respaldo |
 | Velocidad caminando / corriendo / cansado | 2.0 / 6.5 / 1.2 m/s | 1.8 / 5.5 / 1.0 m/s |
 | Resistencia máxima | 100 | 100 |

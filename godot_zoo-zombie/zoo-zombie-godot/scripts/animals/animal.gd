@@ -1,12 +1,15 @@
 class_name Animal
 extends CharacterBody3D
-## A zoo animal (spec 001 §5.3). Phase 3: wanders inside its enclosure and eats when fed.
-## Hunger/weakness (phase 4) and escape/follow (phase 7) extend this state machine.
+## A zoo animal (spec 001 §5.3). Wanders inside its enclosure, eats when fed and loses
+## health from hunger. Weakness (RF-27) is a modifier on top of the movement states:
+## below the health threshold the animal plays `weak` instead of `idle` and moves slower.
+## Escape/follow (phase 7) extend this state machine.
 
 enum State { IDLE, WALK, EATING, DEAD }
 
 signal state_changed(new_state: State)
 signal fed
+signal weak_changed(is_weak: bool)
 
 @export var config: AnimalConfig
 ## Feeder scene spawned for this animal (elevated for the giraffe, low for the elephant).
@@ -27,6 +30,8 @@ var state: State = State.IDLE
 var enclosure: Enclosure = null
 var feeder: Feeder = null
 var needs: AnimalNeeds
+## True while health is below config.weak_threshold (RF-27).
+var is_weak := false
 
 var _target := Vector3.ZERO
 var _has_target := false
@@ -46,6 +51,7 @@ func _ready() -> void:
 	assert(config != null, "Animal needs an AnimalConfig")
 	health.reset(config.max_health)
 	health.died.connect(_on_health_depleted)
+	health.health_changed.connect(_on_health_changed)
 	needs = AnimalNeeds.new()
 	needs.configure(config)
 	for loop_name: StringName in [&"idle", &"walk", &"run", &"eat", &"weak"]:
@@ -71,7 +77,7 @@ func _physics_process(delta: float) -> void:
 			if _timer <= 0.0:
 				_pick_wander_target()
 		State.WALK:
-			if _move_to_target(delta, config.walk_speed):
+			if _move_to_target(delta, get_move_speed()):
 				if _was_stuck and _stuck_count < MAX_STUCK_RETRIES:
 					_pick_wander_target()  # blocked: try another direction right away
 				else:
@@ -79,7 +85,7 @@ func _physics_process(delta: float) -> void:
 					_enter_state(State.IDLE)
 		State.EATING:
 			if _has_target:
-				if _move_to_target(delta, config.walk_speed):
+				if _move_to_target(delta, get_move_speed()):
 					_has_target = false
 					_play(&"eat")
 			else:
@@ -108,6 +114,11 @@ func enter_enclosure(new_enclosure: Enclosure) -> void:
 ## True while the animal can receive food (contained and alive).
 func can_be_fed() -> bool:
 	return enclosure != null and state != State.DEAD
+
+
+## Walking speed, reduced while weak (RF-27).
+func get_move_speed() -> float:
+	return config.walk_speed * (config.weak_speed_multiplier if is_weak else 1.0)
 
 
 func can_receive_damage_from(source: Node) -> bool:
@@ -144,7 +155,7 @@ func _enter_state(new_state: State) -> void:
 	match state:
 		State.IDLE:
 			_timer = randf_range(config.idle_time_min, config.idle_time_max)
-			_play(&"idle")
+			_play(_idle_animation())
 		State.WALK:
 			_play(&"walk")
 		State.EATING:
@@ -153,6 +164,21 @@ func _enter_state(new_state: State) -> void:
 			_play(&"death")
 	state_changed.emit(state)
 	EventBus.animal_state_changed.emit(config.animal_id, state)
+
+
+func _on_health_changed(current: float, maximum: float) -> void:
+	var weak_now := current > 0.0 and maximum > 0.0 and current / maximum < config.weak_threshold
+	if weak_now == is_weak:
+		return
+	is_weak = weak_now
+	weak_changed.emit(is_weak)
+	EventBus.animal_weak_changed.emit(config.animal_id, is_weak)
+	if state == State.IDLE:
+		_play(_idle_animation())
+
+
+func _idle_animation() -> StringName:
+	return &"weak" if is_weak and _animation.has_animation(&"weak") else &"idle"
 
 
 func _on_health_depleted() -> void:

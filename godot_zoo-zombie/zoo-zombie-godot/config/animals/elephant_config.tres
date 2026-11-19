@@ -13,6 +13,7 @@ grace_period = 30.0
 starvation_damage_per_second = 0.8
 heal_per_feeding = 60.0
 weak_threshold = 0.3
+weak_speed_multiplier = 0.5
 walk_speed = 1.8
 run_speed = 5.5
 tired_speed = 1.0
