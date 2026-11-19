@@ -128,6 +128,7 @@ Convenciones:
 - [ ] T-093 Agregar indicaciones contextuales con icono según el dispositivo — RF-102
 - [ ] T-094 Agregar avisos (oleada, descanso, recinto atacado o destruido, animal muerto) y marcadores hacia los animales escapados y los refugios — RF-103, RF-104
 - [ ] T-095 Crear las pantallas de victoria y derrota, y el menú de pausa — RF-105 a RF-107
+- [x] T-099 Mensajes de acción: `ActionFeed`, `ActionFeedConfig`, señales nuevas en `EventBus` y textos en el CSV, con pruebas — RF-10B, CA-21 (se adelanta a pedido del usuario) (`scenes/ui/action_feed.tscn`, `config/action_feed_config.tres`, `tests/integration/test_action_feed.gd`)
 - [ ] T-096 Verificar — CA-10
 
 ## Fase 10: Integración, pruebas y optimización

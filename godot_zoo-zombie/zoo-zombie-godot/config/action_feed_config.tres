@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ActionFeedConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/action_feed_config.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+message_duration = 2.5
+fade_time = 0.4
+max_visible = 4
+repeat_cooldown = 2.0
+font_size = 20
+vertical_position = 0.82
+positive_color = Color(0.55, 0.95, 0.5, 1)
+info_color = Color(0.95, 0.95, 0.95, 1)
+warning_color = Color(1, 0.8, 0.3, 1)
+danger_color = Color(1, 0.4, 0.38, 1)
+background_color = Color(0.05, 0.06, 0.05, 0.6)

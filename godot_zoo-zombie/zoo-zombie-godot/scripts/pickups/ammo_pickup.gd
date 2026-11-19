@@ -15,6 +15,8 @@ signal collected(pickup: AmmoPickup)
 
 var _glow_config: AmmoSpawnConfig = null
 var _is_collected := false
+## "Reserve full" is reported once per contact, not every frame.
+var _full_reported := false
 
 
 ## Optional setup before adding to the tree.
@@ -39,6 +41,7 @@ func _physics_process(_delta: float) -> void:
 		if body is PlayerController:
 			_try_collect(body as PlayerController)
 			return
+	_full_reported = false
 
 
 func _try_collect(player: PlayerController) -> void:
@@ -47,8 +50,12 @@ func _try_collect(player: PlayerController) -> void:
 		return
 	var added := weapons.add_ammo(amount)
 	if added <= 0:
+		if not _full_reported:
+			_full_reported = true
+			EventBus.ammo_reserve_full.emit()
 		return
 	amount -= added
+	EventBus.ammo_collected.emit(added)
 	Sfx.play_at(self, pickup_sound, global_position)
 	if amount <= 0:
 		_is_collected = true

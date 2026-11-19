@@ -193,6 +193,7 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 | RF-101 | Por cada animal hay una tarjeta con: **barra de vida**, **barra de alimento** (saciedad), **barra de integridad de su recinto** y estado (**contenido**, **débil**, **escapado**, **cansado**, **siguiéndote** o **muerto**). |
 | RF-108 | La **barra de alimento** está llena justo después de comer y se vacía durante el periodo de gracia (RF-22). Cuando llega a 0, parpadea en rojo y la vida empieza a bajar. Así el jugador ve qué animal necesita comida antes de que pierda vida. |
 | RF-10A | **Contador de zombis** junto a la oleada: zombis **vivos** en el mapa y zombis que **faltan por aparecer** en la oleada actual (ej. `Zombis: 7 · Faltan 11`). Los zombis de una horda de zombificación cuentan como vivos. Durante el descanso solo se muestran los vivos. |
+| RF-10B | **Mensajes de acción:** mensajes breves en pantalla que confirman lo que hace el jugador y avisan de lo importante: caja de comida recogida o soltada, animal alimentado, munición recogida (`+4 cartuchos`), munición llena, cargador vacío (con la tecla de recarga), sin munición, arma equipada, armas bloqueadas mientras se carga comida, animal débil, animal muerto, muerte y reaparición del jugador. Tienen un color según su tipo (positivo, informativo, advertencia y peligro), se apilan (máximo configurable), desaparecen solos y un mismo mensaje no se repite antes de un tiempo configurable. Los textos están en español e inglés. |
 | RF-109 | El HUD muestra el icono del arma equipada. Con la escopeta, la munición aparece como `cargador / reserva`; con el hacha, como `∞`. Cuando el cargador está vacío o la reserva está baja (umbral configurable), cambia de color. |
 | RF-102 | Hay indicaciones contextuales: "Recoger (E)" junto a una caja y "Alimentar (E)" junto al comedero mientras se carga una caja. El icono cambia según el dispositivo: teclado o gamepad. |
 | RF-103 | Hay avisos visuales al empezar cada oleada, al iniciar el descanso, cuando un recinto está bajo ataque, cuando un recinto se destruye y cuando un animal muere. |
@@ -311,6 +312,14 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 
 - Descanso entre oleadas: **15 s**.
 
+### Mensajes de acción
+| Parámetro | Valor |
+|---|---|
+| Tiempo en pantalla | 2.5 s |
+| Desvanecido | 0.4 s |
+| Mensajes visibles a la vez | 4 |
+| Tiempo mínimo antes de repetir el mismo mensaje | 2.0 s |
+
 ### Puntuación
 | Acción | Puntos |
 |---|---:|
@@ -340,6 +349,7 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 - **CA-18:** Con vida incompleta, alimentar cura y reinicia la saciedad; con la vida completa, solo reinicia la saciedad.
 - **CA-19:** La barra amarilla de saciedad baja continuamente durante el periodo configurable; al llegar a cero empieza la pérdida de vida a la tasa configurada.
 - **CA-20:** Al llegar a cero de vida, el animal emite el evento de muerte, termina su animación y desaparecen tanto el animal como su comedero.
+- **CA-21:** Al recoger o soltar una caja, alimentar a un animal, recoger munición, cambiar de arma, quedarse sin munición, o cuando un animal se debilita o muere, aparece un mensaje breve en el idioma elegido, con el color de su tipo, que desaparece solo.
 - **CA-13:** Todos los valores de la sección 6 se pueden cambiar en recursos `.tres` sin tocar el código.
 - **CA-14:** El juego se puede jugar completo tanto con teclado y mouse como con gamepad.
 - **CA-15:** El juego mantiene 60 FPS a 1080p en la máquina de desarrollo (Mac) con el máximo de zombis vivos.
@@ -370,6 +380,7 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 | D-10 | Tipo de comida | Cualquier caja sirve para cualquier animal | ✅ Confirmado |
 | D-11 | Zombis al terminar una oleada | Siguen activos en la siguiente | ✅ Confirmado |
 | D-12 | Salto | ~~El jugador no puede saltar~~ Reemplazada: el jugador **sí salta** (no cargando una caja). Ver spec 005 | ✅ Confirmado (2026-11-18) |
+| D-16 | Mensajes de acción | Mensajes breves que confirman las acciones del jugador y avisan de eventos de los animales (petición del usuario) | ✅ Confirmado (2026-11-19) |
 | D-13 | Punto de aparición del jugador | Junto a `EST_CAFETERIA` | ✅ Confirmado |
 | D-14 | Hacha | Arma secundaria ilimitada, con daño medio en arco | ✅ Confirmado |
 | D-15 | Munición en el mapa | Puntos aleatorios poco obvios, señalados con una luz | ✅ Confirmado |

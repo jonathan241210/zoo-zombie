@@ -8,10 +8,18 @@ extends Node
 signal player_died
 signal player_respawned
 signal player_carry_changed(is_carrying: bool)
+signal food_crate_picked_up
+signal food_crate_dropped
+## The player tried something not allowed right now (e.g. &"weapons_while_carrying").
+signal action_blocked(reason: StringName)
 
 # --- Weapons ---
 signal weapon_changed(weapon_id: StringName)
 signal ammo_changed(magazine: int, reserve: int)
+signal ammo_collected(amount: int)
+signal ammo_reserve_full
+## Tried to fire with an empty magazine.
+signal weapon_empty(has_reserve: bool)
 
 # --- Zombies ---
 signal zombie_killed(zombie: Node3D)

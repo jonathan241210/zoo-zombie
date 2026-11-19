@@ -118,3 +118,23 @@ ACTION_UI_BACK,Volver,Back
 ACTION_UI_TAB_PREV,Pestaña anterior,Previous tab
 ACTION_UI_TAB_NEXT,Pestaña siguiente,Next tab
 ACTION_MINIMAP_ZOOM,Cambiar zoom del minimapa,Toggle minimap zoom
+MSG_CRATE_PICKED_UP,Recogiste comida: llévala a un comedero,Food picked up: take it to a feeder
+MSG_CRATE_DROPPED,Soltaste la caja de comida,You dropped the food crate
+MSG_FED,Animal alimentado,Animal fed
+MSG_FED_GIRAFFE,Alimentaste a la jirafa,You fed the giraffe
+MSG_FED_ELEPHANT,Alimentaste al elefante,You fed the elephant
+MSG_WEAK,¡Un animal está débil! Necesita comida,An animal is weak! It needs food
+MSG_WEAK_GIRAFFE,¡La jirafa está débil! Necesita comida,The giraffe is weak! It needs food
+MSG_WEAK_ELEPHANT,¡El elefante está débil! Necesita comida,The elephant is weak! It needs food
+MSG_DIED,Un animal murió,An animal died
+MSG_DIED_GIRAFFE,La jirafa murió,The giraffe died
+MSG_DIED_ELEPHANT,El elefante murió,The elephant died
+MSG_AMMO_COLLECTED,+{amount} cartuchos,+{amount} shells
+MSG_AMMO_FULL,Munición llena,Ammo full
+MSG_RELOAD_HINT,Cargador vacío: recarga con {key},Magazine empty: reload with {key}
+MSG_NO_AMMO,Sin munición: busca cajas con luz o usa el hacha,Out of ammo: find glowing crates or use the axe
+MSG_WEAPON_SHOTGUN,Escopeta equipada,Shotgun equipped
+MSG_WEAPON_AXE,Hacha equipada,Axe equipped
+MSG_WEAPONS_BLOCKED,No puedes usar armas cargando comida (suéltala con {key}),You can't use weapons while carrying food (drop it with {key})
+MSG_PLAYER_DIED,Caíste. Reapareces en la cafetería…,You fell. Respawning at the cafeteria…
+MSG_PLAYER_RESPAWNED,De vuelta en la cafetería,Back at the cafeteria

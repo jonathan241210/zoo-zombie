@@ -25,12 +25,15 @@ func _ready() -> void:
 	_activate(current)
 	if view_model != null:
 		view_model.show_weapon(current)
-	EventBus.weapon_changed.emit(current)
+	# No weapon_changed here: the HUD starts with the shotgun, and the event means
+	# "the player switched" (it drives the action message).
 
 
 func _process(_delta: float) -> void:
 	if not player.input_enabled:
 		return
+	if Input.is_action_just_pressed(&"fire") and not carry.can_use_weapons():
+		EventBus.action_blocked.emit(&"weapons_while_carrying")
 	if Input.is_action_just_pressed(&"switch_weapon"):
 		switch_to(AXE if current == SHOTGUN else SHOTGUN)
 	elif Input.is_action_just_pressed(&"weapon_1"):

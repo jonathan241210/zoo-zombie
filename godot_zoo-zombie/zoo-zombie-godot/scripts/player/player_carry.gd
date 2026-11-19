@@ -37,6 +37,7 @@ func pick_up() -> bool:
 	if is_carrying():
 		return false
 	_set_state(State.CARRYING)
+	EventBus.food_crate_picked_up.emit()
 	return true
 
 
@@ -66,6 +67,7 @@ func drop() -> bool:
 	food_crate_director.register_dropped(crate)
 	_set_state(State.ARMED)
 	crate_dropped.emit(crate)
+	EventBus.food_crate_dropped.emit()
 	return true
 
 

@@ -44,6 +44,8 @@ func fire() -> bool:
 	if not _can_use() or is_reloading or Time.get_ticks_msec() / 1000.0 < _next_fire_time:
 		return false
 	if not ammo.consume_shell():
+		if Input.is_action_just_pressed(&"fire") or not Input.is_action_pressed(&"fire"):
+			EventBus.weapon_empty.emit(ammo.reserve > 0)
 		return false
 	_next_fire_time = Time.get_ticks_msec() / 1000.0 + config.fire_interval
 	_play_animation(&"shotgun_fire")
