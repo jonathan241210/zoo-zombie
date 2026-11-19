@@ -78,3 +78,4 @@ Convenciones:
 - [x] T-D38 Añadir filas individuales cercanas, con corazón, nombre, relleno verde y borde amarillo dibujado aparte — RF-60 a RF-63
 - [x] T-D39 Conectar el color del borde a `AnimalNeeds.satiety_changed`, independiente de la vida — RF-64
 - [ ] T-D40 Verificar visualmente Soltar, distancia, varias filas, cambios de vida y respuesta del borde a la saciedad — CA-01, CA-02, CA-12 a CA-15
+- [x] T-D41 Corregir que E no soltaba la caja en la partida real: la referencia al `FoodCrateDirector` desde `player.tscn` no se resolvía; ahora la conecta `game.gd`. Prueba de regresión con la tecla E en `test_feeding_flow.gd` — RF-01, RF-04

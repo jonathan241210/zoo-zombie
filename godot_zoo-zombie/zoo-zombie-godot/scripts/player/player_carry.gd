@@ -9,6 +9,7 @@ signal state_changed(new_state: State)
 signal crate_dropped(crate: FoodCrate)
 
 @export var food_crate_scene: PackedScene
+## Set by the game root (scripts/systems/game.gd) when the match starts.
 @export var food_crate_director: FoodCrateDirector
 
 var state: State = State.ARMED
@@ -58,7 +59,8 @@ func drop() -> bool:
 	if crate == null:
 		return false
 	crate.set_dropped(true)
-	get_tree().current_scene.add_child(crate)
+	# Same parent as the director (the match root), not current_scene, which may differ.
+	food_crate_director.get_parent().add_child(crate)
 	crate.global_position = _find_drop_position(player, camera)
 	crate.global_rotation.y = player.global_rotation.y
 	food_crate_director.register_dropped(crate)

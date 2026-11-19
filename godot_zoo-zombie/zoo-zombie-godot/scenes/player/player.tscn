@@ -53,10 +53,9 @@ visible = false
 [node name="HealthComponent" type="Node" parent="."]
 script = ExtResource("3_health")
 
-[node name="PlayerCarry" type="Node" parent="." node_paths=PackedStringArray("food_crate_director")]
+[node name="PlayerCarry" type="Node" parent="."]
 script = ExtResource("4_carry")
 food_crate_scene = ExtResource("11_food_crate")
-food_crate_director = NodePath("../../FoodCrateDirector")
 
 [node name="Shotgun" type="Node" parent="." node_paths=PackedStringArray("player", "carry", "camera", "view_model")]
 script = ExtResource("9_shotgun")

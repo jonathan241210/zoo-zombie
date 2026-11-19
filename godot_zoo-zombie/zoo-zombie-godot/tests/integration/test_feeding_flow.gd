@@ -83,3 +83,37 @@ func test_cannot_feed_without_food() -> void:
 	var feeder_pos := giraffe.feeder.global_position
 	await _stand_facing(feeder_pos - giraffe.feeder.global_basis.z * 2.6 + Vector3.UP * 0.1, feeder_pos)
 	assert_null(interactor.focused, "no feed prompt with empty hands")
+
+
+func _press_interact() -> void:
+	# Real key events through the viewport, so the input path is tested, not just drop().
+	for pressed in [true, false]:
+		var event := InputEventKey.new()
+		event.physical_keycode = KEY_E
+		event.keycode = KEY_E
+		event.pressed = pressed
+		Input.parse_input_event(event)
+		await wait_physics_frames(3)
+
+
+func test_e_key_drops_and_crate_can_be_picked_up_again() -> void:
+	# Spec 004 RF-01 to RF-04: E drops the crate away from feeders; it can be taken again.
+	var director: FoodCrateDirector = game.get_node("FoodCrateDirector")
+	assert_eq(carry.food_crate_director, director, "director wired by the game root")
+	player.input_enabled = true
+	player.global_position = Vector3(10.0, 1.6, 9.0)
+	await wait_physics_frames(4)
+	carry.pick_up()
+	await wait_physics_frames(3)
+	var active_before := director.active_count()
+	watch_signals(carry)
+	await _press_interact()
+	assert_false(carry.is_carrying(), "E drops the crate")
+	assert_signal_emitted(carry, "crate_dropped")
+	var dropped: FoodCrate = get_signal_parameters(carry, "crate_dropped")[0]
+	assert_true(dropped.is_inside_tree())
+	assert_eq(director.active_count(), active_before + 1, "dropped crate counts as active")
+	await _stand_facing(dropped.global_position + Vector3(0, 0.1, 1.2), dropped.global_position)
+	assert_eq(interactor.focused.prompt_key if interactor.focused else "", "PROMPT_PICK_UP")
+	await _press_interact()
+	assert_true(carry.is_carrying(), "picked up again with E")

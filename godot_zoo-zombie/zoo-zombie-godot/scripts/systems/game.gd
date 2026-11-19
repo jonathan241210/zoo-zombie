@@ -25,3 +25,5 @@ func _ready() -> void:
 		level.add_child(animal)
 		enclosures.assign(animal, enclosures.get_enclosure(animal.config.home_enclosure))
 	food_crates.setup(level.get_food_crate_spawns())
+	# Wired here: a NodePath from player.tscn to a node outside it cannot resolve.
+	(player.get_node("PlayerCarry") as PlayerCarry).food_crate_director = food_crates
