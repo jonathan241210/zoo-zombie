@@ -1,6 +1,6 @@
 class_name PlayerController
 extends CharacterBody3D
-## First-person movement and look (spec 001 RF-01): walk, sprint, no jump, mouse and
+## First-person movement and look (spec 001 RF-01, spec 005): walk, sprint, jump, mouse and
 ## gamepad look. Carrying speed (RF-05) is driven by `is_carrying`, set by PlayerCarry.
 
 @export var config: PlayerConfig
@@ -10,7 +10,8 @@ var is_carrying: bool = false
 ## Disabled while dead or in menus.
 var input_enabled: bool = true
 
-var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
+var _coyote_timer: float = 0.0
+var _jump_buffer_timer: float = 0.0
 
 @onready var head: Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
@@ -39,13 +40,27 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if not is_on_floor():
-		velocity.y -= _gravity * delta
+	var on_floor := is_on_floor()
+	if on_floor:
+		_coyote_timer = config.coyote_time
+	else:
+		_coyote_timer = maxf(_coyote_timer - delta, 0.0)
+		velocity.y -= config.gravity * delta
+	_jump_buffer_timer = maxf(_jump_buffer_timer - delta, 0.0)
 
 	var move_input := Vector2.ZERO
 	if input_enabled:
 		_apply_stick_look(delta)
 		move_input = Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back")
+		if Input.is_action_just_pressed(&"jump"):
+			_jump_buffer_timer = config.jump_buffer_time
+
+	# A buffered press plus coyote time allows the jump; both timers are spent so there is
+	# no double jump (spec 005 RF-05).
+	if _jump_buffer_timer > 0.0 and _coyote_timer > 0.0 and can_jump():
+		velocity.y = jump_velocity(config.jump_height, config.gravity)
+		_jump_buffer_timer = 0.0
+		_coyote_timer = 0.0
 
 	var direction := transform.basis * Vector3(move_input.x, 0.0, move_input.y)
 	direction.y = 0.0
@@ -55,16 +70,32 @@ func _physics_process(delta: float) -> void:
 	var target := direction * get_target_speed(move_input)
 	var rate := config.acceleration if direction != Vector3.ZERO else config.deceleration
 	var weight := 1.0 - exp(-rate * delta)
+	# Airborne: the player keeps momentum and only corrects it partially (RF-06, RF-15).
+	if not on_floor:
+		weight *= config.air_control
 	velocity.x = lerpf(velocity.x, target.x, weight)
 	velocity.z = lerpf(velocity.z, target.z, weight)
 	move_and_slide()
 
 
-## Speed for the current state: carrying > sprinting (forward only) > walking.
+## Launch speed needed to reach `height` meters under `gravity` (spec 005 RF-02).
+static func jump_velocity(height: float, gravity: float) -> float:
+	return sqrt(2.0 * gravity * height)
+
+
+## Jumping is blocked while carrying a crate or when input is disabled (RF-03).
+func can_jump() -> bool:
+	return input_enabled and not is_carrying
+
+
+## Speed for the current state: carrying > sprinting > walking. Sprinting needs Shift held
+## and forward input, unless backward sprint is allowed (RF-10, RF-12, RF-13).
 func get_target_speed(move_input: Vector2) -> float:
 	if is_carrying:
 		return config.carry_speed
-	if Input.is_action_pressed(&"sprint") and move_input.y < -0.1:
+	var moving_forward := move_input.y < -0.1
+	var can_sprint := moving_forward or (config.allow_backward_sprint and move_input != Vector2.ZERO)
+	if Input.is_action_pressed(&"sprint") and can_sprint:
 		return config.sprint_speed
 	return config.walk_speed
 

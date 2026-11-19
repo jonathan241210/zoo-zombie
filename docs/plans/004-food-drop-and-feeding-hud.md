@@ -1,0 +1,198 @@
+# Plan técnico 004: Soltar comida y HUD de alimentación
+
+**Estado:** Borrador, pendiente de aprobación · **Versión:** 0.1 · **Fecha:** 2026-11-18
+**Spec:** [`specs/004-food-drop-and-feeding-hud.md`](../specs/004-food-drop-and-feeding-hud.md) · **Tareas:** `tasks/004-food-drop-and-feeding-hud.md` (aún no existe)
+**Se apoya en:** [`plans/001-zoo-survival.md`](001-zoo-survival.md) (`PlayerCarry`, `Feeder`, `FoodCrateDirector`, `Animal`) y [`plans/002-menus-and-onboarding.md`](002-menus-and-onboarding.md) (`InputGlyphs`, consejos, controles).
+
+---
+
+## 1. Estado actual del código y dependencias
+
+| Elemento | Estado | Consecuencia |
+|---|---|---|
+| `PlayerCarry` (`ARMED` / `CARRYING`) | Hecho. Tiene `pick_up()` y `consume()`; no tiene `drop()` | Se agrega `drop()` |
+| `PlayerInteractor` | Hecho. Busca el mejor `Interactable` cercano y lo activa con `interact` | Se agrega el respaldo "soltar" cuando no hay nada que activar |
+| `FoodCrate` (`food_crate.gd`) | Hecho. Se recoge y se libera con `queue_free()`; emite `picked_up` | Las cajas soltadas deben poder recogerse sin generar reaparición |
+| `FoodCrateDirector` | Hecho. Cuenta cajas activas por punto de aparición (`_occupied`) | Hay que contar también las cajas sueltas (RF-04) |
+| `Feeder` | Hecho. Se asocia al animal y valida `is_carrying` y `can_be_fed()` | Se agrega el contador 3D |
+| `Animal` | Hecho: estados, `feed()` con curación y animación de comer. **No tiene hambre todavía** | Depende de la Fase 4 de la 001 (`AnimalNeeds`, T-040 a T-042) |
+| `AnimalConfig` | Ya tiene `grace_period` (30 s) y `starvation_damage_per_second` | No hace falta un campo nuevo para la duración |
+| HUD (tarjetas de animales) | **No existe** (Fase 9 de la 001) | Las barras del HUD (RF-10) esperan a T-091 y T-092 |
+| Input map | `interact` existe (E + A / Cruz) | No se agrega ninguna acción nueva (RF-40) |
+
+> [!IMPORTANT]
+> Las barras de saturación y el contador necesitan el **modelo de hambre** (`AnimalNeeds`, Fase 4 de la 001), que aún no está implementado. Esta funcionalidad se hace en dos bloques: primero **soltar la caja** (independiente), y después lo que depende del hambre y del HUD.
+
+## 2. Arquitectura
+
+### 2.1 Soltar la caja (RF-01 a RF-09)
+
+**`PlayerCarry.drop()`**: si está `CARRYING`, pasa a `ARMED` y emite `crate_dropped(position, transform)`. Es el opuesto de `consume()`, pero **no** alimenta.
+
+**Prioridad de E (RF-05)** en `PlayerInteractor._unhandled_input`:
+
+```
+interact pulsado:
+  si hay un Interactable enfocado y puede activarse → activarlo (alimentar o recoger)
+  si no, y el jugador está CARRYING                 → carry.drop()
+```
+
+Así, junto a un comedero donde se puede alimentar, E alimenta. Si el comedero no aplica (animal muerto o escapado), el `validator` devuelve falso y E suelta la caja.
+
+**`DroppedCrate`**: no se crea una escena nueva. Se reutiliza `food_crate.tscn` (la misma caja del mapa) con un modo "suelta":
+
+| Propiedad | Caja de aparición | Caja soltada |
+|---|---|---|
+| `spawn_point` | Un `Marker3D` | Ninguno |
+| Al recogerla | Emite `picked_up` y el director programa reaparición | Emite `picked_up`, **sin** reaparición |
+| Duración | Permanente hasta recogerla | Permanente (RF-03) |
+
+`FoodCrate` gana `var is_dropped: bool` y `RigidBody3D`/colisión opcional: se coloca con un `PhysicsRayQuery` hacia adelante (RF-06) y otro hacia abajo para encontrar el suelo. Si el rayo frontal choca con geometría, se coloca justo antes del punto de choque.
+
+**`FoodCrateDirector`**: se suscribe a `crate_dropped`. Mantiene `_dropped: Array[FoodCrate]`. `active_count()` pasa a ser `_occupied.size() + _dropped.size()`. Al recoger una caja suelta se quita de `_dropped` y **no** se programa reaparición, porque el punto original ya reaparece solo (RF-04). El director no genera nuevas cajas mientras `active_count() >= max_active`.
+
+**Efectos secundarios:**
+- Animación y sonido (RF-07): `ViewModel` ya oculta los brazos y muestra la caja al cargar. Se agrega un `Tween` corto (`drop_time`, 0.3 s) que baja la caja y la oculta, y bloquea el disparo durante ese tiempo con un `_is_dropping` en `PlayerCarry`.
+- Atracción (RF-09): al emitirse `player_carry_changed(false)`, el sistema `AnimalLure` (T-074 de la 001, aún sin hacer) deja de seguir al jugador. No requiere código extra aquí.
+- Muerte del jugador (RF-14 de la 001): sigue **perdiendo** la caja sin soltarla. Es un caso distinto y no cambia.
+
+### 2.2 Saturación (RF-20 a RF-23)
+
+La saturación es el **periodo de gracia** de `AnimalNeeds` (T-040). No hay un segundo temporizador.
+
+`AnimalNeeds` (lógica pura, sin nodos) expone:
+
+| Miembro | Descripción |
+|---|---|
+| `satiety_remaining: float` | Segundos restantes de gracia |
+| `satiety_ratio() -> float` | `satiety_remaining / grace_period` (0 a 1) |
+| `signal satiety_changed(ratio, seconds_left)` | Se emite al cambiar el segundo entero o al alimentar |
+| `feed()` | Reinicia `satiety_remaining = grace_period` |
+| `tick(delta)` | Baja la saturación; al llegar a 0 aplica `starvation_damage_per_second` |
+
+`AnimalNeeds` corre con `PROCESS_MODE_PAUSABLE` (RF-23: sigue corriendo escapado o con el jugador muerto, y se detiene solo en pausa). La duración se lee de `AnimalConfig.grace_period` (RF-20). Si en el futuro se quiere distinguir el nombre, se agrega `saturation_duration` como alias; hoy no hace falta.
+
+### 2.3 Contador en el comedero (RF-30 a RF-37)
+
+`Feeder` gana un hijo `FeederTimer` (`Label3D`):
+
+| Propiedad | Valor |
+|---|---|
+| `billboard` | `BILLBOARD_ENABLED` |
+| `no_depth_test` | `true` (legible a distancia) |
+| `outline_size` | Configurable (`FeedingHudConfig`) |
+| `pixel_size` / `font_size` | Configurables |
+| Posición | Sobre el comedero; para el comedero elevado de la jirafa, sobre el soporte |
+
+`FeederTimer` se conecta a `animal.needs.satiety_changed`:
+
+- Texto: `tr("FEEDER_SECONDS").format({s = seconds_left})`, por ejemplo `27 s`.
+- Rojo y parpadeo cuando `seconds_left < urgent_threshold` (10 s). El parpadeo es un `Tween` de `modulate:a`.
+- `0 s` en rojo cuando la saturación está agotada (RF-33).
+- Se oculta con `visible = false` cuando el animal escapa (`animal_escaped`) o muere (`animal_died`); aparece de nuevo en `Feeder.attach()` cuando el animal es contenido (RF-35).
+
+### 2.4 Barras de vida y saturación sobre el animal (RF-11 a RF-15)
+
+Nueva escena `scenes/ui/world/animal_bars.tscn` (`Node3D`, hijo del animal):
+
+```
+AnimalBars (Node3D, script animal_bars.gd)
+├── HealthBar (Sprite3D billboard + SubViewport o TextureProgressBar vía ShaderMaterial)
+└── SatietyBar (igual, debajo)
+```
+
+Para evitar un `SubViewport` por barra (costo de render), cada barra es un `MeshInstance3D` con un `QuadMesh` y un **shader simple** (`bar.gdshader`) con los uniforms `ratio`, `fill_color` y `back_color`. El billboard se activa con `billboard_mode` del `StandardMaterial3D`, o en el shader con `MODELVIEW_MATRIX`. Es una sola draw call por barra y se actualiza por `set_shader_parameter("ratio", x)`.
+
+- Vida: verde. Por debajo de `weak_threshold` pasa a rojo (RF-12). Se calcula con `HealthComponent.health_changed`.
+- Saturación: amarillo. Se actualiza con `AnimalNeeds.satiety_changed`. Parpadea al llegar a 0 (RF-13).
+- Visibilidad: se oculta a más de `bars_visible_distance` (25 m) de la cámara, comparando la distancia en `_process` a baja frecuencia (cada 0.1 s). Se oculta si el animal murió (RF-14).
+- Accesibilidad (RF-15): cada barra lleva un icono (corazón y hoja) a la izquierda, además del color.
+
+### 2.5 Tarjeta del HUD (RF-10)
+
+Depende de T-091 y T-092 de la 001. Cuando exista `AnimalCard`, usa los mismos colores de `FeedingHudConfig` (`health_color` verde, `satiety_color` amarillo) para sus `ProgressBar`, con `StyleBoxFlat` creados desde el recurso. Se agrega la lectura numérica de segundos. Si el HUD aún no existe al implementar esta spec, la tarea se aplaza hasta la Fase 9 de la 001.
+
+### 2.6 Recurso de configuración
+
+`scripts/data/feeding_hud_config.gd` y `config/feeding_hud_config.tres`:
+
+| Campo | Valor inicial |
+|---|---|
+| `health_color` | verde (por ejemplo `#4CAF50`) |
+| `health_low_color` | rojo (`#E53935`) |
+| `satiety_color` | amarillo (`#FFC107`) |
+| `timer_color` / `timer_urgent_color` | blanco / rojo |
+| `timer_urgent_threshold` | 10.0 s |
+| `bars_visible_distance` | 25.0 m |
+| `timer_font_size` / `timer_outline_size` | 64 / 12 |
+| `drop_time` (en `PlayerConfig`) | 0.3 s |
+
+### 2.7 Controles y textos (RF-40 a RF-43)
+
+- No hay acción nueva: se reutiliza `interact`.
+- `InputGlyphs` ya muestra el icono de `interact` en el aviso. La clave `PROMPT_DROP` ("Soltar") se muestra cuando se carga una caja y no hay un comedero aplicable; la decide `InteractionPrompt` (ya existe) consultando `PlayerCarry`.
+- Textos en el CSV: `PROMPT_DROP`, `FEEDER_SECONDS`, `HOWTO_DROP`, `TIP_DROP_CRATE` (TIP-14), y el cambio de la fila de controles "Interactuar (recoger, alimentar, soltar)".
+- Consejo TIP-14 en `config/tips/tip_catalog.tres`, con el disparador `CARRY_STARTED` (ya existe en el plan 002).
+
+### 2.8 Archivos
+
+```
+scripts/
+├── player/player_carry.gd        # + drop(), señal crate_dropped, _is_dropping
+├── player/player_interactor.gd   # + respaldo "soltar" con E
+├── pickups/food_crate.gd         # + is_dropped, sin reaparición
+├── world/food_crate_director.gd  # + _dropped y conteo
+├── world/feeder.gd               # + FeederTimer
+├── animals/animal_needs.gd       # NUEVO (T-040 de la 001): saturación y hambre
+├── ui/world/animal_bars.gd       # NUEVO
+├── ui/world/feeder_timer.gd      # NUEVO
+├── data/feeding_hud_config.gd    # NUEVO
+scenes/ui/world/animal_bars.tscn  # NUEVA
+shaders/bar.gdshader              # NUEVO
+config/feeding_hud_config.tres    # NUEVO
+tests/test_animal_needs.gd        # NUEVO
+tests/test_food_crate_director.gd # + casos de cajas soltadas
+tests/test_player_carry.gd        # + drop()
+```
+
+## 3. Decisiones técnicas
+
+| Decisión | Motivo |
+|---|---|
+| Soltar es el **respaldo** de `interact` cuando no hay nada que activar | Cumple RF-05 sin mapear una tecla nueva, y no choca con alimentar |
+| La caja soltada **reutiliza** `food_crate.tscn` (`is_dropped`) | Evita duplicar escenas y comportamiento (AGENTS.md, §5) |
+| La caja suelta cuenta para el máximo, pero **no** programa reaparición | Su punto original ya reaparece solo; así no hay cajas infinitas |
+| Saturación = periodo de gracia existente | La spec lo confirma (D-03 y D-04); evita dos temporizadores desincronizados |
+| Barras con `QuadMesh` + shader, no con `SubViewport` | Una draw call por barra y sin renders extra, con el máximo de zombis en pantalla (CA-15 de la 001) |
+| `Label3D` con `no_depth_test` para el contador | Legible a distancia y a través de la cerca; se traduce con `tr()` |
+| Colores y umbrales en `FeedingHudConfig` | Principio III de la constitución: todo valor de diseño vive en `.tres` |
+
+## 4. Fases de implementación
+
+| Fase | Contenido | Depende de | Resultado verificable |
+|---|---|---|---|
+| **A** | `PlayerCarry.drop()`, respaldo en `PlayerInteractor`, caja soltada y conteo en el director | Fase 3 de la 001 (hecha) | CA-01, CA-02, CA-03 |
+| **B** | Animación y sonido de soltar, `PROMPT_DROP`, texto de controles y TIP-14 | A, spec 002 (parcial) | CA-10 (parcial) |
+| **C** | `AnimalNeeds` (saturación y hambre) | T-040 a T-042 de la 001 | CA-06 |
+| **D** | `FeederTimer` en cada comedero | C | CA-07, CA-08 |
+| **E** | `AnimalBars` flotantes con shader | C | CA-05 (parcial) |
+| **F** | Colores en la tarjeta del HUD | T-091 y T-092 de la 001 | CA-05 |
+| **G** | Verificación con teclado y gamepad, y FPS | A–F | CA-04, CA-09, CA-11 |
+
+> [!NOTE]
+> La **Fase A** puede hacerse ya. Las Fases **C a F** requieren primero el hambre de los animales (Fase 4 de la 001), así que se coordinan con esa fase. La Fase **F** espera al HUD (Fase 9 de la 001).
+
+## 5. Pruebas
+
+- **Unitarias (GUT):** `PlayerCarry.drop()` (de `CARRYING` a `ARMED`, y falso si no se carga); `FoodCrateDirector` cuenta las cajas sueltas y no programa reaparición; `AnimalNeeds` (la saturación baja, se reinicia al alimentar, llega a 0 y dispara la pérdida de vida, y se detiene en pausa); formato del contador (`27 s`).
+- **Integración:** ampliar [`test_feeding_flow.gd`](../../godot_zoo-zombie/zoo-zombie-godot/tests/integration/test_feeding_flow.gd): recoger, soltar, recoger de nuevo y alimentar.
+- **Manuales:** soltar contra una pared; soltar junto a un comedero con y sin animal alimentable; ver las barras y el contador a 5, 15 y 30 m; esperar a que la saturación llegue a 0 y comprobar el parpadeo rojo; verificar con gamepad.
+
+## 6. Riesgos
+
+| Riesgo | Efecto | Mitigación |
+|---|---|---|
+| El hambre de los animales aún no existe | Las barras y el contador no tienen datos | Orden de fases: A y B ya; C a F después de la Fase 4 de la 001 |
+| Soltar la caja dentro de un recinto o fuera del mapa | La caja queda inalcanzable | Rayos de colocación y `NavigationServer`/`world` como respaldo; si no hay suelo, se vuelve a ARMADO y la caja reaparece en su punto |
+| Demasiadas cajas sueltas | Se acumulan y se saltan el máximo | Conteo en el director (RF-04) y no se genera reaparición adicional |
+| Barras y textos 3D con el máximo de zombis | Bajan los FPS | Shader sin `SubViewport`, visibilidad por distancia y actualización de baja frecuencia |

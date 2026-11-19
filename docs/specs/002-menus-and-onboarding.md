@@ -194,7 +194,8 @@ Los textos van en el archivo de traducción, en español (principal) y en inglé
 |---|---|---|---|
 | Moverse | W A S D | Stick izquierdo | Moverse |
 | Mirar | Mouse | Stick derecho | Mirar |
-| Correr | Shift izquierdo | L3 | Correr |
+| Correr (mantener) | Shift izquierdo | L3 | Correr |
+| Saltar | Espacio | B / Círculo | Saltar |
 | Disparar / golpear | Clic izquierdo | RT / R2 | Disparar / Golpear |
 | Recargar | R | X / Cuadrado | Recargar |
 | Interactuar (recoger, alimentar) | E | A / Cruz | Interactuar |

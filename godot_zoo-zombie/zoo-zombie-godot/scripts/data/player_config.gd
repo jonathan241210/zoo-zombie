@@ -11,6 +11,18 @@ extends Resource
 @export var sprint_speed: float = 7.0
 ## m/s while carrying a food crate.
 @export var carry_speed: float = 3.2
+## Jump height (m). Spec 005 RF-02.
+@export var jump_height: float = 1.0
+## Gravity applied to the player (m/s^2). Spec 005 RF-02.
+@export var gravity: float = 20.0
+## Fraction (0-1) of ground acceleration available while airborne. Spec 005 RF-06.
+@export_range(0.0, 1.0) var air_control: float = 0.6
+## Seconds after leaving a ledge during which a jump is still allowed. Spec 005 RF-05.
+@export var coyote_time: float = 0.1
+## Seconds a jump press is remembered before landing. Spec 005 RF-05.
+@export var jump_buffer_time: float = 0.1
+## Whether sprinting backwards is allowed. Spec 005 RF-12.
+@export var allow_backward_sprint: bool = false
 ## How fast velocity reaches the target speed (1/s).
 @export var acceleration: float = 12.0
 ## How fast the player stops (1/s).

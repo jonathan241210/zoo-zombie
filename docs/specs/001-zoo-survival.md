@@ -28,7 +28,7 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 ## 3. Plataforma y controles
 
 - PC (macOS y Windows), con teclado y mouse y también con control (gamepad).
-- El jugador **no puede saltar**.
+- El jugador **puede saltar** (no mientras carga una caja). Ver [spec 005](005-jump-and-sprint.md).
 
 | Acción | Teclado/Mouse | Gamepad |
 |---|---|---|
@@ -38,7 +38,8 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 | Recargar | R | X / Cuadrado |
 | Cambiar arma (escopeta ↔ hacha) | Q / rueda del mouse / 1-2 | Y / Triángulo |
 | Interactuar (recoger / alimentar) | E | A / Cruz |
-| Correr | Shift | L3 |
+| Correr (mantener) | Shift | L3 |
+| Saltar | Espacio | B / Círculo |
 | Pausa | Esc | Start / Options |
 
 ## 4. Historias de usuario
@@ -59,7 +60,7 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 
 | ID | Requisito |
 |---|---|
-| RF-01 | El jugador se mueve en primera persona con cámara libre (mouse o stick). Puede caminar y correr. **No puede saltar.** |
+| RF-01 | El jugador se mueve en primera persona con cámara libre (mouse o stick). Puede caminar, correr (mientras mantiene Shift) y **saltar** (ver spec 005). |
 | RF-02 | El jugador tiene vida máxima configurable. Recibe daño de los zombis. |
 | RF-03 | La vista en primera persona muestra los brazos con el arma equipada (escopeta o hacha), o con la caja cuando la está cargando. |
 | RF-04 | El jugador tiene dos estados exclusivos: **ARMADO** y **CARGANDO**. |
@@ -358,7 +359,7 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 | D-09 | Reparar recintos | No. Se usa otro recinto (refugio) | ✅ Confirmado |
 | D-10 | Tipo de comida | Cualquier caja sirve para cualquier animal | ✅ Confirmado |
 | D-11 | Zombis al terminar una oleada | Siguen activos en la siguiente | ✅ Confirmado |
-| D-12 | Salto | El jugador no puede saltar | ✅ Confirmado |
+| D-12 | Salto | ~~El jugador no puede saltar~~ Reemplazada: el jugador **sí salta** (no cargando una caja). Ver spec 005 | ✅ Confirmado (2026-11-18) |
 | D-13 | Punto de aparición del jugador | Junto a `EST_CAFETERIA` | ✅ Confirmado |
 | D-14 | Hacha | Arma secundaria ilimitada, con daño medio en arco | ✅ Confirmado |
 | D-15 | Munición en el mapa | Puntos aleatorios poco obvios, señalados con una luz | ✅ Confirmado |
