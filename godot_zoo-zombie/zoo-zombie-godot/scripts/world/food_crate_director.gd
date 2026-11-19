@@ -12,6 +12,7 @@ signal crate_spawned(crate: FoodCrate)
 var _spawns: Array[Marker3D] = []
 var _occupied: Dictionary = {}  # Marker3D -> FoodCrate
 var _pending_respawns := 0
+var _dropped_crates: Dictionary = {}  # FoodCrate -> true
 
 
 func setup(spawn_points: Array[Marker3D]) -> void:
@@ -21,7 +22,13 @@ func setup(spawn_points: Array[Marker3D]) -> void:
 
 
 func active_count() -> int:
-	return _occupied.size()
+	return _occupied.size() + _dropped_crates.size()
+
+
+func register_dropped(crate: FoodCrate) -> void:
+	_dropped_crates[crate] = true
+	crate.picked_up.connect(_on_dropped_crate_picked_up)
+	crate.tree_exiting.connect(_on_dropped_crate_removed.bind(crate), CONNECT_ONE_SHOT)
 
 
 func pending_respawns() -> int:
@@ -33,7 +40,7 @@ func _spawn_one() -> FoodCrate:
 	for point in _spawns:
 		if not _occupied.has(point):
 			free_points.append(point)
-	if free_points.is_empty() or _occupied.size() >= config.max_active:
+	if free_points.is_empty() or active_count() >= config.max_active:
 		return null
 	var point: Marker3D = free_points.pick_random()
 	var crate := crate_scene.instantiate() as FoodCrate
@@ -51,6 +58,14 @@ func _on_crate_picked_up(_crate: FoodCrate, point: Marker3D) -> void:
 	# process_always = false: the timer stops while the game is paused.
 	var timer := get_tree().create_timer(config.respawn_delay, false)
 	timer.timeout.connect(_on_respawn_timeout)
+
+
+func _on_dropped_crate_picked_up(crate: FoodCrate) -> void:
+	_dropped_crates.erase(crate)
+
+
+func _on_dropped_crate_removed(crate: FoodCrate) -> void:
+	_dropped_crates.erase(crate)
 
 
 func _on_respawn_timeout() -> void:

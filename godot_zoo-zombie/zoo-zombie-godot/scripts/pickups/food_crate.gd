@@ -5,6 +5,8 @@ extends Node3D
 
 signal picked_up(crate: FoodCrate)
 
+var is_dropped: bool = false
+
 @onready var interactable: Interactable = $Interactable
 
 
@@ -12,6 +14,11 @@ func _ready() -> void:
 	interactable.prompt_key = "PROMPT_PICK_UP"
 	interactable.validator = _can_pick_up
 	interactable.interacted.connect(_on_interacted)
+	interactable.prompt_key = "PROMPT_PICK_UP"
+
+
+func set_dropped(dropped: bool) -> void:
+	is_dropped = dropped
 
 
 func _can_pick_up(interactor: Node) -> bool:

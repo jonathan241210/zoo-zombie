@@ -73,10 +73,10 @@ Convenciones:
 ## Fase 5: Combate, escopeta y munición
 
 - [ ] T-050 Crear `AmmoState` (lógica pura) con pruebas — RF-51, CA-12
-- [ ] T-051 Crear `shotgun.gd`: hitscan con N perdigones, dispersión, alcance y cadencia — RF-50, RF-54
-- [ ] T-052 Recarga con animación procedural (Tween: bajar el arma, bombear la corredera `Corredera`, volver) y duración — RF-52
-- [ ] T-053 Agregar feedback: fogonazo, retroceso de cámara, sonido e impacto — RF-53
-- [ ] T-054 Bloquear el disparo y la recarga en `CARRYING` — RF-05
+- [x] T-051 Crear `shotgun.gd`: hitscan con N perdigones, dispersión, alcance y cadencia — RF-50, RF-54
+- [x] T-052 Recarga procedural con Tween y duración configurable — RF-52
+- [ ] T-053 Agregar feedback: fogonazo, retroceso de cámara, sonido e impacto — RF-53 (falta integrar audio; no hay SFX de escopeta en assets/audio)
+- [x] T-054 Bloquear el disparo y la recarga en `CARRYING` — RF-05
 - [ ] T-055 Crear `ammo_pickup.tscn`: recogida automática hasta el máximo y desaparición por tiempo — RF-56, RF-57
 - [ ] T-056 Crear `WeaponManager`: cambio entre escopeta y hacha, bloqueo en `CARRYING` y restaurar el arma después de alimentar — RF-5B, RF-05
 - [ ] T-057 Crear `axe.gd`: golpe en arco, máximo de zombis por golpe, cadencia, retroceso y feedback — RF-5A, RF-5C
@@ -118,6 +118,7 @@ Convenciones:
 
 - [ ] T-090 Crear `ScoreManager` con pruebas — RF-90 a RF-93
 - [ ] T-091 Crear el HUD base: vida, munición, puntaje, oleada, tiempo e indicador de carga — RF-100
+- [x] T-091a Mostrar vida actual/máxima y munición del jugador — RF-100, RF-109 (HUD parcial; T-091 sigue pendiente para los demás elementos)
 - [ ] T-092 Agregar tarjetas de los animales: barras de vida, alimento e integridad del recinto, y estado — RF-101, RF-108
 - [ ] T-097 Agregar icono del arma equipada, munición (`cargador / reserva` o `∞` con el hacha) y alerta de munición baja — RF-109
 - [ ] T-098 Agregar contador de zombis vivos y por aparecer; `WaveManager` emite `zombie_count_changed(alive, pending)` por `EventBus` — RF-10A

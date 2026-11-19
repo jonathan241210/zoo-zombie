@@ -1,7 +1,7 @@
 # Plan técnico 004: Soltar comida y HUD de alimentación
 
-**Estado:** Borrador, pendiente de aprobación · **Versión:** 0.1 · **Fecha:** 2026-11-18
-**Spec:** [`specs/004-food-drop-and-feeding-hud.md`](../specs/004-food-drop-and-feeding-hud.md) · **Tareas:** `tasks/004-food-drop-and-feeding-hud.md` (aún no existe)
+**Estado:** Parcialmente aprobado: soltar comida e indicadores del jugador · **Versión:** 0.2 · **Fecha:** 2026-11-18
+**Spec:** [`specs/004-food-drop-and-feeding-hud.md`](../specs/004-food-drop-and-feeding-hud.md) · **Tareas:** [`tasks/004-food-drop-and-feeding-hud.md`](../tasks/004-food-drop-and-feeding-hud.md)
 **Se apoya en:** [`plans/001-zoo-survival.md`](001-zoo-survival.md) (`PlayerCarry`, `Feeder`, `FoodCrateDirector`, `Animal`) y [`plans/002-menus-and-onboarding.md`](002-menus-and-onboarding.md) (`InputGlyphs`, consejos, controles).
 
 ---
@@ -18,6 +18,7 @@
 | `Animal` | Hecho: estados, `feed()` con curación y animación de comer. **No tiene hambre todavía** | Depende de la Fase 4 de la 001 (`AnimalNeeds`, T-040 a T-042) |
 | `AnimalConfig` | Ya tiene `grace_period` (30 s) y `starvation_damage_per_second` | No hace falta un campo nuevo para la duración |
 | HUD (tarjetas de animales) | **No existe** (Fase 9 de la 001) | Las barras del HUD (RF-10) esperan a T-091 y T-092 |
+| Indicadores del jugador | Ahora existe `PlayerStatusHud` con barra de vida y cargador/reserva; no cubre aún el HUD completo RF-100 | Se conecta a `HealthComponent` y `EventBus.ammo_changed` |
 | Input map | `interact` existe (E + A / Cruz) | No se agrega ninguna acción nueva (RF-40) |
 
 > [!IMPORTANT]
@@ -27,7 +28,7 @@
 
 ### 2.1 Soltar la caja (RF-01 a RF-09)
 
-**`PlayerCarry.drop()`**: si está `CARRYING`, pasa a `ARMED` y emite `crate_dropped(position, transform)`. Es el opuesto de `consume()`, pero **no** alimenta.
+**`PlayerCarry.drop()`**: si está `CARRYING`, instancia `food_crate.tscn` en el primer punto libre frente al jugador (rayos a pared y suelo), registra la caja en `FoodCrateDirector`, pasa a `ARMED` y emite `crate_dropped`. Es el opuesto de `consume()`, pero **no** alimenta.
 
 **Prioridad de E (RF-05)** en `PlayerInteractor._unhandled_input`:
 
@@ -49,14 +50,18 @@ Así, junto a un comedero donde se puede alimentar, E alimenta. Si el comedero n
 
 `FoodCrate` gana `var is_dropped: bool` y `RigidBody3D`/colisión opcional: se coloca con un `PhysicsRayQuery` hacia adelante (RF-06) y otro hacia abajo para encontrar el suelo. Si el rayo frontal choca con geometría, se coloca justo antes del punto de choque.
 
-**`FoodCrateDirector`**: se suscribe a `crate_dropped`. Mantiene `_dropped: Array[FoodCrate]`. `active_count()` pasa a ser `_occupied.size() + _dropped.size()`. Al recoger una caja suelta se quita de `_dropped` y **no** se programa reaparición, porque el punto original ya reaparece solo (RF-04). El director no genera nuevas cajas mientras `active_count() >= max_active`.
+**`FoodCrateDirector`**: mantiene un registro de cajas sueltas. `active_count()` pasa a ser `_occupied.size() + _dropped_crates.size()`. Al recoger una caja suelta se quita del registro y **no** se programa reaparición, porque el punto original ya reaparece solo (RF-04). El director no genera nuevas cajas mientras `active_count() >= max_active`.
 
 **Efectos secundarios:**
 - Animación y sonido (RF-07): `ViewModel` ya oculta los brazos y muestra la caja al cargar. Se agrega un `Tween` corto (`drop_time`, 0.3 s) que baja la caja y la oculta, y bloquea el disparo durante ese tiempo con un `_is_dropping` en `PlayerCarry`.
 - Atracción (RF-09): al emitirse `player_carry_changed(false)`, el sistema `AnimalLure` (T-074 de la 001, aún sin hacer) deja de seguir al jugador. No requiere código extra aquí.
 - Muerte del jugador (RF-14 de la 001): sigue **perdiendo** la caja sin soltarla. Es un caso distinto y no cambia.
 
-### 2.2 Saturación (RF-20 a RF-23)
+### 2.2 Indicadores básicos del jugador (RF-50)
+
+`PlayerStatusHud` se agrega al `CanvasLayer` existente. Presenta vida actual/máxima con una barra y cargador/reserva de munición. Escucha `HealthComponent.health_changed` y `EventBus.ammo_changed`; consulta los valores actuales al iniciar para no depender de señales previas a su carga. El HUD completo (oleada, puntaje, temporizador y tarjetas de animales) queda para T-091/T-092 de la spec 001.
+
+### 2.3 Saturación (RF-20 a RF-23)
 
 La saturación es el **periodo de gracia** de `AnimalNeeds` (T-040). No hay un segundo temporizador.
 
@@ -72,7 +77,7 @@ La saturación es el **periodo de gracia** de `AnimalNeeds` (T-040). No hay un s
 
 `AnimalNeeds` corre con `PROCESS_MODE_PAUSABLE` (RF-23: sigue corriendo escapado o con el jugador muerto, y se detiene solo en pausa). La duración se lee de `AnimalConfig.grace_period` (RF-20). Si en el futuro se quiere distinguir el nombre, se agrega `saturation_duration` como alias; hoy no hace falta.
 
-### 2.3 Contador en el comedero (RF-30 a RF-37)
+### 2.4 Contador en el comedero (RF-30 a RF-37)
 
 `Feeder` gana un hijo `FeederTimer` (`Label3D`):
 
@@ -91,7 +96,7 @@ La saturación es el **periodo de gracia** de `AnimalNeeds` (T-040). No hay un s
 - `0 s` en rojo cuando la saturación está agotada (RF-33).
 - Se oculta con `visible = false` cuando el animal escapa (`animal_escaped`) o muere (`animal_died`); aparece de nuevo en `Feeder.attach()` cuando el animal es contenido (RF-35).
 
-### 2.4 Barras de vida y saturación sobre el animal (RF-11 a RF-15)
+### 2.5 Barras de vida y saturación sobre el animal (RF-11 a RF-15)
 
 Nueva escena `scenes/ui/world/animal_bars.tscn` (`Node3D`, hijo del animal):
 
@@ -108,7 +113,7 @@ Para evitar un `SubViewport` por barra (costo de render), cada barra es un `Mesh
 - Visibilidad: se oculta a más de `bars_visible_distance` (25 m) de la cámara, comparando la distancia en `_process` a baja frecuencia (cada 0.1 s). Se oculta si el animal murió (RF-14).
 - Accesibilidad (RF-15): cada barra lleva un icono (corazón y hoja) a la izquierda, además del color.
 
-### 2.5 Tarjeta del HUD (RF-10)
+### 2.6 Tarjeta del HUD (RF-10)
 
 Depende de T-091 y T-092 de la 001. Cuando exista `AnimalCard`, usa los mismos colores de `FeedingHudConfig` (`health_color` verde, `satiety_color` amarillo) para sus `ProgressBar`, con `StyleBoxFlat` creados desde el recurso. Se agrega la lectura numérica de segundos. Si el HUD aún no existe al implementar esta spec, la tarea se aplaza hasta la Fase 9 de la 001.
 

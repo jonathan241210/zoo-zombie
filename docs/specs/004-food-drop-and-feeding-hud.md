@@ -1,18 +1,21 @@
 # Spec 004: Soltar comida y HUD de alimentación
 
-**Estado:** Borrador, pendiente de aprobación · **Versión:** 0.1 · **Fecha:** 2026-11-18
-**Plan:** `plans/004-food-drop-and-feeding-hud.md` (aún no existe) · **Tareas:** `tasks/004-food-drop-and-feeding-hud.md` (aún no existe)
+**Estado:** Aprobada parcialmente: RF-01 a RF-09 y RF-50 · **Versión:** 0.2 · **Fecha:** 2026-11-18
+**Plan:** [`plans/004-food-drop-and-feeding-hud.md`](../plans/004-food-drop-and-feeding-hud.md) · **Tareas:** [`tasks/004-food-drop-and-feeding-hud.md`](../tasks/004-food-drop-and-feeding-hud.md)
 **Depende de:** [`specs/001-zoo-survival.md`](001-zoo-survival.md) y [`specs/002-menus-and-onboarding.md`](002-menus-and-onboarding.md)
 
 ---
 
 ## 1. Resumen
 
-Tres mejoras sobre la alimentación de los animales:
+Mejoras de interacción y HUD:
 
 1. El jugador puede **soltar la caja de comida con la misma tecla de interactuar (E)**.
-2. Cada animal muestra su **vida en verde** y su **saturación en amarillo**, en la tarjeta del HUD y flotando sobre el animal en el mundo 3D.
-3. Cada **comedero** muestra un **contador de segundos** con el tiempo que le queda a la saturación del animal, para saber cuándo volver a darle de comer.
+2. El HUD muestra la **vida del jugador** y la **munición actual y de reserva**.
+3. Cada animal muestra su **vida en verde** y su **saturación en amarillo**, en la tarjeta del HUD y flotando sobre el animal en el mundo 3D.
+4. Cada **comedero** muestra un **contador de segundos** con el tiempo que le queda a la saturación del animal, para saber cuándo volver a darle de comer.
+
+El usuario aprobó únicamente el descarte de comida (RF-01 a RF-09) y los indicadores básicos del jugador (RF-50). RF-10 en adelante sigue pendiente.
 
 Esta spec **amplía** RF-11, RF-25, RF-101 y RF-108 de la spec 001, y el RF-60 de la spec 002.
 
@@ -79,6 +82,7 @@ Esta spec **amplía** RF-11, RF-25, RF-101 y RF-108 de la spec 001, y el RF-60 d
 | RF-41 | La fila "Interactuar" de la tabla de controles se renombra a **"Interactuar (recoger, alimentar, soltar)"**. |
 | RF-42 | **Cómo jugar > Animales y comida** (RF-51 de la spec 002) explica que se puede soltar la caja con E y qué significan las barras verde y amarilla y el contador. |
 | RF-43 | Nuevo consejo contextual, una sola vez: **TIP-14**, primera vez que se carga una caja: "Pulsa [E] lejos de un comedero para soltar la caja." |
+| RF-50 | El HUD muestra la vida actual/máxima del jugador y el cargador/reserva de munición de la escopeta; se actualiza al cambiar la vida o munición. |
 
 ## 4. Valores configurables
 

@@ -6,6 +6,10 @@ extends Node
 enum State { ARMED, CARRYING }
 
 signal state_changed(new_state: State)
+signal crate_dropped(crate: FoodCrate)
+
+@export var food_crate_scene: PackedScene
+@export var food_crate_director: FoodCrateDirector
 
 var state: State = State.ARMED
 
@@ -41,6 +45,48 @@ func consume() -> bool:
 		return false
 	_set_state(State.ARMED)
 	return true
+
+
+## Drops the carried crate in front of the player. A dropped crate remains in the world
+## and is tracked by the director, so it can be picked up again without creating stock.
+func drop() -> bool:
+	if not is_carrying() or food_crate_scene == null or food_crate_director == null:
+		return false
+	var player := get_parent() as PlayerController
+	var camera := player.camera
+	var crate := food_crate_scene.instantiate() as FoodCrate
+	if crate == null:
+		return false
+	crate.set_dropped(true)
+	get_tree().current_scene.add_child(crate)
+	crate.global_position = _find_drop_position(player, camera)
+	crate.global_rotation.y = player.global_rotation.y
+	food_crate_director.register_dropped(crate)
+	_set_state(State.ARMED)
+	crate_dropped.emit(crate)
+	return true
+
+
+func _find_drop_position(player: PlayerController, camera: Camera3D) -> Vector3:
+	var space := player.get_world_3d().direct_space_state
+	var forward := -camera.global_basis.z
+	forward.y = 0.0
+	forward = forward.normalized()
+	var start := player.global_position + Vector3.UP * 0.65
+	var destination := start + forward * 1.1
+	var wall_query := PhysicsRayQueryParameters3D.create(start, destination, 1)
+	wall_query.exclude = [player.get_rid()]
+	var wall_hit := space.intersect_ray(wall_query)
+	if not wall_hit.is_empty():
+		destination = wall_hit["position"] - forward * 0.4
+	var ground_start := Vector3(destination.x, player.global_position.y + 2.0, destination.z)
+	var ground_end := ground_start + Vector3.DOWN * 4.0
+	var ground_query := PhysicsRayQueryParameters3D.create(ground_start, ground_end, 1)
+	ground_query.exclude = [player.get_rid()]
+	var ground_hit := space.intersect_ray(ground_query)
+	if not ground_hit.is_empty():
+		return ground_hit["position"]
+	return Vector3(destination.x, player.global_position.y, destination.z)
 
 
 func _on_player_died() -> void:

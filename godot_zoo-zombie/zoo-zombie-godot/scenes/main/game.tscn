@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/game.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/levels/zoo_level.tscn" id="2_level"]
@@ -12,6 +12,7 @@
 [ext_resource type="Resource" path="res://config/food_crate_config.tres" id="10_crate_config"]
 [ext_resource type="PackedScene" path="res://scenes/pickups/food_crate.tscn" id="11_crate"]
 [ext_resource type="PackedScene" path="res://scenes/ui/interaction_prompt.tscn" id="12_prompt"]
+[ext_resource type="PackedScene" path="res://scenes/ui/player_status_hud.tscn" id="13_status_hud"]
 
 [node name="Game" type="Node3D"]
 script = ExtResource("1_game")
@@ -32,8 +33,13 @@ crate_scene = ExtResource("11_crate")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
-[node name="InteractionPrompt" parent="HUD" node_paths=PackedStringArray("interactor") instance=ExtResource("12_prompt")]
+[node name="PlayerStatusHud" parent="HUD" node_paths=PackedStringArray("player", "shotgun") instance=ExtResource("13_status_hud")]
+player = NodePath("../../Player")
+shotgun = NodePath("../../Player/Shotgun")
+
+[node name="InteractionPrompt" parent="HUD" node_paths=PackedStringArray("interactor", "carry") instance=ExtResource("12_prompt")]
 interactor = NodePath("../../Player/PlayerInteractor")
+carry = NodePath("../../Player/PlayerCarry")
 
 [node name="PerfProbe" type="Node" parent="." node_paths=PackedStringArray("level", "player")]
 script = ExtResource("4_perf")

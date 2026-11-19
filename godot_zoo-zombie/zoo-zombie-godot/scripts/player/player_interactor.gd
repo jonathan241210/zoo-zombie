@@ -61,6 +61,12 @@ func _physics_process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed(&"interact") and focused != null and is_instance_valid(focused):
+	if not event.is_action_pressed(&"interact"):
+		return
+	if focused != null and is_instance_valid(focused):
 		focused.interact(_player)
+		get_viewport().set_input_as_handled()
+		return
+	var carry := _player.get_node_or_null("PlayerCarry") as PlayerCarry
+	if carry != null and carry.drop():
 		get_viewport().set_input_as_handled()

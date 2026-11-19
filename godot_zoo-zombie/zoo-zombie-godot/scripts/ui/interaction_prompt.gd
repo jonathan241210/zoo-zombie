@@ -5,6 +5,7 @@ extends Control
 ## Part of the HUD; the full HUD (phase 9) will host this widget.
 
 @export var interactor: PlayerInteractor
+@export var carry: PlayerCarry
 
 var _current: Interactable = null
 
@@ -16,6 +17,7 @@ var _current: Interactable = null
 func _ready() -> void:
 	visible = false
 	interactor.focus_changed.connect(_on_focus_changed)
+	carry.state_changed.connect(func(_state: PlayerCarry.State) -> void: _refresh())
 	InputGlyphs.device_changed.connect(func(_device: StringName) -> void: _refresh())
 
 
@@ -25,12 +27,16 @@ func _on_focus_changed(interactable: Interactable) -> void:
 
 
 func _refresh() -> void:
-	visible = _current != null and is_instance_valid(_current)
+	var has_interactable := _current != null and is_instance_valid(_current)
+	var show_drop := not has_interactable and carry.is_carrying()
+	visible = has_interactable or show_drop
 	if not visible:
 		return
-	var texture := InputGlyphs.get_glyph(_current.action)
+	var action: StringName = _current.action if has_interactable else &"interact"
+	var prompt_key := _current.prompt_key if has_interactable else "PROMPT_DROP"
+	var texture := InputGlyphs.get_glyph(action)
 	_glyph.texture = texture
 	_glyph.visible = texture != null
-	_key_label.text = "[%s]" % InputGlyphs.get_label(_current.action)
+	_key_label.text = "[%s]" % InputGlyphs.get_label(action)
 	_key_label.visible = texture == null
-	_text.text = tr(_current.prompt_key)
+	_text.text = tr(prompt_key)

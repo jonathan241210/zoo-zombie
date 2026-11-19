@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_controller"]
 [ext_resource type="Resource" path="res://config/player_config.tres" id="2_config"]
@@ -8,6 +8,9 @@
 [ext_resource type="Script" path="res://scripts/player/view_model.gd" id="6_viewmodel"]
 [ext_resource type="PackedScene" path="res://assets/models/weapons/fp_arms_shotgun.glb" id="7_arms"]
 [ext_resource type="PackedScene" path="res://assets/models/props/food_crate.glb" id="8_crate"]
+[ext_resource type="Script" path="res://scripts/weapons/shotgun.gd" id="9_shotgun"]
+[ext_resource type="Resource" path="res://config/shotgun_config.tres" id="10_shotgun_config"]
+[ext_resource type="PackedScene" path="res://scenes/pickups/food_crate.tscn" id="11_food_crate"]
 
 [sub_resource type="CapsuleShape3D" id="capsule"]
 radius = 0.35
@@ -50,8 +53,18 @@ visible = false
 [node name="HealthComponent" type="Node" parent="."]
 script = ExtResource("3_health")
 
-[node name="PlayerCarry" type="Node" parent="."]
+[node name="PlayerCarry" type="Node" parent="." node_paths=PackedStringArray("food_crate_director")]
 script = ExtResource("4_carry")
+food_crate_scene = ExtResource("11_food_crate")
+food_crate_director = NodePath("../../FoodCrateDirector")
+
+[node name="Shotgun" type="Node" parent="." node_paths=PackedStringArray("player", "carry", "camera", "view_model")]
+script = ExtResource("9_shotgun")
+config = ExtResource("10_shotgun_config")
+player = NodePath("..")
+carry = NodePath("../PlayerCarry")
+camera = NodePath("../Head/Camera3D")
+view_model = NodePath("../Head/Camera3D/ViewModel")
 
 [node name="PlayerInteractor" type="Area3D" parent="." node_paths=PackedStringArray("camera")]
 script = ExtResource("5_interactor")

@@ -14,11 +14,11 @@ Convenciones:
 
 ## Fase A: Soltar la caja (independiente)
 
-- [ ] T-D01 Agregar `PlayerCarry.drop()` y la señal `crate_dropped` — RF-01, RF-02
-- [ ] T-D02 Dar a `FoodCrate` el modo `is_dropped` (se recoge igual, sin reaparición) — RF-03
-- [ ] T-D03 Colocar la caja soltada con rayos hacia adelante y hacia el suelo, sin atravesar paredes — RF-06
-- [ ] T-D04 Respaldo de E en `PlayerInteractor`: si nada se puede activar y se carga una caja, soltarla; alimentar tiene prioridad — RF-01, RF-05
-- [ ] T-D05 `FoodCrateDirector`: contar las cajas sueltas en `active_count()` y no programar reaparición al recogerlas — RF-04
+- [x] T-D01 Agregar `PlayerCarry.drop()` y la señal `crate_dropped` — RF-01, RF-02
+- [x] T-D02 Dar a `FoodCrate` el modo `is_dropped` (se recoge igual, sin reaparición) — RF-03
+- [x] T-D03 Colocar la caja soltada con rayos hacia adelante y hacia el suelo, sin atravesar paredes — RF-06
+- [x] T-D04 Respaldo de E en `PlayerInteractor`: si nada se puede activar y se carga una caja, soltarla; alimentar tiene prioridad — RF-01, RF-05
+- [x] T-D05 `FoodCrateDirector`: contar las cajas sueltas en `active_count()` y no programar reaparición al recogerlas — RF-04
 - [ ] T-D06 Pruebas GUT: `drop()`, conteo del director y ausencia de reaparición; ampliar `test_feeding_flow.gd` (recoger, soltar, recoger, alimentar) — CA-01, CA-02, CA-03
 - [ ] T-D07 Verificar: soltar lejos y junto a un comedero, y contra una pared — CA-01, CA-02, CA-03
 
@@ -26,7 +26,7 @@ Convenciones:
 
 - [ ] T-D08 Animación breve de soltar (`drop_time`) en `ViewModel`, con bloqueo del disparo durante ese tiempo — RF-07
 - [ ] T-D09 Sonido de soltar y registro en `docs/assets.md` si es externo — RF-07
-- [ ] T-D10 [P] Aviso "Soltar (E)" en `InteractionPrompt` con el icono del dispositivo — RF-08
+- [x] T-D10 [P] Aviso "Soltar (E)" en `InteractionPrompt` con el icono del dispositivo — RF-08
 - [ ] T-D11 [P] Cambiar la fila de controles a "Interactuar (recoger, alimentar, soltar)" y agregar las claves de traducción — RF-41
 - [ ] T-D12 [P] Consejo TIP-14 y texto en Cómo jugar > Animales y comida — RF-42, RF-43
 - [ ] T-D13 Verificar con gamepad — CA-10, CA-11 (parcial)
@@ -65,3 +65,8 @@ Convenciones:
 - [ ] T-D31 Jugar con teclado y mouse y con gamepad: soltar, alimentar, ver barras y contador — CA-04, CA-11
 - [ ] T-D32 Comprobar que cambiar la duración y los colores en los `.tres` se refleja sin tocar el código — CA-09
 - [ ] T-D33 Revisar todos los criterios de aceptación CA-01 a CA-11
+
+## Alcance adicional aprobado: indicadores básicos del jugador
+
+- [x] T-D34 Mostrar vida actual/máxima del jugador y cargador/reserva en `PlayerStatusHud`, escuchando salud y munición — RF-50
+- [ ] T-D35 Verificar visualmente la vida y la munición en juego — RF-50

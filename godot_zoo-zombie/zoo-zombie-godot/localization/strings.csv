@@ -73,6 +73,7 @@ LANGUAGE_EN,English,English
 PROMPT_INTERACT,Interactuar,Interact
 PROMPT_PICK_UP,Recoger,Pick up
 PROMPT_FEED,Alimentar,Feed
+PROMPT_DROP,Soltar,Drop
 ANIMAL_GIRAFFE,Jirafa,Giraffe
 ANIMAL_ELEPHANT,Elefante,Elephant
 WAVE_LABEL,Oleada,Wave
