@@ -16,10 +16,14 @@ DIALOG_NO,No,No
 DIALOG_CONFIRM,Confirmar,Confirm
 DIALOG_CANCEL,Cancelar,Cancel
 DIALOG_BACK,Volver,Back
+CONTROLS_EXIT,Salir,Exit
 DIALOG_ACCEPT,Aceptar,Accept
 DIALOG_QUIT_CONFIRM,¿Seguro que quieres salir?,Are you sure you want to quit?
 DIALOG_RESTART_CONFIRM,¿Reiniciar la partida?,Restart the game?
 DIALOG_QUIT_TO_MENU_CONFIRM,¿Volver al menú principal?,Return to the main menu?
+TUTORIAL_TITLE,Antes de empezar,Before you start
+TUTORIAL_MESSAGE,"Tienes dos animales a tu cuidado: una jirafa y un elefante. Hay cajas de comida en el mapa; llévalas a sus comederos para alimentarlos. Evita que mueran de hambre o que los maten los zombis.","You care for two animals: a giraffe and an elephant. Food crates are scattered around the map; take them to their feeders. Keep the animals from starving or being killed by zombies."
+TUTORIAL_CONTINUE,Comenzar,Start
 DIALOG_WATCH_TUTORIAL,¿Ver el tutorial rápido?,Watch the quick tutorial?
 DIALOG_DONT_ASK_AGAIN,No volver a preguntar,Don't ask again
 DIALOG_KEEP_CHANGES,¿Mantener estos cambios?,Keep these changes?
@@ -79,6 +83,7 @@ ANIMAL_ELEPHANT,Elefante,Elephant
 ANIMAL_STATUS_WEAK,Débil,Weak
 WAVE_LABEL,Oleada,Wave
 HUD_SCORE,Puntaje,Score
+HUD_COINS,Monedas,Coins
 HUD_TIME,Tiempo,Time
 HUD_AMMO,Munición,Ammo
 HUD_HEALTH,Vida,Health
@@ -88,7 +93,7 @@ ACTION_LOOK,Mirar,Look
 ACTION_SPRINT,Correr,Sprint
 ACTION_FIRE,Disparar / Golpear,Fire / Strike
 ACTION_RELOAD,Recargar,Reload
-ACTION_INTERACT,Interactuar,Interact
+ACTION_INTERACT,"Interactuar (recoger, alimentar, soltar)","Interact (pick up, feed, drop)"
 ACTION_SWITCH_WEAPON,Cambiar arma,Switch weapon
 ACTION_SHOTGUN,Escopeta,Shotgun
 ACTION_AXE,Hacha,Axe
@@ -120,6 +125,8 @@ ACTION_UI_TAB_NEXT,Pestaña siguiente,Next tab
 ACTION_MINIMAP_ZOOM,Cambiar zoom del minimapa,Toggle minimap zoom
 MSG_CRATE_PICKED_UP,Recogiste comida: llévala a un comedero,Food picked up: take it to a feeder
 MSG_CRATE_DROPPED,Soltaste la caja de comida,You dropped the food crate
+MSG_FOOD_SUPPLY_EMPTY,No quedan cajas en las bodegas; llegará comida de nuevo pronto,No food crates are available; more supplies will arrive soon
+MSG_FOOD_SUPPLY_RESTORED,Hay una caja de comida disponible en una bodega,A food crate is available at a warehouse
 MSG_FED,Animal alimentado,Animal fed
 MSG_FED_GIRAFFE,Alimentaste a la jirafa,You fed the giraffe
 MSG_FED_ELEPHANT,Alimentaste al elefante,You fed the elephant

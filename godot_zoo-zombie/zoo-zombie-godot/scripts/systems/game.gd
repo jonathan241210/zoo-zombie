@@ -2,7 +2,7 @@ extends Node3D
 ## Root of a match: wires the level, player, enclosures, animals, food and ammo crates, then
 ## starts the match. Handles the player's death and respawn at the cafeteria (RF-80 to
 ## RF-83). The WaveManager runs the three waves and declares victory. Score and the
-## full HUD are added in phase 9.
+## coin balance and remaining HUD elements are managed by their own scene systems.
 
 ## Animals spawned at the start, each into the home enclosure named in its config.
 @export var animal_scenes: Array[PackedScene] = []
@@ -14,6 +14,7 @@ extends Node3D
 @onready var ammo_crates: AmmoSpawnDirector = $AmmoSpawnDirector
 @onready var zombies: ZombieSpawner = $ZombieSpawner
 @onready var waves: WaveManager = $WaveManager
+@onready var tutorial_popup: TutorialPopup = $HUD/TutorialPopup
 
 var _horde_sizes: Dictionary = {}  # animal_id -> zombies in its zombification horde
 
@@ -21,6 +22,7 @@ var _horde_sizes: Dictionary = {}  # animal_id -> zombies in its zombification h
 func _ready() -> void:
 	player.respawn_at(level.player_spawn.global_transform)
 	GameManager.start_match()
+	GameManager.set_paused(true)
 	var animals: Array[Animal] = []
 	var homes := PackedStringArray()
 	for scene in animal_scenes:
@@ -35,12 +37,15 @@ func _ready() -> void:
 	# Wired here: a NodePath from player.tscn to a node outside it cannot resolve.
 	(player.get_node("PlayerCarry") as PlayerCarry).food_crate_director = food_crates
 	ammo_crates.setup(level.get_ammo_spawns())
-	zombies.setup(level.get_zombie_spawns(), player, enclosures)
-	waves.setup(zombies)
 	for animal in animals:
 		_horde_sizes[animal.config.animal_id] = animal.config.death_horde_size
 	EventBus.animal_died.connect(_on_animal_died)
 	EventBus.player_died.connect(_on_player_died)
+	# Keep the world paused until the player has read the one-screen tutorial.
+	await tutorial_popup.continued
+	GameManager.set_paused(false)
+	zombies.setup(level.get_zombie_spawns(), player, enclosures)
+	waves.setup(zombies)
 
 
 ## RF-80 to RF-83: the match goes on; after a delay (paused with the game) the player

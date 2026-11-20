@@ -12,6 +12,5 @@ border_width = 2.0
 health_fill_color = Color(0.24, 0.78, 0.32, 1)
 weak_fill_color = Color(0.9, 0.2, 0.18, 1)
 bar_back_color = Color(0.08, 0.12, 0.08, 0.9)
-satiety_full_border_color = Color(1, 0.9, 0, 1)
-satiety_empty_border_color = Color(0.48, 0.43, 0.19, 1)
+bar_border_color = Color(0.03, 0.04, 0.03, 1)
 heart_color = Color(1, 0.3, 0.34, 1)

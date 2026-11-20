@@ -48,7 +48,6 @@ func _close_pause() -> void:
 
 
 func _show_controls() -> void:
-	_menu_panel.visible = false
 	_controls.open()
 
 

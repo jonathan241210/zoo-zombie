@@ -1,6 +1,6 @@
 # Plan técnico 002: Menús, configuración e instrucciones
 
-**Estado:** Borrador, pendiente de aprobación · **Versión:** 0.3 · **Fecha:** 2026-11-18
+**Estado:** Ampliación de Controles y tutorial breve aprobados; tutorial implementado; verificación pendiente; resto del plan en borrador · **Versión:** 0.5 · **Fecha:** 2026-11-20
 **Spec:** [`specs/002-menus-and-onboarding.md`](../specs/002-menus-and-onboarding.md) · **Tareas:** [`tasks/002-menus-and-onboarding.md`](../tasks/002-menus-and-onboarding.md)
 **Se apoya en:** [`plans/001-zoo-survival.md`](001-zoo-survival.md): `EventBus`, `GameManager`, input map y HUD.
 
@@ -48,6 +48,7 @@ scenes/ui/
 │   └── pause_menu.tscn
 ├── loading_screen.tscn
 ├── briefing.tscn
+├── tutorial_popup.tscn            # one-screen tutorial before waves start
 ├── tip_popup.tscn                 # contextual tip widget (in HUD layer)
 ├── wave_announcer.tscn            # wave / break / final wave banners
 └── widgets/{input_glyph.tscn, setting_slider.tscn, setting_option.tscn}
@@ -56,7 +57,7 @@ scripts/
 ├── autoload/{settings_manager.gd, input_glyphs.gd,
 │             tutorial_manager.gd, scene_loader.gd}
 ├── data/{tip_data.gd, tip_catalog.gd, how_to_play_page.gd}
-└── ui/menus/*.gd, ui/{briefing.gd, tip_popup.gd, wave_announcer.gd, loading_screen.gd}
+└── ui/menus/*.gd, ui/{briefing.gd, tutorial_popup.gd, tip_popup.gd, wave_announcer.gd, loading_screen.gd}
 
 config/
 ├── tips/tip_catalog.tres          # TIP-01..13: id, trigger, text key, priority, duration
@@ -100,11 +101,17 @@ Los marcadores `[action:x]` se sustituyen por el icono de `InputGlyphs` (`RichTe
 
 `get_tree().paused = true`. Los nodos de interfaz de pausa, consejos y diálogos usan `process_mode = PROCESS_MODE_ALWAYS`. Los sistemas de la 001 (`AnimalNeeds`, `WaveManager`) usan `PROCESS_MODE_PAUSABLE`, así que se detienen solos (CA-07). La desconexión del control se detecta con `Input.joy_connection_changed`.
 
+`TutorialPopup` se instancia en el HUD de `game.tscn`, pausa el árbol y muestra el resumen localizado de los dos animales, las cajas de comida y el peligro de hambre y zombis. `Game._ready()` prepara el nivel y los animales, pone `GameManager` en pausa, espera la señal `continued` y recién entonces reanuda el estado y configura `ZombieSpawner` y `WaveManager`; así el cronómetro de supervivencia tampoco avanza mientras el jugador lee. El botón **Comenzar** siempre procesa aunque el árbol esté pausado.
+
 ### 2.5 Navegación con gamepad
 
 - Cada pantalla define el primer control con foco (`grab_focus()` en `_ready` y al volver de una subpantalla).
 - Las acciones `ui_accept`, `ui_cancel`, `ui_left/right/up/down` y las nuevas `ui_tab_prev` y `ui_tab_next` se asignan a teclado y gamepad.
 - El tema define un estilo de foco muy visible.
+
+### 2.6 Ventana emergente de Controles
+
+`ControlsMenu` conserva una raíz de pantalla completa para recibir entrada y mostrar un fondo atenuado, pero su `PanelContainer` se limita a una ventana centrada con márgenes adaptables. La lista conserva todas las filas en un `ScrollContainer` compacto. Un botón **Salir** emite `back_requested`; `Esc` y `ui_cancel` hacen lo mismo. Los controladores de menú principal y pausa restauran su panel anterior y el foco.
 
 ## 3. Decisiones técnicas
 
@@ -112,8 +119,10 @@ Los marcadores `[action:x]` se sustituyen por el icono de `InputGlyphs` (`RichTe
 |---|---|
 | `ConfigFile` en `user://` para las opciones y el perfil; los controles son de solo consulta | Es nativo, legible y no requiere dependencias |
 | Iconos de controles de **Kenney Input Prompts** (CC0) | Cubre teclado, Xbox y PlayStation con estilo uniforme y licencia libre |
+| Controles como diálogo modal, con botón **Salir** | Permite consultar la tabla sin reemplazar visualmente toda la pantalla y deja claro cómo volver |
 | Textos con `TranslationServer` + CSV, español por defecto | Lo decidió el usuario (spec D-01): el español es el idioma principal y el inglés es opcional. Las claves de traducción van en inglés |
 | Consejos como datos (`.tres`) | Se agregan o cambian consejos sin programar (principio III de la constitución) |
+| Tutorial inicial como modal localizado | Explica el objetivo esencial antes de habilitar las oleadas y no requiere un nivel o flujo de menú aparte |
 
 ## 4. Fases de implementación
 
@@ -131,4 +140,4 @@ Se integran con las fases de la 001:
 ## 5. Pruebas
 
 - **Unitarias (GUT):** guardar y cargar en `SettingsManager`; cola y prioridad de `TutorialManager`, y que cada consejo se muestre una sola vez.
-- **Manuales:** recorrido completo solo con el gamepad (CA-01), cambio de resolución con reversión, y lectura a 720p y 4K.
+- **Manuales:** recorrido completo solo con el gamepad (CA-01), cambio de resolución con reversión, lectura a 720p y 4K, y apertura/cierre del diálogo de Controles desde menú principal y pausa (CA-11).

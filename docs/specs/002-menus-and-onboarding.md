@@ -1,6 +1,6 @@
 # Spec 002: Menús, configuración e instrucciones
 
-**Estado:** Borrador, pendiente de aprobación · **Versión:** 0.3 · **Fecha:** 2026-11-18
+**Estado:** Ampliación de Controles y tutorial breve aprobados; tutorial implementado; verificación pendiente; resto en borrador · **Versión:** 0.5 · **Fecha:** 2026-11-20
 **Plan:** [`plans/002-menus-and-onboarding.md`](../plans/002-menus-and-onboarding.md) · **Tareas:** [`tasks/002-menus-and-onboarding.md`](../tasks/002-menus-and-onboarding.md)
 **Depende de:** [`specs/001-zoo-survival.md`](001-zoo-survival.md)
 
@@ -14,7 +14,7 @@ Todo lo que rodea a la partida y le explica al jugador **qué hacer y cómo hace
 - Configuración de gráficos, audio, controles y accesibilidad.
 - Pantalla de **Cómo jugar**, con las reglas del juego: animales, comida, recintos, armas y oleadas.
 - Pantalla de **controles** para consultar todas las teclas y botones que usa el juego. En esta versión es informativa: no permite reasignar controles.
-- **Instrucciones dentro del juego**: un briefing antes de empezar, consejos contextuales la primera vez que ocurre algo y anuncios de oleada.
+- **Instrucciones dentro del juego**: un tutorial breve antes de empezar, consejos contextuales la primera vez que ocurre algo y anuncios de oleada.
 
 El objetivo es que un jugador nuevo entienda el dilema central (**combatir, alimentar o rescatar**) en sus primeros minutos, sin leer un manual.
 
@@ -33,7 +33,7 @@ El objetivo es que un jugador nuevo entienda el dilema central (**combatir, alim
 Inicio del juego
    └─► Pantalla de título ("Presiona cualquier tecla")
          └─► Menú principal
-               ├─► Jugar ──► Carga (con consejos) ──► Briefing ──► Partida
+               ├─► Jugar ──► Partida pausada + tutorial breve ──► Comenzar ──► Oleada 1
                │                                                   ├─► Pausa ──► (Continuar | Cómo jugar | Controles | Configuración | Reiniciar | Salir al menú)
                │                                                   └─► Victoria / Derrota ──► (Reiniciar | Menú principal)
                ├─► Cómo jugar
@@ -51,7 +51,7 @@ Inicio del juego
 |---|---|
 | RF-01 | Al abrir el juego aparece una **pantalla de título** con el logo "Zoo Zombie" sobre una escena de fondo del zoológico (cámara lenta recorriendo el mapa) y el texto "Presiona cualquier tecla" (o "Presiona cualquier botón" si se usa un control). |
 | RF-02 | El **menú principal** tiene estas opciones: **Jugar**, **Cómo jugar**, **Controles**, **Configuración**, **Créditos** y **Salir**. |
-| RF-03 | Al elegir **Jugar** por primera vez (o si los consejos están activos), antes de la partida se ofrece "¿Ver el tutorial rápido?" (sí / no / no volver a preguntar). Elegir "sí" abre **Cómo jugar**. |
+| RF-03 | Al elegir **Jugar**, se abre una ventana emergente con el tutorial breve antes de iniciar las oleadas. No se muestra una pregunta previa ni se abre la pantalla extensa de Cómo jugar. |
 | RF-04 | La opción **Salir** pide confirmación. |
 
 ### 4.2 Pantalla de carga
@@ -61,14 +61,14 @@ Inicio del juego
 | RF-10 | Mientras carga la partida se muestra una pantalla con barra de progreso y un **consejo aleatorio** de la lista de consejos (sección 6). |
 | RF-11 | La carga se hace en segundo plano: la pantalla no se congela. |
 
-### 4.3 Briefing (antes de empezar)
+### 4.3 Tutorial breve (antes de empezar)
 
 | ID | Requisito |
 |---|---|
-| RF-20 | Al cargar la partida aparece un **briefing** de una sola pantalla, con el juego pausado detrás. Resume el objetivo en 4 puntos con iconos: (1) sobrevive 3 oleadas, (2) lleva comida a la jirafa y al elefante, (3) protege sus recintos, (4) si un animal escapa, atráelo con comida a un refugio. |
-| RF-21 | El briefing muestra la **regla clave**: "Mientras cargas comida no puedes usar armas". |
-| RF-22 | Se cierra con la tecla o el botón de interactuar. Al cerrarse empieza una **cuenta regresiva** de 5 s (configurable) antes de la oleada 1, con el texto "Oleada 1 en camino". |
-| RF-23 | El briefing se muestra en cada partida nueva y puede saltarse de inmediato. |
+| RF-20 | Al cargar la partida aparece una ventana emergente compacta, con el juego pausado detrás. Informa que hay dos animales (jirafa y elefante), que hay cajas de comida en el mapa y que el jugador debe alimentarlos y evitar que mueran de hambre o los maten los zombis. |
+| RF-21 | El texto del tutorial es breve, de una sola pantalla, y está disponible en español e inglés mediante el sistema de traducciones. |
+| RF-22 | Un botón visible **Comenzar** cierra la ventana y después inicia la cuenta regresiva configurable antes de las oleadas. Hasta entonces no aparecen ni se activan zombis. |
+| RF-23 | El tutorial aparece al iniciar cada partida nueva y el jugador puede continuar cuando termine de leerlo. |
 
 ### 4.4 Consejos contextuales (tutorial integrado)
 
@@ -96,7 +96,7 @@ Estos requisitos amplían el RF-103 de la spec 001.
 | ID | Requisito |
 |---|---|
 | RF-50 | Es una pantalla con **secciones navegables** (pestañas o páginas). Cada sección tiene un título, 2 a 4 puntos breves y una ilustración o captura. |
-| RF-51 | Secciones: **Objetivo** (victoria y derrota), **Animales y comida** (barras de vida y alimento, alimentar), **Recintos** (integridad, destructores, escape, cansancio y recaptura con comida), **Armas** (escopeta, munición, cajas de munición que brillan en el mapa, hacha ilimitada, no usar armas mientras cargas comida), **Oleadas** (3 oleadas, descanso, zombis vivos que pasan a la siguiente, horda al morir un animal), **Puntuación** (qué da y qué quita puntos) y **HUD** (captura del HUD anotada con cada elemento). |
+| RF-51 | Secciones: **Objetivo** (victoria y derrota), **Animales y comida** (barras de vida y alimento, alimentar), **Recintos** (integridad, destructores, escape, cansancio y recaptura con comida), **Armas** (escopeta, munición, cajas de munición que brillan en el mapa, hacha ilimitada, no usar armas mientras cargas comida), **Oleadas** (3 oleadas, descanso, zombis vivos que pasan a la siguiente, horda al morir un animal), **Monedas** (recompensas y penalizaciones) y **HUD** (captura del HUD anotada con cada elemento). |
 | RF-52 | Se puede abrir desde el menú principal y desde la pausa. |
 
 ### 4.7 Controles
@@ -106,6 +106,7 @@ Estos requisitos amplían el RF-103 de la spec 001.
 | RF-60 | La pantalla **Controles** muestra todas las acciones de juego y menú en una tabla con columnas de teclado/mouse y gamepad; cada fila incluye descripción e iconos (sección 7). |
 | RF-61 | Se puede abrir la pantalla **Controles** desde el menú principal y desde el menú de pausa. |
 | RF-62 | La pantalla es informativa: muestra las asignaciones actuales, pero no permite reasignar teclas ni botones. La reasignación queda fuera de alcance por ahora. |
+| RF-63 | Controles se presenta como una ventana emergente centrada, compacta y claramente separada del fondo; no ocupa toda la pantalla. Debe incluir todas las acciones vigentes en una tabla desplazable, y un botón visible **Salir** que vuelve a la pantalla anterior. Esc y el botón de volver del gamepad también la cierran. |
 | RF-64 | Los iconos de controles en todo el juego (HUD, consejos, menús) se actualizan con la asignación actual y el último dispositivo usado (teclado, Xbox o PlayStation). |
 
 ### 4.8 Configuración
@@ -127,7 +128,7 @@ Este requisito amplía el RF-107 de la spec 001.
 |---|---|
 | RF-80 | Se abre con Esc o Start. Pausa el juego, incluidos los temporizadores de hambre y de oleada, y libera el mouse. |
 | RF-81 | Opciones: **Continuar**, **Cómo jugar**, **Controles**, **Configuración**, **Reiniciar** (con confirmación) y **Salir al menú** (con confirmación). |
-| RF-82 | La pausa muestra un **resumen rápido del estado**: oleada, tiempo, puntaje y estado de cada animal. |
+| RF-82 | La pausa muestra un **resumen rápido del estado**: oleada, tiempo, saldo de monedas y estado de cada animal. |
 | RF-83 | Si el control se desconecta durante la partida, el juego se pausa solo. |
 
 ### 4.10 Créditos
@@ -184,7 +185,7 @@ Los textos van en el archivo de traducción, en español (principal) y en inglé
 - El hacha nunca se queda sin munición, pero te obliga a acercarte.
 - Un animal cansado no puede huir: llega rápido con comida.
 - Los zombis que sobreviven a una oleada siguen en la siguiente.
-- Alimentar a un animal da más puntos que matar zombis.
+- Alimentar a un animal mantiene su vida y su saciedad; cada alimentación y cada zombi eliminado dan 5 monedas.
 - Si mueres, pierdes la comida que cargabas.
 
 ## 7. Controles por defecto
@@ -209,7 +210,7 @@ Los textos van en el archivo de traducción, en español (principal) y en inglé
 ## 8. Criterios de aceptación
 
 - **CA-01:** Desde el título se llega a una partida, y de ahí a la pausa y de vuelta al menú, usando **solo el gamepad**.
-- **CA-02:** El briefing aparece al iniciar la partida, se puede cerrar y da paso a la cuenta regresiva y la oleada 1.
+- **CA-02:** El tutorial aparece al iniciar la partida, se puede cerrar y da paso a la cuenta regresiva y la oleada 1.
 - **CA-03:** Cada consejo de la sección 6.1 aparece una sola vez, en su evento. Al desactivar los consejos no aparece ninguno. Al reiniciarlos vuelven a aparecer.
 - **CA-04:** Los anuncios de las oleadas 1, 2 y 3 (final) y del descanso aparecen con su texto y su cuenta regresiva.
 - **CA-05:** La pantalla Controles se abre desde el menú principal y la pausa y muestra todas las acciones, teclas y botones actualmente usados. No ofrece controles de reasignación.
@@ -218,10 +219,12 @@ Los textos van en el archivo de traducción, en español (principal) y en inglé
 - **CA-08:** **Cómo jugar** cubre todas las mecánicas de la spec 001: objetivo, animales, recintos, armas, oleadas, puntuación y HUD.
 - **CA-09:** Los créditos coinciden con el registro de licencias de `docs/assets.md`.
 - **CA-10:** Toda la interfaz se lee correctamente a 1280×720 y a 4K.
+- **CA-11:** Desde menú principal y pausa, Controles aparece como ventana emergente compacta, muestra todas las acciones (con desplazamiento si hace falta) y vuelve a la pantalla anterior mediante el botón **Salir**, Esc o el botón de volver del gamepad.
+- **CA-12:** Al pulsar Jugar aparece una ventana que explica que hay una jirafa y un elefante, que la comida está en cajas por el mapa y que hay que alimentarlos y protegerlos de zombis y hambre. El juego permanece pausado; al pulsar **Comenzar** desaparece el tutorial y empieza la secuencia previa a las oleadas.
 
 ## 9. Fuera de alcance
 
-- Tutorial guiado en un nivel aparte. Se aprende jugando, con consejos.
+- Tutorial guiado en un nivel aparte. El tutorial breve de una pantalla está incluido; el recorrido guiado queda fuera de alcance.
 - Perfiles de jugador múltiples y logros.
 - Más idiomas además de español e inglés.
 - Subtítulos de voces (el juego no tiene diálogos).
@@ -231,5 +234,5 @@ Los textos van en el archivo de traducción, en español (principal) y en inglé
 | ID | Tema | Supuesto por defecto | Estado |
 |---|---|---|---|
 | D-01 | Idioma de los textos del juego | **Español** por defecto, con opción de inglés | ✅ Confirmado (2026-11-17) |
-| D-02 | Tutorial | Se aprende jugando: briefing + consejos contextuales, sin nivel de tutorial aparte | ✅ Confirmado (2026-11-17) |
+| D-02 | Tutorial | Ventana breve al comenzar + consejos contextuales, sin nivel de tutorial aparte | ✅ Confirmado (2026-11-20) |
 | S-03 | Fondo del menú | Recorrido lento de cámara por el mapa real | Supuesto |

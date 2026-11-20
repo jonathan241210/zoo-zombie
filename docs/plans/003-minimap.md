@@ -1,6 +1,6 @@
 # Plan técnico 003: Minimapa
 
-**Estado:** Fases A y B1 aprobadas por solicitud del usuario · **Versión:** 0.2 · **Fecha:** 2026-11-18
+**Estado:** Fases A y B1, más puntos de bodegas, aprobados por solicitud del usuario · **Versión:** 0.3 · **Fecha:** 2026-11-20
 **Spec:** [`specs/003-minimap.md`](../specs/003-minimap.md) · **Tareas:** [`tasks/003-minimap.md`](../tasks/003-minimap.md)
 **Se apoya en:** [`plans/001-zoo-survival.md`](001-zoo-survival.md) (nivel, animales, cajas, recintos y HUD) y [`plans/002-menus-and-onboarding.md`](002-menus-and-onboarding.md) (`InputGlyphs` y pantalla informativa de controles).
 
@@ -26,19 +26,20 @@ El GLB estático del zoológico se pone en una capa visual dedicada al mapa; los
 
 | Archivo | Responsabilidad |
 |---|---|
-| `scripts/data/minimap_config.gd`, `config/minimap_config.tres` | Forma, tamaño, zoom, frecuencia, capas y opciones visuales configurables |
+| `scripts/data/minimap_config.gd`, `config/minimap_config.tres` | Forma, tamaño, zoom, frecuencia, capas y colores/radios configurables de iconos |
 | `scenes/ui/minimap.tscn`, `scripts/ui/minimap.gd` | Widget HUD; cámara, render, iconos, brújula, zoom y panel del mapa completo |
 | `shaders/minimap_circle.gdshader` | Máscara circular opcional para la textura del `SubViewport` |
 | `scripts/ui/minimap_marker.gd` | Datos y actualización de iconos de entidades; proyecta X/Z del mundo al panel |
 | `scripts/systems/map_objective_selector.gd` | Elige el objetivo más urgente a partir de estados publicados por los sistemas existentes |
 
-El widget recibe referencias explícitas del `Game` al `ZooLevel`, jugador, `FoodCrateDirector` y `EnclosureRegistry`. No descubre dependencias por rutas de nodos. Para entidades móviles usa grupos/registro y señales de alta/baja; los marcadores fijos leen los `Marker3D` del nivel.
+El widget recibe referencias explícitas del `Game` al `ZooLevel`, jugador, `FoodCrateDirector` y `EnclosureRegistry`. No descubre dependencias por rutas de nodos. Para entidades móviles usa grupos/registro y señales de alta/baja; los dos puntos fijos de bodega se leen de `Markers/FoodWarehouses`.
 
 ### 2.3 Coordenadas y modos
 
 - `map_radius` define los metros visibles desde el centro en el minimapa. El `Camera3D` ortográfico usa `size = map_radius * 2`.
 - Con el mapa giratorio, la cámara y los marcadores giran en sentido contrario al yaw del jugador; el icono de jugador apunta arriba. Con norte fijo, el fondo no gira y el icono rota según el yaw.
 - Los marcadores se colocan por transformación relativa al jugador y al yaw activo. Los objetivos fuera del círculo se limitan al borde y reciben una flecha; los marcadores informativos se ocultan fuera del radio.
+- Los dos puntos de bodega se dibujan en verde desde sus `Marker3D`; su ubicación se transforma con el mismo zoom y rotación que los animales.
 - Zoom y rotación se leen de `MinimapConfig`; el estado de presentación se conserva durante la partida. Persistir preferencias de usuario espera al `SettingsManager` completo de la spec 002.
 
 ### 2.4 Mapa completo e inputs
@@ -72,7 +73,7 @@ Además de los valores de la spec, se exponen: resolución interna del viewport,
 | D. Objetivos de supervivencia | Prioridad urgente, indicadores de hambre/escape/ataque y guía de ruta cuando haya datos | RF-20 a RF-25 |
 | E. Sistemas y accesibilidad | Munición/zombis, controles, traducciones, ajustes y rendimiento final | RF-14 a RF-16, RF-40 a RF-43 |
 
-La subfase **B1** implementa exclusivamente los puntos de jirafa y elefante. `Animal` anuncia su registro por `EventBus`; el overlay conserva las referencias y dibuja la posición en coordenadas relativas al jugador, con colores distintos y gris para animales muertos. Los puntos se limitan al área visible y siguen los dos niveles de zoom. Los estados débil y escapado quedan pendientes hasta que la lógica de animales los implemente.
+La subfase **B1** implementa los puntos de jirafa y elefante. `Animal` anuncia su registro por `EventBus`; el overlay conserva las referencias y dibuja la posición en coordenadas relativas al jugador, con colores distintos y gris para animales muertos. Los puntos verdes de las dos bodegas reutilizan sus marcadores fijos del nivel y se limitan al área visible. Ambos tipos de puntos siguen el zoom y la rotación.
 
 Cada fase termina con revisión manual de sus criterios antes de comenzar la siguiente. La Fase A no espera a IA de zombis ni a los sistemas de hambre.
 

@@ -34,7 +34,7 @@ Convenciones:
 ## Fase C: Saturación (depende de T-040 a T-042 de la 001)
 
 - [ ] T-D14 Crear `FeedingHudConfig` y `config/feeding_hud_config.tres` con colores, umbrales y distancias — CA-09
-- [ ] T-D15 `AnimalNeeds`: exponer `satiety_remaining`, `satiety_ratio()` y la señal `satiety_changed(ratio, seconds_left)` — RF-13, RF-20, RF-21
+- [x] T-D15 `AnimalNeeds`: conservar el temporizador interno de hambre sin emitir cambios de saciedad cada cuadro — RF-13, RF-20
 - [ ] T-D16 Reiniciar la saturación al alimentar, y mantenerla corriendo escapado o con el jugador muerto — RF-22, RF-23
 - [ ] T-D17 Pruebas GUT de la saturación: baja, se reinicia, llega a 0 y se detiene en pausa — CA-06
 - [ ] T-D18 Verificar la duración configurable en el `.tres` de cada animal — CA-06, CA-09
@@ -42,7 +42,7 @@ Convenciones:
 ## Fase D: Contador en el comedero
 
 - [ ] T-D19 Crear `FeederTimer` (`Label3D` con billboard y sin prueba de profundidad) como hijo de `Feeder` — RF-30, RF-31
-- [ ] T-D20 Conectarlo a `satiety_changed`: texto `27 s`, rojo y parpadeo bajo 10 s, `0 s` en rojo al agotarse — RF-32, RF-33
+- [ ] T-D20 Consultar el tiempo restante a baja frecuencia: texto `27 s`, rojo y parpadeo bajo 10 s, `0 s` en rojo al agotarse — RF-32, RF-33
 - [ ] T-D21 Reiniciarlo al alimentar y ocultarlo si el animal escapa o muere, mostrándolo de nuevo en el nuevo comedero — RF-34 a RF-36
 - [ ] T-D22 Claves de traducción del contador (`FEEDER_SECONDS`) — RF-37
 - [ ] T-D23 Verificar — CA-07, CA-08
@@ -74,8 +74,10 @@ Convenciones:
 ## Alcance adicional aprobado: corrección de Soltar y vida/saciedad de animales
 
 - [x] T-D36 Permitir que el respaldo `drop()` corra cuando el interactable enfocado rechaza la interacción — RF-01, RF-05
-- [x] T-D37 Añadir `AnimalHealthHudConfig` con radio, dimensiones y colores para vida/saciedad — RF-60 a RF-64
-- [x] T-D38 Añadir filas individuales cercanas, con corazón, nombre, relleno verde y borde amarillo dibujado aparte — RF-60 a RF-63
-- [x] T-D39 Conectar el color del borde a `AnimalNeeds.satiety_changed`, independiente de la vida — RF-64
-- [ ] T-D40 Verificar visualmente Soltar, distancia, varias filas, cambios de vida y respuesta del borde a la saciedad — CA-01, CA-02, CA-12 a CA-15
+- [x] T-D37 Mantener `AnimalHealthHudConfig` solo con distancia, tamaño y colores de vida/estado débil — RF-60 a RF-64
+- [x] T-D38 Mostrar filas cercanas con corazón, nombre y barra exclusiva de vida, sin borde de saciedad — RF-60 a RF-63
+- [x] T-D39 Desconectar la fila de `AnimalNeeds.satiety_changed` y retirar su dibujo manual continuo — RF-64
+- [ ] T-D40 Verificar visualmente Soltar, distancia, varias filas, actualización de vida y estabilidad al acercarse — CA-01, CA-02, CA-12 a CA-15
 - [x] T-D41 Corregir que E no soltaba la caja en la partida real: la referencia al `FoodCrateDirector` desde `player.tscn` no se resolvía; ahora la conecta `game.gd`. Prueba de regresión con la tecla E en `test_feeding_flow.gd` — RF-01, RF-04
+- [x] T-D42 Ajustar a 120 s el periodo configurable sin daño de hambre para ambos animales — RF-20, RF-22
+- [ ] T-D43 Comprobar en partida que alimentar reinicia los 120 s y que la vida solo baja al agotarse — CA-06

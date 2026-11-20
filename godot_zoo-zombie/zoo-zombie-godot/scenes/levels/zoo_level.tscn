@@ -91,25 +91,30 @@ rotation = Vector3(0, -1.898, 0)
 position = Vector3(-8.44, 1.5, 52.13)
 rotation = Vector3(0, -0.209, 0)
 
-[node name="FoodCrateSpawns" type="Node3D" parent="Markers"]
+[node name="FoodWarehouses" type="Node3D" parent="Markers"]
 
-[node name="Veterinaria" type="Marker3D" parent="Markers/FoodCrateSpawns"]
+[node name="VeterinaryWarehouse" type="Marker3D" parent="Markers/FoodWarehouses"]
 position = Vector3(-53.8, 1.6, 54.2)
 
-[node name="Administracion" type="Marker3D" parent="Markers/FoodCrateSpawns"]
-position = Vector3(-14.7, 1.6, -29.4)
-
-[node name="Tienda" type="Marker3D" parent="Markers/FoodCrateSpawns"]
+[node name="StoreWarehouse" type="Marker3D" parent="Markers/FoodWarehouses"]
 position = Vector3(0.35, 1.6, -46.4)
 
-[node name="KioscoEste" type="Marker3D" parent="Markers/FoodCrateSpawns"]
-position = Vector3(31.9, 1.6, -16.6)
+[node name="FoodCrateSpawns" type="Node3D" parent="Markers"]
 
-[node name="MiradorEste" type="Marker3D" parent="Markers/FoodCrateSpawns"]
-position = Vector3(31.2, 1.6, 4.4)
+[node name="WarehouseVeterinarySlotA" type="Marker3D" parent="Markers/FoodCrateSpawns"]
+position = Vector3(-54.5, 1.6, 54.2)
 
-[node name="SanitariosSur" type="Marker3D" parent="Markers/FoodCrateSpawns"]
-position = Vector3(-45, 1.6, 71.8)
+[node name="WarehouseVeterinarySlotB" type="Marker3D" parent="Markers/FoodCrateSpawns"]
+position = Vector3(-53.1, 1.6, 54.2)
+
+[node name="WarehouseStoreSlotA" type="Marker3D" parent="Markers/FoodCrateSpawns"]
+position = Vector3(-0.85, 1.6, -46.4)
+
+[node name="WarehouseStoreSlotB" type="Marker3D" parent="Markers/FoodCrateSpawns"]
+position = Vector3(0.35, 1.6, -47.6)
+
+[node name="WarehouseStoreSlotC" type="Marker3D" parent="Markers/FoodCrateSpawns"]
+position = Vector3(1.55, 1.6, -46.4)
 
 [node name="AmmoSpawns" type="Node3D" parent="Markers"]
 

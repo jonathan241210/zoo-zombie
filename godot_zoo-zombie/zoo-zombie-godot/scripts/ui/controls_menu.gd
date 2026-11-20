@@ -33,6 +33,7 @@ const CONTROL_ROWS: Array[Dictionary] = [
 @onready var _rows: VBoxContainer = %Rows
 @onready var _scroll: ScrollContainer = %Scroll
 @onready var _back_button: Button = %BackButton
+@onready var _panel: PanelContainer = %Panel
 @onready var _title: Label = %Title
 @onready var _action_header: Label = %ActionHeader
 @onready var _keyboard_header: Label = %KeyboardHeader
@@ -45,15 +46,27 @@ func _ready() -> void:
 	_action_header.text = tr("CONTROLS_ACTION")
 	_keyboard_header.text = tr("CONTROLS_KEYBOARD")
 	_gamepad_header.text = tr("CONTROLS_GAMEPAD")
-	_back_button.text = tr("DIALOG_BACK")
+	_back_button.text = tr("CONTROLS_EXIT")
 	_build_rows()
 	_back_button.pressed.connect(func() -> void: back_requested.emit())
 	InputGlyphs.device_changed.connect(_refresh_bindings)
+	get_viewport().size_changed.connect(_update_panel_layout)
+	_update_panel_layout()
 
 
 func open() -> void:
 	visible = true
+	_scroll.scroll_vertical = 0
 	_back_button.grab_focus()
+
+
+func _update_panel_layout() -> void:
+	var viewport_size := get_viewport_rect().size
+	var dialog_size := Vector2(minf(viewport_size.x * 0.84, 1120.0), minf(viewport_size.y * 0.88, 780.0))
+	_panel.offset_left = -dialog_size.x * 0.5
+	_panel.offset_top = -dialog_size.y * 0.5
+	_panel.offset_right = dialog_size.x * 0.5
+	_panel.offset_bottom = dialog_size.y * 0.5
 
 
 func _unhandled_input(event: InputEvent) -> void:

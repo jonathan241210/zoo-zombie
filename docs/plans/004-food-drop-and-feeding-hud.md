@@ -1,6 +1,6 @@
 # Plan técnico 004: Soltar comida y HUD de alimentación
 
-**Estado:** Soltar, HUD jugador, barra vida/saciedad y alimentación por vida aprobados · **Versión:** 0.4 · **Fecha:** 2026-11-19
+**Estado:** Soltar, HUD jugador, indicador de vida animal y periodo de hambre aprobados · **Versión:** 0.5 · **Fecha:** 2026-11-20
 **Spec:** [`specs/004-food-drop-and-feeding-hud.md`](../specs/004-food-drop-and-feeding-hud.md) · **Tareas:** [`tasks/004-food-drop-and-feeding-hud.md`](../tasks/004-food-drop-and-feeding-hud.md)
 **Se apoya en:** [`plans/001-zoo-survival.md`](001-zoo-survival.md) (`PlayerCarry`, `Feeder`, `FoodCrateDirector`, `Animal`) y [`plans/002-menus-and-onboarding.md`](002-menus-and-onboarding.md) (`InputGlyphs`, consejos, controles).
 
@@ -16,13 +16,13 @@
 | `FoodCrateDirector` | Hecho. Cuenta cajas activas por punto de aparición (`_occupied`) | Hay que contar también las cajas sueltas (RF-04) |
 | `Feeder` | Hecho. Se asocia al animal y valida `is_carrying` y `can_be_fed()` | Se agrega el contador 3D |
 | `Animal` | Tiene estados, `feed()` y `HealthComponent`; integra `AnimalNeeds` para saciedad, daño por hambre y muerte |
-| `AnimalConfig` | Ya tiene `grace_period` (30 s) y `starvation_damage_per_second` | No hace falta un campo nuevo para la duración |
+| `AnimalConfig` | Ya tiene `grace_period` y `starvation_damage_per_second` | El periodo de gracia se ajusta a 120 s en los dos `.tres` |
 | HUD (tarjetas de animales) | **No existe** (Fase 9 de la 001) | Las barras del HUD (RF-10) esperan a T-091 y T-092 |
 | Indicadores del jugador | Ahora existe `PlayerStatusHud` con barra de vida y cargador/reserva; no cubre aún el HUD completo RF-100 | Se conecta a `HealthComponent` y `EventBus.ammo_changed` |
 | Input map | `interact` existe (E + A / Cruz) | No se agrega ninguna acción nueva (RF-40) |
 
 > [!IMPORTANT]
-> Las barras flotantes y el contador completo de saciedad siguen pendientes. La barra próxima aprobada usa el contorno amarillo como lectura de saciedad; no agrega una segunda barra.
+> Las barras flotantes y el contador completo siguen pendientes. La fila próxima del HUD solo muestra vida y no representa la saciedad.
 
 ## 2. Arquitectura
 
@@ -63,11 +63,11 @@ La acción enfocada solo consume el evento si `Interactable.interact()` devuelve
 
 `PlayerStatusHud` se agrega al `CanvasLayer` existente. Presenta vida actual/máxima con una barra y cargador/reserva de munición. Escucha `HealthComponent.health_changed` y `EventBus.ammo_changed`; consulta los valores actuales al iniciar para no depender de señales previas a su carga. El HUD completo (oleada, puntaje, temporizador y tarjetas de animales) queda para T-091/T-092 de la spec 001.
 
-### 2.2.1 Vida y saciedad de animales cercanos en el HUD (RF-60 a RF-64)
+### 2.2.1 Vida de animales cercanos en el HUD (RF-60 a RF-64)
 
 Una escena `AnimalHealthHud` escucha `EventBus.animal_registered`, crea una fila para cada `Animal` y actualiza su visibilidad según la distancia al jugador. Las filas se apilan justo encima de `PlayerStatusHud` y muestran un corazón más una barra compacta independiente por animal.
 
-Cada fila conecta `HealthComponent.health_changed` y `AnimalNeeds.satiety_changed`; el `ProgressBar` interior usa relleno verde y su valor es exclusivamente la proporción de vida actual. Un `Control` de borde se dibuja aparte alrededor de la barra. Su color interpola suavemente de amarillo intenso a oliva apagado según la saciedad actual y vuelve a intenso al alimentar. No representa una segunda barra y no depende de la vida.
+Cada fila conecta `HealthComponent.health_changed` y `Animal.weak_changed`. El `ProgressBar` verde representa exclusivamente la vida. No hay borde de saciedad ni conexión con `AnimalNeeds`; así se evita que el HUD redibuje el borde continuamente por la señal de hambre. El temporizador de gracia permanece en `AnimalNeeds` y se reinicia al alimentar.
 
 Los valores de radio, tamaño, grosor y colores viven en `AnimalHealthHudConfig`. La lógica temporal y el daño por hambre viven en `AnimalNeeds` (Fase 4 de la spec 001), no en el HUD.
 
@@ -81,9 +81,10 @@ La saturación es el **periodo de gracia** de `AnimalNeeds` (T-040). No hay un s
 |---|---|
 | `satiety_remaining: float` | Segundos restantes de gracia |
 | `satiety_ratio() -> float` | `satiety_remaining / grace_period` (0 a 1) |
-| `signal satiety_changed(ratio, seconds_left)` | Se emite continuamente al bajar la saciedad y al alimentar |
 | `feed()` | Reinicia `satiety_remaining = grace_period` |
 | `tick(delta)` | Baja la saciedad y devuelve el daño de hambre que corresponda al llegar a 0 |
+
+El contador solo se conserva en la lógica; no emite una señal por cuadro. El HUD cercano ya no consume la saciedad. Si más adelante se implementa el contador del comedero, debe actualizarse a baja frecuencia.
 
 `AnimalNeeds` es lógica pura (`RefCounted`) y `Animal._physics_process()` avanza el temporizador, así se pausa con el árbol y sigue avanzando durante el resto de la partida. La duración se lee de `AnimalConfig.grace_period` (RF-20). El temporizador empieza lleno al inicio.
 
@@ -101,7 +102,7 @@ Al alimentar, `Animal` cura solo si le falta vida y siempre llama `needs.feed()`
 | `pixel_size` / `font_size` | Configurables |
 | Posición | Sobre el comedero; para el comedero elevado de la jirafa, sobre el soporte |
 
-`FeederTimer` se conecta a `animal.needs.satiety_changed`:
+`FeederTimer` consulta `animal.needs.satiety_remaining` a baja frecuencia:
 
 - Texto: `tr("FEEDER_SECONDS").format({s = seconds_left})`, por ejemplo `27 s`.
 - Rojo y parpadeo cuando `seconds_left < urgent_threshold` (10 s). El parpadeo es un `Tween` de `modulate:a`.
@@ -121,7 +122,7 @@ AnimalBars (Node3D, script animal_bars.gd)
 Para evitar un `SubViewport` por barra (costo de render), cada barra es un `MeshInstance3D` con un `QuadMesh` y un **shader simple** (`bar.gdshader`) con los uniforms `ratio`, `fill_color` y `back_color`. El billboard se activa con `billboard_mode` del `StandardMaterial3D`, o en el shader con `MODELVIEW_MATRIX`. Es una sola draw call por barra y se actualiza por `set_shader_parameter("ratio", x)`.
 
 - Vida: verde. Por debajo de `weak_threshold` pasa a rojo (RF-12). Se calcula con `HealthComponent.health_changed`.
-- Saturación: amarillo. Se actualiza con `AnimalNeeds.satiety_changed`. Parpadea al llegar a 0 (RF-13).
+- Hambre: no se dibuja en la fila cercana; las futuras barras 3D que se aprueben deberán leer el tiempo restante a baja frecuencia.
 - Visibilidad: se oculta a más de `bars_visible_distance` (25 m) de la cámara, comparando la distancia en `_process` a baja frecuencia (cada 0.1 s). Se oculta si el animal murió (RF-14).
 - Accesibilidad (RF-15): cada barra lleva un icono (corazón y hoja) a la izquierda, además del color.
 
@@ -164,9 +165,9 @@ scripts/
 ├── ui/world/animal_bars.gd       # NUEVO
 ├── ui/world/feeder_timer.gd      # NUEVO
 ├── data/feeding_hud_config.gd    # NUEVO
-├── data/animal_health_hud_config.gd # NUEVO: radio, dimensiones y desgaste del borde
+├── data/animal_health_hud_config.gd # NUEVO: radio, dimensiones y colores de vida
 ├── ui/animal_health_hud.gd       # NUEVO: filas próximas, seguimiento de vida/distancia
-├── ui/animal_health_indicator.gd # NUEVO: corazón, relleno verde y borde amarillo
+├── ui/animal_health_indicator.gd # NUEVO: corazón, nombre y barra de vida
 scenes/ui/world/animal_bars.tscn  # NUEVA
 shaders/bar.gdshader              # NUEVO
 config/feeding_hud_config.tres    # NUEVO
@@ -199,7 +200,7 @@ tests/test_player_carry.gd        # + drop()
 | **E** | `AnimalBars` flotantes con shader | C | CA-05 (parcial) |
 | **F** | Colores en la tarjeta del HUD | T-091 y T-092 de la 001 | CA-05 |
 | **G** | Verificación con teclado y gamepad, y FPS | A–F | CA-04, CA-09, CA-11 |
-| **H** | Indicadores compactos de vida animal en HUD con contorno amarillo que representa saciedad | Animal, HUD del jugador, `AnimalNeeds` | CA-12 a CA-15 |
+| **H** | Indicadores compactos de vida animal en HUD, sin visualización de saciedad | Animal, HUD del jugador | CA-12 a CA-15 |
 
 > [!NOTE]
 > El hambre gradual y la respuesta de alimentación de la Fase C están implementadas. El estado débil, contador, barras flotantes y verificación manual siguen pendientes. La Fase H usa el mismo `AnimalNeeds` y `HealthComponent`.
@@ -214,7 +215,7 @@ tests/test_player_carry.gd        # + drop()
 
 | Riesgo | Efecto | Mitigación |
 |---|---|---|
-| El estado débil y los indicadores completos de saciedad siguen pendientes | Las tarjetas y el contador 3D no están disponibles | El `AnimalNeeds` actual alimenta el contorno del HUD; completar esos elementos en sus fases aprobadas |
+| El estado débil, contador y barras flotantes siguen pendientes | Las tarjetas y el contador 3D no están disponibles | El hambre permanece en `AnimalNeeds`; futuras interfaces deben actualizarse a baja frecuencia |
 | Soltar la caja dentro de un recinto o fuera del mapa | La caja queda inalcanzable | Rayos de colocación y `NavigationServer`/`world` como respaldo; si no hay suelo, se vuelve a ARMADO y la caja reaparece en su punto |
 | Demasiadas cajas sueltas | Se acumulan y se saltan el máximo | Conteo en el director (RF-04) y no se genera reaparición adicional |
 | Barras y textos 3D con el máximo de zombis | Bajan los FPS | Shader sin `SubViewport`, visibilidad por distancia y actualización de baja frecuencia |

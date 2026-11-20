@@ -196,6 +196,7 @@ func feed() -> bool:
 		feeder.set_filled(true)
 	fed.emit()
 	EventBus.animal_fed.emit(config.animal_id)
+	EventBus.coins_earned.emit(config.feed_score)
 	_enter_state(State.EATING)
 	if feeder != null:
 		_target = feeder.get_eat_position()

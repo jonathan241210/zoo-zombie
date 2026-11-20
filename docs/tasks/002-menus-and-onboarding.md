@@ -32,19 +32,21 @@ Convenciones: `[ ]` pendiente · `[x]` hecha · `[P]` paralelizable. **Ninguna f
 - [ ] T-C03 Botón "Restaurar valores por defecto" por pestaña — RF-75
 - [x] T-C04 Crear `controls_menu.tscn`: tabla informativa de todas las acciones con asignaciones de teclado/mouse y gamepad, iconos y descripciones — RF-60, RF-62
 - [x] T-C05 Conectar la pantalla de controles desde el menú principal y el menú de pausa — RF-61
+- [x] T-C05a Convertir Controles en una ventana emergente compacta y adaptable con todas las filas en una tabla desplazable — RF-63
+- [x] T-C05b Agregar botón visible **Salir** y conservar cierre con Esc y botón de volver del gamepad; restaurar la pantalla y el foco anteriores — RF-63
 - [ ] T-C06 Aplicar sensibilidad, invertir Y, FOV, vibración e intensidad del retroceso en el jugador de la 001 — RF-72, RF-73
-- [ ] T-C07 Verificar — CA-05, CA-06
+- [ ] T-C07 Verificar — CA-05, CA-06, CA-11
 
 ## Fase D: Instrucciones dentro del juego (después de la Fase 8 de la 001)
 
-- [ ] T-D01 Crear `briefing.tscn`: 4 puntos con iconos, regla clave y cuenta regresiva para la oleada 1 — RF-20 a RF-23
+- [x] T-D01 Crear `tutorial_popup.tscn`: ventana de una pantalla que explica los dos animales, la comida del mapa y el peligro del hambre y los zombis — RF-20, RF-21
 - [ ] T-D02 Crear `wave_announcer.tscn`: oleada N/3, descanso con cuenta regresiva y consejo, oleada final — RF-40 a RF-43
 - [ ] T-D03 Crear `TipData` + `tip_catalog.tres` con TIP-01 a TIP-13 — §6.1 de la spec
 - [ ] T-D04 Crear el autoload `TutorialManager`: conexión de los disparadores, cola con prioridad y persistencia de los consejos vistos, con pruebas — RF-30 a RF-33
 - [ ] T-D05 Crear `tip_popup.tscn` con iconos de controles dentro del texto — RF-30, RF-64
 - [ ] T-D06 Opciones "Mostrar consejos" y "Reiniciar consejos" en Configuración — RF-34
-- [ ] T-D07 Pregunta "¿Ver el tutorial rápido?" al elegir Jugar — RF-03
-- [ ] T-D08 Verificar — CA-02, CA-03, CA-04
+- [x] T-D07 Integrar la ventana en el inicio de partida: pausar durante la lectura y configurar zombis/oleadas después de **Comenzar** — RF-03, RF-22, RF-23
+- [ ] T-D08 Verificar — CA-02 a CA-04 y CA-12
 
 ## Fase E: Cómo jugar y créditos (después de la Fase 9 de la 001)
 

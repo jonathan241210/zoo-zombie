@@ -12,7 +12,7 @@ extends Resource
 ## Whether direct attacks from the player can damage this animal.
 @export var player_damageable: bool = true
 ## Seconds without hunger damage after eating.
-@export var grace_period: float = 30.0
+@export var grace_period: float = 120.0
 @export var starvation_damage_per_second: float = 0.8
 @export var heal_per_feeding: float = 50.0
 ## Health ratio below which the animal is weak.
@@ -34,7 +34,7 @@ extends Resource
 @export var lure_radius: float = 8.0
 @export var follow_max_radius: float = 15.0
 @export var follow_distance: float = 2.5
-@export var feed_score: int = 150
+@export var feed_score: int = 5
 ## Ground speed (m/s) the walk/run animation clips were authored for, measured from the
 ## foot motion. Playback speed is scaled by actual_speed / anim_speed to avoid sliding.
 @export var walk_anim_speed: float = 2.07

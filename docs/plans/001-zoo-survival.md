@@ -1,6 +1,6 @@
 # Plan técnico 001: Supervivencia en el zoológico
 
-**Estado:** Fase 4 aprobada para implementación; resto del plan en borrador · **Versión:** 0.3 · **Fecha:** 2026-11-19
+**Estado:** Fase 4, monedas, bodegas de alimento e indicador de vida aprobados; implementación en curso · **Versión:** 0.6 · **Fecha:** 2026-11-20
 **Spec:** [`specs/001-zoo-survival.md`](../specs/001-zoo-survival.md) · **Tareas:** [`tasks/001-zoo-survival.md`](../tasks/001-zoo-survival.md)
 
 ---
@@ -40,7 +40,7 @@ No existe ningún sistema: ni movimiento, armas, enemigos, navegación, vida, es
 | `REC_HEX_SUR_5` | (-10.0, -55.3) | 12 × 10 m | Refugio |
 | `EST_CAFETERIA` | (19.3, -8.7) | 11 × 9 m | Aparición del jugador |
 | `EST_ENTRADA_PORTICO` | (-9.8, 64.4) | 18 × 3 m | Candidato para aparición de zombis |
-| `EST_VETERINARIA`, `EST_ADMINISTRACION`, `EST_TIENDA`, `EST_KIOSCO_ESTE`, `EST_MIRADOR_ESTE`, `EST_SANITARIOS_*` | varias | — | Candidatos para puntos de cajas de alimento |
+| `EST_TIENDA`, `EST_VETERINARIA` | ubicaciones existentes | — | Dos bodegas de alimento; ambas quedan a más de 45 m del recinto más cercano y a más de 55 m del punto de aparición |
 
 La distancia entre la jirafa y el elefante es de ~66 m.
 
@@ -135,7 +135,7 @@ zoo-zombie-godot/
 
 | Autoload | Responsabilidad |
 |---|---|
-| `EventBus` | Solo declara señales globales: `zombie_killed`, `animal_fed(animal_id)`, `animal_state_changed(animal_id, state)`, `animal_escaped(animal_id)`, `animal_recaptured(animal_id, enclosure)`, `animal_died(animal_id, position)`, `enclosure_damaged(enclosure)`, `enclosure_destroyed(enclosure)`, `player_died`, `player_respawned`, `wave_started(index)`, `wave_break_started(index)`, `game_won(stats)`, `game_lost(stats)`, `ammo_changed(mag, reserve)`, `score_changed(score)`, `zombie_count_changed(alive, pending)` |
+| `EventBus` | Solo declara señales globales: `zombie_killed`, `coins_earned(amount)`, `animal_fed(animal_id)`, `animal_state_changed(animal_id, state)`, `animal_escaped(animal_id)`, `animal_recaptured(animal_id, enclosure)`, `animal_died(animal_id, position)`, `enclosure_damaged(enclosure)`, `enclosure_destroyed(enclosure)`, `player_died`, `player_respawned`, `wave_started(index)`, `wave_break_started(index)`, `game_won(stats)`, `game_lost(stats)`, `ammo_changed(mag, reserve)`, `ammo_collected(amount)`, `score_changed(coins)`, `zombie_count_changed(alive, pending)` |
 | `GameManager` | Estado global de la partida (`PLAYING`, `PAUSED`, `WON`, `LOST`), tiempo, estadísticas, animales vivos (derrota cuando son 0) y reinicio |
 
 `WaveManager`, `ScoreManager` y `EnclosureRegistry` son nodos dentro de `game.tscn`. Su ciclo de vida queda atado a la partida y reiniciar es solo recargar la escena.
@@ -166,15 +166,15 @@ zoo-zombie-godot/
 | **Zombis de prueba** | Hasta que exista `WaveManager` (Fase 8), `ZombieSpawner.test_zombie_count` crea zombis ya alertados en los puntos del perímetro al empezar la partida |
 | **Zombificación** | `ZombieSpawner` escucha `animal_died` y genera la horda extra en esa posición, respetando el máximo de vivos. Los zombis que no caben se encolan |
 | **Comederos** | Un `Feeder` por animal, con un `Interactable` que acepta la caja si el jugador está `CARRYING` y el animal está contenido. El de la jirafa es elevado y el del elefante es bajo |
-| **Cajas** | `FoodCrateSpawn` (marcador) + coordinador de reaparición y máximo de cajas activas |
+| **Cajas** | `FoodCrateDirector` llena cinco puntos fijos agrupados en las bodegas de Tienda (3) y Veterinaria (2). Tras recoger cajas las repone de una en una cada 30 s (configurable en `food_crate_config.tres`), con máximo global de cinco y avisos de agotamiento/reposición por `EventBus` |
 | **Munición** | `AmmoPickup` (`Area3D`) que se recoge al contacto. Hay dos fuentes: lo que sueltan los zombis (según su probabilidad) y `AmmoSpawnDirector`, que reparte cajas al azar entre los `Marker3D` de `Markers/AmmoSpawns` del nivel (sin clase propia, igual que los puntos de cajas de comida) (activas a la vez, reaparición y un punto distinto al anterior). Las cajas del mapa llevan una `OmniLight3D` con pulso (Tween de `light_energy`) y un material emisivo para que se distingan a distancia |
 | **Sonidos y efectos** | `Sfx` (estático) crea reproductores de un solo uso en el bus `SFX` que se liberan al terminar. `HitEffects.spawn_impact()` dibuja la chispa de impacto de ambas armas. Los WAV provisionales se generan con `tools/generate_sfx.py` (síntesis propia) y se pueden reemplazar por grabaciones sin tocar código |
 | **Oleadas** | `WaveManager` + `WaveSchedule` (lógica pura del cronograma: cuenta regresiva → oleada → descanso → … → terminado; devuelve cuántos zombis toca crear en cada paso). El `WaveManager` reparte destructores según la proporción de la oleada de forma determinista, publica `wave_started`, `wave_break_started` y `zombie_count_changed`, y llama a `GameManager.finish_victory()` al terminar la oleada 3 si queda un animal vivo. `WaveHud` muestra oleada, tiempo y contador. `ZombieSpawner` aplica el intervalo, el máximo de vivos, la proporción de destructores y los multiplicadores. Los zombis vivos persisten entre oleadas |
-| **Puntuación** | `ScoreManager` escucha al `EventBus` y aplica `ScoreConfig`, sin bajar de 0 |
-| **HUD** | `CanvasLayer` que solo escucha señales. Muestra una tarjeta por animal (vida, integridad del recinto y estado) y marcadores en pantalla hacia los animales escapados y los refugios libres |
+| **Monedas** | `ScoreManager` escucha `zombie_killed`, `coins_earned`, `animal_recaptured`, `player_died` y `animal_died`; suma/resta las cantidades configurables de `ScoreConfig`/`AnimalConfig`, nunca baja de 0 y emite `score_changed`. Se usa un único saldo de monedas, sin gasto en esta versión |
+| **HUD** | `CanvasLayer` que solo escucha señales. Muestra vida, munición y monedas; además una tarjeta por animal (vida, integridad del recinto y estado) y marcadores en pantalla hacia los animales escapados y los refugios libres |
 | **Mensajes de acción** | `ActionFeed` (`scenes/ui/action_feed.tscn`) en el HUD: solo escucha señales de `EventBus` (`food_crate_picked_up`, `food_crate_dropped`, `ammo_collected`, `ammo_reserve_full`, `weapon_empty`, `action_blocked`, `animal_fed`, `animal_weak_changed`, `animal_died`, `weapon_changed`, `player_died` y `player_respawned`) y las convierte en textos traducidos. `ActionFeedConfig` define duración, desvanecido, máximo visible, tiempo antes de repetir y colores por tipo. Los mensajes de un animal usan claves por especie (`MSG_FED_GIRAFFE`) para concordar el artículo en español |
 
-En la Fase 4, `AnimalNeeds` mantiene el temporizador de saciedad independiente de `HealthComponent`. Empieza lleno para dar el periodo inicial configurable. Alimentar cura solo si la vida está por debajo del máximo, pero siempre reinicia la saciedad. Al agotarse la saciedad, `AnimalNeeds` aplica daño gradual. La interfaz usa el borde amarillo de la barra como lectura de saciedad (intenso lleno, apagado vacío); el relleno verde sigue la vida.
+En la Fase 4, `AnimalNeeds` mantiene el temporizador de hambre independiente de `HealthComponent`. Empieza lleno para dar el periodo de gracia configurable de 120 s. Alimentar cura solo si la vida está por debajo del máximo, pero siempre reinicia el temporizador. Al agotarse, `AnimalNeeds` aplica daño gradual. La fila próxima del HUD muestra solo vida y no dibuja saciedad.
 
 El comedero expone `State.EMPTY` al iniciar, `State.FULL` después de alimentarlo y vuelve a `EMPTY` al agotarse la saciedad. Sus señales son el contrato que consumirá la entrega visual de la spec 006; los modelos actuales aún contienen comida estática.
 
@@ -310,6 +310,8 @@ La Fase 5 puede avanzar en paralelo con la 3 y la 4.
 - **Rendimiento:** monitor de Godot en el mapa completo con 16 zombis.
 
 ## 6. Riesgos
+
+La reparación de recintos se reserva para una funcionalidad futura. Antes de implementarla se definirá en una spec si se reparan recintos dañados, destruidos o ambos, y qué costo, materiales y tiempo requiere.
 
 | Riesgo | Impacto | Mitigación |
 |---|---|---|

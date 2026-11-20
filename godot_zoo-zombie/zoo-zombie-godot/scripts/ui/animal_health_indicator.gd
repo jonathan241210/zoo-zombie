@@ -7,9 +7,7 @@ var animal: Animal
 var config: AnimalHealthHudConfig
 
 var _health_bar: ProgressBar
-var _frame: Control
 var _weak_label: Label
-var _border_color: Color
 
 
 func configure(source_animal: Animal, hud_config: AnimalHealthHudConfig) -> void:
@@ -36,24 +34,16 @@ func _ready() -> void:
 	animal_name.add_theme_font_size_override("font_size", 13)
 	add_child(animal_name)
 
-	_frame = Control.new()
-	_frame.custom_minimum_size = Vector2(config.bar_width, config.bar_height)
-	_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_border_color = config.satiety_full_border_color
-	_frame.draw.connect(_draw_border)
-	add_child(_frame)
-
 	_health_bar = ProgressBar.new()
-	_health_bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_health_bar.offset_left = config.border_width
-	_health_bar.offset_top = config.border_width
-	_health_bar.offset_right = -config.border_width
-	_health_bar.offset_bottom = -config.border_width
+	_health_bar.custom_minimum_size = Vector2(config.bar_width, config.bar_height)
 	_health_bar.show_percentage = false
 	_health_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_health_bar.add_theme_stylebox_override("background", _make_style(config.bar_back_color))
+	var background := _make_style(config.bar_back_color)
+	background.set_border_width_all(roundi(config.border_width))
+	background.border_color = config.bar_border_color
+	_health_bar.add_theme_stylebox_override("background", background)
 	_health_bar.add_theme_stylebox_override("fill", _make_style(config.health_fill_color))
-	_frame.add_child(_health_bar)
+	add_child(_health_bar)
 
 	_weak_label = Label.new()
 	_weak_label.text = tr("ANIMAL_STATUS_WEAK")
@@ -65,29 +55,15 @@ func _ready() -> void:
 
 	if animal != null:
 		animal.health.health_changed.connect(_on_health_changed)
-		animal.needs.satiety_changed.connect(_on_satiety_changed)
 		animal.weak_changed.connect(_on_weak_changed)
 		_on_weak_changed(animal.is_weak)
 		_on_health_changed(animal.health.current_health, animal.health.max_health)
-		_on_satiety_changed(animal.needs.satiety_ratio(), animal.needs.satiety_remaining)
-
-
-func _on_satiety_changed(ratio: float, _seconds_remaining: float) -> void:
-	_border_color = config.satiety_empty_border_color.lerp(
-		config.satiety_full_border_color, clampf(ratio, 0.0, 1.0))
-	_frame.queue_redraw()
 
 
 func _on_weak_changed(is_weak: bool) -> void:
 	_weak_label.visible = is_weak
 	var fill := config.weak_fill_color if is_weak else config.health_fill_color
 	_health_bar.add_theme_stylebox_override("fill", _make_style(fill))
-
-
-func _draw_border() -> void:
-	if _frame == null:
-		return
-	_frame.draw_rect(Rect2(Vector2.ZERO, _frame.size), _border_color, false, config.border_width)
 
 
 func _on_health_changed(current: float, maximum: float) -> void:

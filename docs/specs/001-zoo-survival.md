@@ -1,6 +1,6 @@
 # Spec 001: Supervivencia en el zoológico
 
-**Estado:** Fase 4 aprobada para implementación; resto del documento en borrador · **Versión:** 0.3 · **Fecha:** 2026-11-19
+**Estado:** Fase 4, monedas, suministro de comida e indicador de vida animal aprobados; implementación en curso · **Versión:** 0.6 · **Fecha:** 2026-11-20
 **Plan:** [`plans/001-zoo-survival.md`](../plans/001-zoo-survival.md) · **Tareas:** [`tasks/001-zoo-survival.md`](../tasks/001-zoo-survival.md)
 
 ---
@@ -50,7 +50,7 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 - **HU-04:** Como jugador, quiero ver la vida de cada animal y el estado de su recinto para decidir qué atender primero.
 - **HU-05:** Como jugador, quiero recoger la munición que sueltan los zombis para seguir combatiendo.
 - **HU-06:** Como jugador, quiero reaparecer al morir sin perder la partida, para seguir protegiendo a los animales.
-- **HU-07:** Como jugador, quiero ver la oleada actual, el tiempo y mi puntaje para saber cómo voy.
+- **HU-07:** Como jugador, quiero ver la oleada actual, el tiempo y mi saldo de monedas para saber cómo voy.
 - **HU-08:** Como jugador, quiero atraer con comida a un animal que escapó y llevarlo a otro recinto para salvarlo.
 - **HU-09:** Como jugador, quiero una pantalla de victoria o derrota con estadísticas al terminar la partida.
 
@@ -71,11 +71,12 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 
 | ID | Requisito |
 |---|---|
-| RF-10 | Hay cajas de alimento en varios puntos de aparición del mapa, configurables. |
+| RF-10 | Hay exactamente **dos bodegas de alimento** en edificios alejados de todos los recintos y del punto de aparición del jugador. Cada bodega agrupa varios puntos de cajas. |
 | RF-11 | Al acercarse a una caja aparece la indicación "Recoger (E)". Al interactuar, el jugador la toma y pasa a **CARGANDO**. |
 | RF-12 | Solo se puede cargar una caja a la vez. **Cualquier caja sirve para cualquier animal.** |
-| RF-13 | Cuando se recoge una caja, su punto de aparición genera otra después de un tiempo configurable. Hay un máximo configurable de cajas activas en el mapa. |
-| RF-14 | Si el jugador muere mientras carga una caja, la caja **se pierde**. Su punto de aparición vuelve a generarla después del tiempo configurado. |
+| RF-13 | Hay cinco cajas disponibles al comenzar, distribuidas entre las dos bodegas. Cada caja recogida queda en una cola global de reposición: tras el tiempo configurable aparece **una sola caja por intervalo**, en un punto libre de cualquiera de las bodegas. Nunca se supera el máximo de cinco cajas en el mapa, soltadas o cargadas por el jugador. |
+| RF-14 | Si el jugador muere mientras carga una caja, la caja **se pierde** y se suma una reposición a la cola global (RF-13). |
+| RF-15 | Cuando no queda ninguna caja disponible en las bodegas, el jugador recibe un aviso. Al reaparecer una caja, recibe un aviso de que hay comida disponible otra vez. |
 
 ### 5.3 Animales: hambre y alimentación
 
@@ -86,7 +87,7 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 | RF-22 | La saciedad empieza llena al iniciar la partida y se reinicia después de comer. El animal tiene un **periodo de gracia** configurable sin perder vida por hambre; la saciedad baja de forma continua. Al terminar ese periodo, pierde vida de forma continua a una tasa configurable (vida por segundo). |
 | RF-23 | El temporizador de inanición corre durante **toda la partida**, aunque el animal esté escapado y aunque el jugador esté muerto. Solo se detiene en pausa. |
 | RF-24 | Cada animal tiene su propio **comedero**, que siempre está en el recinto donde el animal vive en ese momento. El de la jirafa es elevado, sobre un poste o soporte alto; el del elefante es bajo, a nivel del suelo. |
-| RF-25 | Si el jugador está **CARGANDO** cerca del comedero de un animal contenido, aparece la indicación "Alimentar (E)". Al interactuar: la caja se consume; si al animal le falta vida, la recupera en la cantidad configurable sin exceder el máximo; si tiene la vida completa, no se cura. En ambos casos se reinicia la saciedad. Se reproduce la animación de comer, se suman puntos y el jugador vuelve a **ARMADO**. |
+| RF-25 | Si el jugador está **CARGANDO** cerca del comedero de un animal contenido, aparece la indicación "Alimentar (E)". Al interactuar: la caja se consume; si al animal le falta vida, la recupera en la cantidad configurable sin exceder el máximo; si tiene la vida completa, no se cura. En ambos casos se reinicia la saciedad. Se reproduce la animación de comer, se agregan monedas y el jugador vuelve a **ARMADO**. |
 | RF-26 | Un animal escapado **no se puede alimentar** hasta que vuelva a estar en un recinto. |
 | RF-27 | Cuando la vida del animal baja de un umbral configurable (% de vida), pasa al estado **DÉBIL**: animación propia, movimiento más lento y alerta en el HUD. |
 | RF-28 | El daño causado por armas del jugador no reduce la vida de la jirafa. La propiedad se configura por especie para permitir excepciones futuras. |
@@ -98,7 +99,7 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 |---|---|
 | RF-30 | Cada recinto ocupado por un animal tiene **integridad** (vida del recinto), con máximo configurable. |
 | RF-31 | Mientras el recinto esté intacto, los zombis **no pueden entrar** ni dañar al animal que está dentro. |
-| RF-32 | Los zombis pueden golpear el recinto (daño y frecuencia configurables). Al llegar a 0 de integridad, el recinto queda **destruido** durante el resto de la partida: no se puede reparar. |
+| RF-32 | Los zombis pueden golpear el recinto (daño y frecuencia configurables). Al llegar a 0 de integridad, el recinto queda **destruido** durante el resto de la partida. En esta versión no se repara; una futura versión definirá la mecánica de reparación. |
 | RF-33 | Al destruirse el recinto, el animal **escapa** (ver 5.5). Su comedero queda inutilizable hasta que el animal tenga un nuevo recinto. |
 | RF-34 | Hay **recintos de refugio**: una lista configurable de recintos libres que pueden recibir a un animal escapado. Un refugio ocupado se comporta como cualquier recinto: tiene integridad y los zombis pueden atacarlo. |
 | RF-35 | Un recinto solo puede contener un animal a la vez. |
@@ -120,7 +121,7 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 | ID | Requisito |
 |---|---|
 | RF-47 | Si un animal llega a 0 de vida, por hambre o por ataques, **muere** y **se zombifica**: aparece una horda extra de zombis (cantidad configurable) en su posición. La señal y la posición se publican antes de eliminar al animal tras su animación de muerte (RF-29). |
-| RF-48 | La muerte de un animal resta puntos (penalización configurable) y deja ese animal fuera del resto de la partida. |
+| RF-48 | La muerte de un animal resta monedas (penalización configurable) y deja ese animal fuera del resto de la partida. |
 | RF-49 | Si mueren **ambos** animales, la partida termina en **derrota**. |
 
 ### 5.7 Combate: escopeta, hacha y munición
@@ -133,7 +134,7 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 | RF-53 | Cada disparo tiene animación, fogonazo, retroceso de cámara y sonido. Al impactar un zombi hay respuesta visual. |
 | RF-54 | Los disparos tienen cadencia limitada (tiempo mínimo entre disparos configurable). |
 | RF-55 | Al morir, un zombi puede soltar una caja de munición (probabilidad y cantidad configurables). |
-| RF-56 | El jugador recoge la munición automáticamente al pasar sobre ella, si su reserva no está llena. La recogida no da puntos en principio (configurable). |
+| RF-56 | El jugador recoge la munición automáticamente al pasar sobre ella, si su reserva no está llena. La recogida no da monedas en principio (configurable). |
 | RF-57 | La munición soltada desaparece después de un tiempo configurable. |
 | RF-58 | **Munición en el mapa:** hay una lista configurable de puntos candidatos. Al iniciar la partida se eligen al azar algunos de ellos (cantidad activa configurable) y se coloca una caja de munición en cada uno. Al recogerla, después de un tiempo configurable aparece otra en un punto candidato libre elegido al azar, distinto del anterior. |
 | RF-59 | Los puntos de munición están en lugares **poco obvios**: detrás de estructuras, junto a bancas, en esquinas o dentro de kioscos, y no en medio de los caminos principales. Cada caja emite una **luz suave de color con pulso** y un brillo que se distinguen a distancia (alcance configurable), para que el jugador pueda encontrarla si explora. |
@@ -172,24 +173,24 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 | ID | Requisito |
 |---|---|
 | RF-80 | Si la vida del jugador llega a 0, este reaparece junto a `EST_CAFETERIA` después de un retraso configurable. |
-| RF-81 | Al reaparecer recupera toda su vida y se le resta una penalización configurable al puntaje (el mínimo es 0). |
-| RF-82 | Se conserva todo el progreso de la partida: oleada, tiempo, estado de los animales y de los recintos, zombis activos y puntaje. |
+| RF-81 | Al reaparecer recupera toda su vida y se le resta una penalización configurable al saldo de monedas (el mínimo es 0). |
+| RF-82 | Se conserva todo el progreso de la partida: oleada, tiempo, estado de los animales y de los recintos, zombis activos y saldo de monedas. |
 | RF-83 | La muerte del jugador **no** termina la partida. |
 
-### 5.11 Puntuación
+### 5.11 Monedas y recompensas
 
 | ID | Requisito |
 |---|---|
-| RF-90 | Se suman puntos (configurables) por alimentar a la jirafa, alimentar al elefante, eliminar un zombi y **recapturar a un animal escapado**. |
-| RF-91 | Se restan puntos (configurables) por muerte del jugador y por muerte de un animal. El puntaje nunca baja de 0. |
-| RF-92 | Recoger munición no da puntos en principio (valor configurable, por defecto 0). |
-| RF-93 | Se registran estas estadísticas: zombis eliminados, veces que se alimentó a cada animal, recintos destruidos, recapturas, muertes del jugador y tiempo de supervivencia. |
+| RF-90 | Un contador único de **monedas** registra las recompensas de la partida: +5 por eliminar un zombi y +5 por alimentar a cualquier animal. Los valores son configurables. La recaptura conserva su recompensa configurada. |
+| RF-91 | Se restan monedas (configurables) por muerte del jugador y por muerte de un animal. El contador nunca baja de 0. |
+| RF-92 | Recoger munición no da monedas en principio (valor configurable, por defecto 0). |
+| RF-93 | Se registran estas estadísticas: saldo de monedas, zombis eliminados, veces que se alimentó a cada animal, recintos destruidos, recapturas, muertes del jugador y tiempo de supervivencia. |
 
 ### 5.12 HUD y pantallas
 
 | ID | Requisito |
 |---|---|
-| RF-100 | El HUD muestra: vida del jugador, munición (cargador / reserva), puntaje, oleada (1/3, 2/3, 3/3), tiempo de supervivencia e indicador de transporte de alimento. |
+| RF-100 | El HUD muestra: vida del jugador, munición (cargador / reserva), contador de monedas, oleada (1/3, 2/3, 3/3), tiempo de supervivencia e indicador de transporte de alimento. |
 | RF-101 | Por cada animal hay una tarjeta con: **barra de vida**, **barra de alimento** (saciedad), **barra de integridad de su recinto** y estado (**contenido**, **débil**, **escapado**, **cansado**, **siguiéndote** o **muerto**). |
 | RF-108 | La **barra de alimento** está llena justo después de comer y se vacía durante el periodo de gracia (RF-22). Cuando llega a 0, parpadea en rojo y la vida empieza a bajar. Así el jugador ve qué animal necesita comida antes de que pierda vida. |
 | RF-10A | **Contador de zombis** junto a la oleada: zombis **vivos** en el mapa y zombis que **faltan por aparecer** en la oleada actual (ej. `Zombis: 7 · Faltan 11`). Los zombis de una horda de zombificación cuentan como vivos. Durante el descanso solo se muestran los vivos. |
@@ -198,8 +199,8 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 | RF-102 | Hay indicaciones contextuales: "Recoger (E)" junto a una caja y "Alimentar (E)" junto al comedero mientras se carga una caja. El icono cambia según el dispositivo: teclado o gamepad. |
 | RF-103 | Hay avisos visuales al empezar cada oleada, al iniciar el descanso, cuando un recinto está bajo ataque, cuando un recinto se destruye y cuando un animal muere. |
 | RF-104 | Hay marcadores en pantalla, o en una brújula, hacia los animales escapados y hacia los refugios libres. |
-| RF-105 | **Pantalla de victoria:** puntaje total, zombis eliminados, veces que se alimentó a cada animal, recapturas, estado final de cada animal y tiempo de supervivencia. |
-| RF-106 | **Pantalla de derrota:** indica que ambos animales murieron, además del puntaje y las estadísticas. |
+| RF-105 | **Pantalla de victoria:** saldo total de monedas, zombis eliminados, veces que se alimentó a cada animal, recapturas, estado final de cada animal y tiempo de supervivencia. |
+| RF-106 | **Pantalla de derrota:** indica que ambos animales murieron, además del saldo de monedas y las estadísticas. |
 | RF-107 | Ambas pantallas permiten reiniciar la partida o salir. Hay menú de pausa: continuar, reiniciar y salir. Los menús, la configuración y las instrucciones se detallan en la [spec 002](002-menus-and-onboarding.md). |
 
 ### 5.13 Modelos 3D y animaciones
@@ -273,7 +274,7 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 |---|---|---|
 | Vida máxima | 100 | 140 |
 | Daño de armas del jugador | No | Sí |
-| Periodo de gracia tras comer | 30 s | 30 s |
+| Periodo de gracia tras comer | 120 s | 120 s |
 | Pérdida de vida tras la gracia | 0.8 /s | 0.8 /s |
 | Vida recuperada por caja | 50 | 60 |
 | Umbral de debilidad | 30 % | 30 % |
@@ -284,7 +285,7 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 | Gasto de resistencia al correr / recuperación | 15 /s / 10 /s | 18 /s / 8 /s |
 | Resistencia para dejar de estar cansado | 50 % | 50 % |
 | Radio de atracción / radio máximo de seguimiento | 8 m / 15 m | 8 m / 15 m |
-| Puntos por alimentar | 150 | 150 |
+| Monedas por alimentar | 5 | 5 |
 | Horda al morir (zombis extra) | 6 | 8 |
 
 ### Recintos
@@ -299,9 +300,9 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 ### Cajas de alimento
 | Parámetro | Valor |
 |---|---|
-| Puntos de aparición | 6 |
-| Máximo de cajas activas | 3 |
-| Tiempo de reaparición | 20 s |
+| Bodegas de alimento | 2 (Tienda y Veterinaria existentes en el mapa) |
+| Cajas disponibles al inicio / máximo | 5 / 5 |
+| Intervalo global de reposición | 30 s por caja |
 
 ### Oleadas
 | Parámetro | Oleada 1 | Oleada 2 | Oleada 3 |
@@ -325,21 +326,23 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 | Mensajes visibles a la vez | 4 |
 | Tiempo mínimo antes de repetir el mismo mensaje | 2.0 s |
 
-### Puntuación
-| Acción | Puntos |
+### Monedas y recompensas
+| Acción | Monedas |
 |---|---:|
-| Alimentar a la jirafa / al elefante | +150 / +150 |
-| Eliminar un zombi | +25 |
+| Alimentar a cualquier animal | +5 |
+| Eliminar un zombi | +5 |
 | Recapturar un animal | +200 |
 | Recoger munición | 0 |
 | Muerte del jugador | −100 |
 | Muerte de un animal | −300 |
 
+La recaptura, las penalizaciones por muerte y el valor configurable por recoger munición conservan sus valores existentes en esta tabla. Las monedas no se gastan en esta versión.
+
 ## 7. Criterios de aceptación
 
 - **CA-01:** Con una caja en las manos, al pulsar disparar o recargar no pasa nada. Al alimentar, el jugador vuelve a poder disparar.
 - **CA-02:** Si no se alimenta a un animal, su vida empieza a bajar al terminar el periodo de gracia, pasa a **débil** al cruzar el umbral y llega a 0 en el tiempo esperado según la configuración.
-- **CA-03:** Al alimentar a un animal, su vida sube según lo configurado (sin pasar del máximo), su temporizador se reinicia y se suman los puntos correctos.
+- **CA-03:** Al alimentar a un animal, su vida sube según lo configurado (sin pasar del máximo), su temporizador se reinicia y se agregan 5 monedas.
 - **CA-04:** Los destructores dañan el recinto. Al llegar a 0, el recinto queda destruido y el animal escapa corriendo.
 - **CA-05:** El animal escapado se cansa al correr, se vuelve más lento y los zombis pueden alcanzarlo y dañarlo.
 - **CA-06:** Con una caja en las manos, el animal escapado sigue al jugador. Al entrar a un refugio libre queda contenido, su comedero aparece ahí y se puede alimentar.
@@ -352,9 +355,12 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 - **CA-16:** El hacha se puede usar sin límite, golpea hasta 2 zombis por golpe con el daño configurado y no se puede usar mientras se carga una caja.
 - **CA-17:** La jirafa no pierde vida cuando recibe perdigones de la escopeta del jugador.
 - **CA-18:** Con vida incompleta, alimentar cura y reinicia la saciedad; con la vida completa, solo reinicia la saciedad.
-- **CA-19:** La barra amarilla de saciedad baja continuamente durante el periodo configurable; al llegar a cero empieza la pérdida de vida a la tasa configurada.
+- **CA-19:** El temporizador de hambre corre sin indicador de saciedad en la fila próxima; al agotarse empieza la pérdida de vida a la tasa configurada.
 - **CA-20:** Al llegar a cero de vida, el animal emite el evento de muerte, termina su animación y desaparecen tanto el animal como su comedero.
 - **CA-21:** Al recoger o soltar una caja, alimentar a un animal, recoger munición, cambiar de arma, quedarse sin munición, o cuando un animal se debilita o muere, aparece un mensaje breve en el idioma elegido, con el color de su tipo, que desaparece solo.
+- **CA-22:** El HUD muestra el saldo de monedas; sube 5 por cada zombi eliminado y 5 por alimentar a cualquier animal, conserva las recompensas y penalizaciones configuradas para recapturas y muertes, y nunca baja de cero.
+- **CA-23:** Solo hay dos bodegas, alejadas de los recintos y del punto de aparición. Al inicio hay cinco cajas; cuando se agotan se muestra un aviso y reaparece como máximo una cada 30 s.
+- **CA-24:** El indicador cercano muestra únicamente la vida del animal; tras alimentarlo, su vida no baja durante 120 s. El hambre inicia el daño gradual después de ese periodo.
 - **CA-13:** Todos los valores de la sección 6 se pueden cambiar en recursos `.tres` sin tocar el código.
 - **CA-14:** El juego se puede jugar completo tanto con teclado y mouse como con gamepad.
 - **CA-15:** El juego mantiene 60 FPS a 1080p en la máquina de desarrollo (Mac) con el máximo de zombis vivos.
@@ -362,6 +368,7 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 ## 8. Fuera de alcance (por ahora)
 
 - Multijugador.
+- Reparar recintos: queda como mejora futura. La forma de reparar, los recursos o costo, y si se podrá reparar antes o después de que se destruyan se definirán en una spec posterior; no forma parte de esta implementación.
 - Armas distintas de la escopeta y el hacha. El modelo `brazos_ametralladora.glb` queda reservado para una versión futura.
 - Power-ups (por ejemplo, un modo "furia" del hacha).
 - Reparar recintos destruidos.
@@ -383,6 +390,8 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 | D-08 | Muerte de un animal | Se zombifica (horda extra) y la partida sigue. Derrota solo si mueren ambos | ✅ Confirmado |
 | D-09 | Reparar recintos | No. Se usa otro recinto (refugio) | ✅ Confirmado |
 | D-10 | Tipo de comida | Cualquier caja sirve para cualquier animal | ✅ Confirmado |
+| D-16 | Suministro de comida | Dos bodegas en Tienda y Veterinaria, 5 cajas iniciales y reposición serial cada 30 s | ✅ Confirmado (2026-11-20) |
+| D-17 | Tiempo sin hambre tras comer | 120 s configurables por animal; la saciedad no se muestra en el indicador próximo | ✅ Confirmado (2026-11-20) |
 | D-11 | Zombis al terminar una oleada | Siguen activos en la siguiente | ✅ Confirmado |
 | D-12 | Salto | ~~El jugador no puede saltar~~ Reemplazada: el jugador **sí salta** (no cargando una caja). Ver spec 005 | ✅ Confirmado (2026-11-18) |
 | D-16 | Mensajes de acción | Mensajes breves que confirman las acciones del jugador y avisan de eventos de los animales (petición del usuario) | ✅ Confirmado (2026-11-19) |

@@ -1,6 +1,6 @@
 # Spec 003: Minimapa del HUD
 
-**Estado:** Fases A y B1 aprobadas por solicitud del usuario · **Versión:** 0.3 · **Fecha:** 2026-11-18
+**Estado:** Fases A y B1, más puntos de bodegas, aprobados por solicitud del usuario · **Versión:** 0.4 · **Fecha:** 2026-11-20
 **Plan:** [`plans/003-minimap.md`](../plans/003-minimap.md) · **Tareas:** [`tasks/003-minimap.md`](../tasks/003-minimap.md)
 **Depende de:** [`specs/001-zoo-survival.md`](001-zoo-survival.md) y [`specs/002-menus-and-onboarding.md`](002-menus-and-onboarding.md)
 
@@ -52,6 +52,7 @@ Esta spec **amplía** los requisitos RF-46 y RF-104 de la spec 001 (marcadores h
 | RF-15 | **Zombis** | Punto rojo pequeño en cada zombi **dentro de un radio de detección** configurable. Los destructores se distinguen del resto. |
 | RF-16 | **Cafetería** (punto de aparición) | Icono fijo de cafetería. |
 | RF-17 | **Zonas importantes del mapa** | Etiquetas de texto en el mapa grande: recintos, cafetería y refugios. Los nombres son claves de traducción. |
+| RF-18 | **Bodegas de alimento** | Un punto verde por cada bodega existente, en su ubicación real; se muestra cuando entra en el radio visible del minimapa y responde al zoom y la rotación. |
 
 ### 3.3 Objetivo guiado (hacia dónde ir)
 
@@ -94,6 +95,8 @@ Se guardan en un recurso `.tres` (por ejemplo `MinimapConfig`), nunca escritos e
 | Radio visible, zoom cercano / lejano | 40 m / 90 m |
 | Ángulo del cono de visión | 60° |
 | Radio visual de los puntos de animales | 6 px |
+| Radio visual de los puntos de bodega | 6 px |
+| Color de los puntos de bodega | Verde |
 | Radio de detección de zombis en el minimapa | 30 m |
 | Frecuencia de actualización | 20 Hz |
 | Tecla mapa completo / zoom | M / Z |
@@ -105,7 +108,7 @@ Se guardan en un recurso `.tres` (por ejemplo `MinimapConfig`), nunca escritos e
 
 - **CA-01:** El minimapa aparece arriba a la derecha desde que empieza la partida y no tapa el HUD existente a 1280×720 ni a 4K.
 - **CA-02:** Al caminar y girar, el icono del jugador y el cono de visión coinciden con lo que se ve en pantalla, en ambos modos de rotación.
-- **CA-03:** La jirafa, el elefante, los recintos, los refugios libres y las cajas de alimento aparecen en su posición real. Los estados (débil, escapado, muerto, bajo ataque) cambian el icono.
+- **CA-03:** La jirafa, el elefante, los dos puntos verdes de bodega, los recintos, los refugios libres y las cajas de alimento aparecen en su posición real. Los estados (débil, escapado, muerto, bajo ataque) cambian el icono.
 - **CA-04:** Las cajas de munición solo aparecen en el minimapa dentro del alcance de su luz.
 - **CA-05:** El marcador de objetivo cambia de destino al cumplirse cada prioridad de RF-21 y RF-22, y su flecha apunta al borde cuando el destino está fuera de vista.
 - **CA-06:** Con el máximo de zombis vivos, el juego mantiene **60 FPS a 1080p** en la máquina de desarrollo con el minimapa activo (CA-15 de la spec 001).

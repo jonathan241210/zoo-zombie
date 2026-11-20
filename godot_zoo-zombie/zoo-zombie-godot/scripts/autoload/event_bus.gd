@@ -10,6 +10,8 @@ signal player_respawned
 signal player_carry_changed(is_carrying: bool)
 signal food_crate_picked_up
 signal food_crate_dropped
+signal food_supply_depleted
+signal food_supply_restored
 ## The player tried something not allowed right now (e.g. &"weapons_while_carrying").
 signal action_blocked(reason: StringName)
 
@@ -44,5 +46,7 @@ signal wave_break_started(index: int)
 
 # --- Score and game flow ---
 signal score_changed(score: int)
+## Reward amount emitted after a successful animal feeding.
+signal coins_earned(amount: int)
 signal game_won(stats: Dictionary)
 signal game_lost(stats: Dictionary)

@@ -4,5 +4,5 @@
 
 [resource]
 script = ExtResource("1_script")
-max_active = 3
-respawn_delay = 20.0
+max_active = 5
+respawn_delay = 30.0

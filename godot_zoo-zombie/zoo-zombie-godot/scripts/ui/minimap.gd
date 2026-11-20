@@ -28,7 +28,7 @@ func _ready() -> void:
 	_map_camera.current = true
 	_map_camera.rotation.x = -PI * 0.5
 	_map_texture.texture = _map_viewport.get_texture()
-	_overlay.configure(player, config)
+	_overlay.configure(player, config, level.get_food_warehouse_markers())
 	EventBus.animal_registered.connect(_overlay.register_animal)
 	InputGlyphs.device_changed.connect(_on_device_changed)
 	_update_layout()

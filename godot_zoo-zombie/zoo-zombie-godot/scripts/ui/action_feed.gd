@@ -25,6 +25,8 @@ func _ready() -> void:
 	_layout()
 	EventBus.food_crate_picked_up.connect(func() -> void: show_message("MSG_CRATE_PICKED_UP", Kind.POSITIVE))
 	EventBus.food_crate_dropped.connect(func() -> void: show_message("MSG_CRATE_DROPPED", Kind.INFO))
+	EventBus.food_supply_depleted.connect(func() -> void: show_message("MSG_FOOD_SUPPLY_EMPTY", Kind.WARNING, {}, 0.0))
+	EventBus.food_supply_restored.connect(func() -> void: show_message("MSG_FOOD_SUPPLY_RESTORED", Kind.POSITIVE, {}, 0.0))
 	EventBus.ammo_collected.connect(func(amount: int) -> void:
 		show_message("MSG_AMMO_COLLECTED", Kind.POSITIVE, {"amount": amount}))
 	EventBus.ammo_reserve_full.connect(func() -> void: show_message("MSG_AMMO_FULL", Kind.WARNING))

@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_script")
-zombie_kill = 25
+zombie_kill = 5
 recapture = 200
 ammo_pickup = 0
 player_death_penalty = 100

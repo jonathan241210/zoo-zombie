@@ -93,7 +93,7 @@ Convenciones:
 - [x] T-061 Máquina de estados `IDLE`/`CHASE`/`ATTACK`/`HIT`/`DEAD`, con detección por radio y línea de visión — RF-63, RF-64 (detección cada `think_interval`; los zombis de oleada aparecen ya alertados)
 - [x] T-062 Ataque cuerpo a cuerpo, incluso cuando el jugador carga una caja — RF-65
 - [x] T-063 Muerte, probabilidad de soltar munición y desaparición del cuerpo — RF-55, RF-66, RF-68 (el cuerpo deja de bloquear y desaparece tras `corpse_lifetime`; también recibe `apply_knockback()` del hacha)
-- [x] T-064 Muerte y reaparición del jugador en la cafetería con penalización — RF-80 a RF-83 (cámara cae al suelo; la penalización de puntaje llega con `ScoreManager` en T-090)
+- [x] T-064 Muerte y reaparición del jugador en la cafetería con penalización — RF-80 a RF-83 (cámara cae al suelo; `ScoreManager` aplica la penalización configurable en monedas)
 - [ ] T-065 Verificar — CA-08, CA-11 (automático en `tests/integration/test_zombies.gd`; falta la prueba del usuario jugando. Mientras no haya oleadas, `ZombieSpawner.test_zombie_count = 4` en `game.tscn` crea zombis al empezar)
 
 ## Fase 7: Recintos destructibles, escape y recaptura
@@ -119,9 +119,11 @@ Convenciones:
 
 ## Fase 9: HUD, puntuación y pantallas
 
-- [ ] T-090 Crear `ScoreManager` con pruebas — RF-90 a RF-93
-- [ ] T-091 Crear el HUD base: vida, munición, puntaje, oleada, tiempo e indicador de carga — RF-100
+- [x] T-090 Crear `ScoreManager` con saldo de monedas y recompensas configurables — RF-90 a RF-93 (+5 por zombi y +5 por alimentar)
+- [ ] T-090a Agregar y ejecutar pruebas de saldo, recompensas, penalizaciones y mínimo de cero — RF-90 a RF-93
+- [ ] T-091 Crear el HUD base: vida, munición, contador de monedas, oleada, tiempo e indicador de carga — RF-100
 - [x] T-091a Mostrar vida actual/máxima y munición del jugador — RF-100, RF-109 (HUD parcial; T-091 sigue pendiente para los demás elementos)
+- [x] T-091b Mostrar el saldo de monedas en el HUD y actualizarlo por señal — RF-90, RF-100
 - [ ] T-092 Agregar tarjetas de los animales: barras de vida, alimento e integridad del recinto, y estado — RF-101, RF-108
 - [ ] T-097 Agregar icono del arma equipada, munición (`cargador / reserva` o `∞` con el hacha) y alerta de munición baja — RF-109
 - [x] T-098 Agregar contador de zombis vivos y por aparecer; `WaveManager` emite `zombie_count_changed(alive, pending)` por `EventBus` — RF-10A (`scenes/ui/wave_hud.tscn`: oleada N/3, tiempo de la fase, zombis vivos y por aparecer; cuenta regresiva y descanso)
@@ -138,3 +140,11 @@ Convenciones:
 - [ ] T-102 Hacer un perfil de rendimiento con 16 zombis y optimizar (LOD, sombras, draw calls, texturas) — CA-15
 - [ ] T-103 Revisar todos los criterios de aceptación CA-01 a CA-15
 - [ ] T-104 Actualizar la documentación y los ADR con las decisiones finales
+
+## Alcance adicional aprobado: bodegas y reposición de alimento
+
+- [x] T-105 Reubicar los puntos de alimento en dos bodegas (Tienda y Veterinaria), con cinco espacios agrupados y lejos de recintos y aparición — RF-10, RF-13
+- [x] T-106 Configurar cinco cajas iniciales/máximas y una cola global que repone una caja cada 30 s — RF-13, RF-14
+- [x] T-107 Avisar cuando no haya cajas disponibles y cuando vuelva a aparecer una — RF-15
+- [ ] T-108 Verificar en partida accesibilidad de ambas bodegas, agotamiento, avisos y reposición serial — CA-23
+- [ ] T-109 Definir en una spec futura cómo reparar recintos, incluidos costo, materiales y estados reparables; la mecánica no se implementa en esta fase.

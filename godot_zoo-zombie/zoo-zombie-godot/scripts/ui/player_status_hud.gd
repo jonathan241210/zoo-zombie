@@ -5,10 +5,12 @@ extends Control
 
 @export var player: PlayerController
 @export var shotgun: Shotgun
+@export var score_manager: ScoreManager
 
 @onready var _health_label: Label = %HealthLabel
 @onready var _health_bar: ProgressBar = %HealthBar
 @onready var _ammo_label: Label = %AmmoLabel
+@onready var _coins_label: Label = %CoinsLabel
 
 var _weapon: StringName = WeaponManager.SHOTGUN
 
@@ -17,8 +19,10 @@ func _ready() -> void:
 	player.health.health_changed.connect(_on_health_changed)
 	EventBus.ammo_changed.connect(_on_ammo_changed)
 	EventBus.weapon_changed.connect(_on_weapon_changed)
+	EventBus.score_changed.connect(_on_score_changed)
 	_on_health_changed(player.health.current_health, player.health.max_health)
 	_on_ammo_changed(shotgun.ammo.magazine, shotgun.ammo.reserve)
+	_on_score_changed(score_manager.coins)
 
 
 func _on_health_changed(current: float, maximum: float) -> void:
@@ -37,3 +41,7 @@ func _on_ammo_changed(magazine: int, reserve: int) -> void:
 func _on_weapon_changed(weapon_id: StringName) -> void:
 	_weapon = weapon_id
 	_on_ammo_changed(shotgun.ammo.magazine, shotgun.ammo.reserve)
+
+
+func _on_score_changed(coins: int) -> void:
+	_coins_label.text = "%s  %d" % [tr("HUD_COINS"), coins]

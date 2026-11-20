@@ -24,6 +24,11 @@ Convenciones: `[ ]` pendiente · `[x]` hecha · `[P]` paralelizable. Ninguna fas
 - [x] T-M09a Dibujar puntos distintos para jirafa y elefante en su posición relativa, aplicando zoom y color gris al morir — RF-10
 - [ ] T-M09b Revisión manual de posiciones al girar, cambiar zoom y mover los animales — CA-03 parcial
 
+### Alcance adicional aprobado: puntos de las bodegas
+
+- [x] T-M09c Exponer los dos marcadores fijos de bodega del nivel y dibujarlos como puntos verdes con zoom y rotación — RF-18
+- [ ] T-M09d Revisar visualmente que ambos puntos coincidan con las bodegas en los dos niveles de zoom — CA-03
+
 ### Trabajo posterior de Fase B (pendiente de aprobación)
 
 - [ ] T-M08 Exponer a `Minimap` referencias públicas a cajas activas, recintos y animales desde sus directores/registro — plan §2.2

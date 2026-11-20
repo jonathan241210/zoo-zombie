@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3]
+[gd_scene load_steps=29 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/game.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/levels/zoo_level.tscn" id="2_level"]
@@ -25,6 +25,9 @@
 [ext_resource type="Script" path="res://scripts/systems/wave_manager.gd" id="23_waves"]
 [ext_resource type="Resource" path="res://config/waves/wave_set.tres" id="24_wave_set"]
 [ext_resource type="PackedScene" path="res://scenes/ui/wave_hud.tscn" id="25_wave_hud"]
+[ext_resource type="Script" path="res://scripts/systems/score_manager.gd" id="26_score_manager"]
+[ext_resource type="Resource" path="res://config/score_config.tres" id="27_score_config"]
+[ext_resource type="PackedScene" path="res://scenes/ui/tutorial_popup.tscn" id="28_tutorial"]
 
 [node name="Game" type="Node3D"]
 script = ExtResource("1_game")
@@ -48,6 +51,10 @@ script = ExtResource("17_ammo_director")
 config = ExtResource("18_ammo_config")
 pickup_scene = ExtResource("19_ammo_pickup")
 
+[node name="ScoreManager" type="Node" parent="."]
+script = ExtResource("26_score_manager")
+config = ExtResource("27_score_config")
+
 [node name="ZombieSpawner" type="Node" parent="."]
 script = ExtResource("20_zombie_spawner")
 zombie_scene = ExtResource("21_zombie")
@@ -58,9 +65,10 @@ config = ExtResource("24_wave_set")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
-[node name="PlayerStatusHud" parent="HUD" node_paths=PackedStringArray("player", "shotgun") instance=ExtResource("13_status_hud")]
+[node name="PlayerStatusHud" parent="HUD" node_paths=PackedStringArray("player", "shotgun", "score_manager") instance=ExtResource("13_status_hud")]
 player = NodePath("../../Player")
 shotgun = NodePath("../../Player/Shotgun")
+score_manager = NodePath("../../ScoreManager")
 
 [node name="AnimalHealthHud" parent="HUD" node_paths=PackedStringArray("player") instance=ExtResource("16_animal_health_hud")]
 player = NodePath("../../Player")
@@ -80,6 +88,8 @@ carry = NodePath("../../Player/PlayerCarry")
 
 [node name="PauseMenu" parent="HUD" node_paths=PackedStringArray("player") instance=ExtResource("14_pause_menu")]
 player = NodePath("../../Player")
+
+[node name="TutorialPopup" parent="HUD" instance=ExtResource("28_tutorial")]
 
 [node name="PerfProbe" type="Node" parent="." node_paths=PackedStringArray("level", "player")]
 script = ExtResource("4_perf")

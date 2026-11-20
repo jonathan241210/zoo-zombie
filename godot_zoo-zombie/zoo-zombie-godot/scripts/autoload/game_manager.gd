@@ -21,6 +21,7 @@ func _ready() -> void:
 	EventBus.animal_recaptured.connect(_on_animal_recaptured)
 	EventBus.enclosure_destroyed.connect(_on_enclosure_destroyed)
 	EventBus.zombie_killed.connect(_on_zombie_killed)
+	EventBus.score_changed.connect(_on_score_changed)
 	EventBus.player_died.connect(_on_player_died)
 	reset_stats()
 
@@ -40,6 +41,7 @@ func start_match() -> void:
 
 func reset_stats() -> void:
 	stats = {
+		"coins": 0,
 		"zombies_killed": 0,
 		"feedings": {},  # animal_id -> count
 		"enclosures_destroyed": 0,
@@ -96,8 +98,14 @@ func _on_animal_died(animal_id: StringName, _position: Vector3) -> void:
 	_living_animals.erase(animal_id)
 	(stats["animals_lost"] as Array).append(animal_id)
 	if state == GameState.PLAYING and _living_animals.is_empty():
-		_set_state(GameState.LOST)
-		EventBus.game_lost.emit(get_final_stats())
+		call_deferred("_finish_loss")
+
+
+func _finish_loss() -> void:
+	if state != GameState.PLAYING or not _living_animals.is_empty():
+		return
+	_set_state(GameState.LOST)
+	EventBus.game_lost.emit(get_final_stats())
 
 
 func _on_animal_fed(animal_id: StringName) -> void:
@@ -115,6 +123,10 @@ func _on_enclosure_destroyed(_enclosure: Node3D) -> void:
 
 func _on_zombie_killed(_zombie: Node3D) -> void:
 	stats["zombies_killed"] += 1
+
+
+func _on_score_changed(coins: int) -> void:
+	stats["coins"] = coins
 
 
 func _on_player_died() -> void:

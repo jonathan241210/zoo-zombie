@@ -19,3 +19,5 @@ extends Resource
 @export var elephant_marker_color: Color = Color(0.35, 0.78, 0.95, 1.0)
 @export var dead_animal_marker_color: Color = Color(0.48, 0.48, 0.48, 1.0)
 @export var animal_marker_radius: float = 6.0
+@export var warehouse_marker_color: Color = Color(0.18, 0.95, 0.28, 1.0)
+@export var warehouse_marker_radius: float = 6.0

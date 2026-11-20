@@ -17,3 +17,5 @@ player_color = Color(0.95, 0.86, 0.42, 1)
 cone_color = Color(0.95, 0.86, 0.42, 0.18)
 border_color = Color(0.92, 0.82, 0.42, 1)
 north_color = Color(1, 1, 1, 1)
+warehouse_marker_color = Color(0.18, 0.95, 0.28, 1)
+warehouse_marker_radius = 6.0

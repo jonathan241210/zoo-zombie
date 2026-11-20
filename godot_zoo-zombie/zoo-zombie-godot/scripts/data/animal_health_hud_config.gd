@@ -11,6 +11,5 @@ extends Resource
 ## Health fill and status label color while the animal is weak (RF-27).
 @export var weak_fill_color: Color = Color(0.9, 0.2, 0.18, 1.0)
 @export var bar_back_color: Color = Color(0.08, 0.12, 0.08, 0.9)
-@export var satiety_full_border_color: Color = Color(1.0, 0.9, 0.0, 1.0)
-@export var satiety_empty_border_color: Color = Color(0.48, 0.43, 0.19, 1.0)
+@export var bar_border_color: Color = Color(0.03, 0.04, 0.03, 1.0)
 @export var heart_color: Color = Color(1.0, 0.3, 0.34, 1.0)
