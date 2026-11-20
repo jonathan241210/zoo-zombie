@@ -13,7 +13,7 @@ func before_each() -> void:
 	_locale = TranslationServer.get_locale()
 	TranslationServer.set_locale("es")
 	game = GAME.instantiate()
-	(game.get_node("ZombieSpawner") as ZombieSpawner).test_zombie_count = 0
+	(game.get_node("WaveManager") as WaveManager).enabled = false
 	add_child_autofree(game)
 	await wait_physics_frames(6)
 	player = game.get_node("Player")

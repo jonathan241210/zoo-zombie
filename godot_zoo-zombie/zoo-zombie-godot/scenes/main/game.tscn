@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3]
+[gd_scene load_steps=26 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/game.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/levels/zoo_level.tscn" id="2_level"]
@@ -22,6 +22,9 @@
 [ext_resource type="Script" path="res://scripts/enemies/zombie_spawner.gd" id="20_zombie_spawner"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/zombie.tscn" id="21_zombie"]
 [ext_resource type="PackedScene" path="res://scenes/ui/action_feed.tscn" id="22_action_feed"]
+[ext_resource type="Script" path="res://scripts/systems/wave_manager.gd" id="23_waves"]
+[ext_resource type="Resource" path="res://config/waves/wave_set.tres" id="24_wave_set"]
+[ext_resource type="PackedScene" path="res://scenes/ui/wave_hud.tscn" id="25_wave_hud"]
 
 [node name="Game" type="Node3D"]
 script = ExtResource("1_game")
@@ -48,7 +51,10 @@ pickup_scene = ExtResource("19_ammo_pickup")
 [node name="ZombieSpawner" type="Node" parent="."]
 script = ExtResource("20_zombie_spawner")
 zombie_scene = ExtResource("21_zombie")
-test_zombie_count = 4
+
+[node name="WaveManager" type="Node" parent="."]
+script = ExtResource("23_waves")
+config = ExtResource("24_wave_set")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
@@ -62,6 +68,9 @@ player = NodePath("../../Player")
 [node name="Minimap" parent="HUD" node_paths=PackedStringArray("player", "level") instance=ExtResource("15_minimap")]
 player = NodePath("../../Player")
 level = NodePath("../../ZooLevel")
+
+[node name="WaveHud" parent="HUD" node_paths=PackedStringArray("waves") instance=ExtResource("25_wave_hud")]
+waves = NodePath("../../WaveManager")
 
 [node name="ActionFeed" parent="HUD" instance=ExtResource("22_action_feed")]
 

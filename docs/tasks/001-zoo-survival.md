@@ -111,11 +111,11 @@ Convenciones:
 
 ## Fase 8: Oleadas y temporizadores
 
-- [ ] T-080 Crear `WaveSchedule` (lógica pura) con pruebas: oleada → descanso → oleada — RF-70 a RF-73
-- [ ] T-081 Crear `WaveManager` + `ZombieSpawner`: puntos del perímetro, intervalo, máximo de vivos, proporción de destructores y multiplicadores — RF-71, RF-74
-- [ ] T-082 Hacer que los zombis vivos persistan entre oleadas — RF-72
-- [ ] T-083 Al terminar la oleada 3 con al menos un animal vivo → `game_won` — RF-76
-- [ ] T-084 Verificar — CA-09, CA-10
+- [x] T-080 Crear `WaveSchedule` (lógica pura) con pruebas: oleada → descanso → oleada — RF-70 a RF-73 (`scripts/systems/wave_schedule.gd`, `tests/test_wave_schedule.gd`)
+- [x] T-081 Crear `WaveManager` + `ZombieSpawner`: puntos del perímetro, intervalo, máximo de vivos, proporción de destructores y multiplicadores — RF-71, RF-74 (los zombis aparecen en puntos del perímetro a más de `min_spawn_distance` del jugador; se quitaron los zombis de prueba de la Fase 6)
+- [x] T-082 Hacer que los zombis vivos persistan entre oleadas — RF-72
+- [x] T-083 Al terminar la oleada 3 con al menos un animal vivo → `game_won` — RF-76
+- [ ] T-084 Verificar — CA-09, CA-10 (automático en `tests/integration/test_waves.gd` con tiempos acortados; falta la prueba del usuario jugando y la pantalla de victoria de T-095)
 
 ## Fase 9: HUD, puntuación y pantallas
 
@@ -124,7 +124,7 @@ Convenciones:
 - [x] T-091a Mostrar vida actual/máxima y munición del jugador — RF-100, RF-109 (HUD parcial; T-091 sigue pendiente para los demás elementos)
 - [ ] T-092 Agregar tarjetas de los animales: barras de vida, alimento e integridad del recinto, y estado — RF-101, RF-108
 - [ ] T-097 Agregar icono del arma equipada, munición (`cargador / reserva` o `∞` con el hacha) y alerta de munición baja — RF-109
-- [ ] T-098 Agregar contador de zombis vivos y por aparecer; `WaveManager` emite `zombie_count_changed(alive, pending)` por `EventBus` — RF-10A
+- [x] T-098 Agregar contador de zombis vivos y por aparecer; `WaveManager` emite `zombie_count_changed(alive, pending)` por `EventBus` — RF-10A (`scenes/ui/wave_hud.tscn`: oleada N/3, tiempo de la fase, zombis vivos y por aparecer; cuenta regresiva y descanso)
 - [ ] T-093 Agregar indicaciones contextuales con icono según el dispositivo — RF-102
 - [ ] T-094 Agregar avisos (oleada, descanso, recinto atacado o destruido, animal muerto) y marcadores hacia los animales escapados y los refugios — RF-103, RF-104
 - [ ] T-095 Crear las pantallas de victoria y derrota, y el menú de pausa — RF-105 a RF-107

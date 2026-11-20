@@ -13,6 +13,7 @@ var interactor: PlayerInteractor
 
 func before_each() -> void:
 	game = GAME.instantiate()
+	(game.get_node("WaveManager") as WaveManager).enabled = false
 	add_child_autofree(game)
 	await wait_physics_frames(10)
 	player = game.get_node("Player")

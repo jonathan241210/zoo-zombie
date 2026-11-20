@@ -12,7 +12,7 @@ var spawner: ZombieSpawner
 
 func before_each() -> void:
 	game = GAME.instantiate()
-	(game.get_node("ZombieSpawner") as ZombieSpawner).test_zombie_count = 0
+	(game.get_node("WaveManager") as WaveManager).enabled = false
 	add_child_autofree(game)
 	await wait_physics_frames(10)
 	player = game.get_node("Player")
@@ -69,7 +69,7 @@ func test_escaped_animal_flees_and_gets_tired() -> void:
 	# RF-40 to RF-42, CA-05.
 	var elephant := _animal(&"elephant")
 	_destroy_home(elephant)
-	await wait_seconds(2.5)
+	await wait_seconds(Animal.ESCAPE_MAX_SECONDS + 0.5)
 	elephant.stamina = Stamina.new(10.0, 10.0, 1.0, 0.5)
 	var zombie := spawner.spawn_at(elephant.global_position + Vector3(3.0, 0.0, 0.0), true)
 	zombie.config = zombie.config.duplicate()
@@ -102,6 +102,7 @@ func test_zombie_attacks_escaped_animal() -> void:
 func test_breaker_hits_occupied_enclosure_then_hunts_player_when_hurt() -> void:
 	# RF-60, RF-61.
 	var home := _animal(&"elephant").enclosure
+	spawner.spawn_jitter = 0.0
 	var zombie := spawner.spawn_at(home.nearest_attack_point(home.global_position + Vector3(30, 0, 0)), true,
 		Zombie.Role.BREAKER)
 	zombie.config = zombie.config.duplicate()

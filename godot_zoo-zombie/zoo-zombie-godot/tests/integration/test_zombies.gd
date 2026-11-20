@@ -11,7 +11,7 @@ var spawner: ZombieSpawner
 
 func before_each() -> void:
 	game = GAME.instantiate()
-	(game.get_node("ZombieSpawner") as ZombieSpawner).test_zombie_count = 0
+	(game.get_node("WaveManager") as WaveManager).enabled = false
 	add_child_autofree(game)
 	await wait_physics_frames(10)
 	player = game.get_node("Player")
@@ -28,19 +28,6 @@ func _spawn(offset: Vector3, alerted: bool = true) -> Zombie:
 	zombie.config = zombie.config.duplicate()
 	zombie.global_position = player.global_position + offset
 	return zombie
-
-
-func test_test_zombies_spawn_at_the_start() -> void:
-	var other := GAME.instantiate()
-	add_child_autofree(other)
-	await wait_physics_frames(5)
-	var other_spawner: ZombieSpawner = other.get_node("ZombieSpawner")
-	assert_gt(other_spawner.test_zombie_count, 0)
-	var count := 0
-	for node in other.get_children():
-		if node is Zombie:
-			count += 1
-	assert_eq(count, other_spawner.test_zombie_count, "temporary zombies until waves exist")
 
 
 func test_alerted_zombie_chases_the_player() -> void:

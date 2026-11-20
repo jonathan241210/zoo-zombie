@@ -31,6 +31,8 @@ const ANIM_BLEND := 0.3
 const THINK_INTERVAL := 0.25
 ## How far ahead (m) a fleeing animal aims when running away.
 const FLEE_LOOKAHEAD := 10.0
+## Escaping gives up after this long (e.g. sliding along an obstacle) and roams free.
+const ESCAPE_MAX_SECONDS := 3.0
 
 var state: State = State.IDLE
 var enclosure: Enclosure = null
@@ -168,6 +170,7 @@ func escape(from: Enclosure) -> void:
 	_target.y = global_position.y
 	_has_target = true
 	_enter_state(State.ESCAPING)
+	_timer = ESCAPE_MAX_SECONDS
 	EventBus.animal_escaped.emit(config.animal_id)
 
 
@@ -321,8 +324,9 @@ func _process_escaped(delta: float) -> void:
 	if state == State.ESCAPING:
 		var speed := _escape_speed()
 		_play(&"run" if speed > config.walk_speed else &"walk")
+		_timer -= delta
 		# Straight out: the destroyed fence no longer collides.
-		if _move_to_target(delta, speed):
+		if _move_to_target(delta, speed) or _timer <= 0.0:
 			_enter_state(State.LOOSE)
 		return
 	if think:

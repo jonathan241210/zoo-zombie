@@ -150,3 +150,12 @@ MSG_FOLLOWING_ELEPHANT,El elefante te sigue: llévalo a un refugio libre,The ele
 MSG_RECAPTURED,El animal está a salvo en un refugio,The animal is safe in a refuge
 MSG_RECAPTURED_GIRAFFE,La jirafa está a salvo en un refugio,The giraffe is safe in a refuge
 MSG_RECAPTURED_ELEPHANT,El elefante está a salvo en un refugio,The elephant is safe in a refuge
+HUD_WAVE_COUNTDOWN,La oleada {wave} empieza en {time},Wave {wave} starts in {time}
+HUD_WAVE_ACTIVE,Oleada {wave}/{total} · {time} · Zombis: {alive} · Faltan {pending},Wave {wave}/{total} · {time} · Zombies: {alive} · Coming {pending}
+HUD_WAVE_BREAK,Descanso · Oleada {wave} en {time} · Zombis: {alive},Break · Wave {wave} in {time} · Zombies: {alive}
+HUD_WAVE_DONE,¡Sobreviviste a las {total} oleadas!,You survived all {total} waves!
+MSG_WAVE_STARTED,¡Oleada {wave}/{total}! Protege a los animales,Wave {wave}/{total}! Protect the animals
+MSG_WAVE_FINAL,¡Oleada final {wave}/{total}! Resiste,Final wave {wave}/{total}! Hold on
+MSG_WAVE_BREAK,Descanso: prepárate para la oleada {wave},Break: get ready for wave {wave}
+MSG_GAME_WON,¡Victoria! Los animales sobrevivieron,Victory! The animals survived
+MSG_GAME_LOST,Derrota: murieron los dos animales,Defeat: both animals died

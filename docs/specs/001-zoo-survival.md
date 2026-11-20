@@ -314,6 +314,8 @@ Son valores de partida para el balance. Se ajustan probando el juego.
 | Multiplicador de velocidad / vida / daño | 1.0 / 1.0 / 1.0 | 1.15 / 1.1 / 1.1 | 1.3 / 1.2 / 1.25 |
 
 - Descanso entre oleadas: **15 s**.
+- Cuenta regresiva antes de la oleada 1: **5 s**.
+- Distancia mínima entre el jugador y el punto donde aparece un zombi: **20 m** (si ningún punto está tan lejos, se usa el más lejano).
 
 ### Mensajes de acción
 | Parámetro | Valor |

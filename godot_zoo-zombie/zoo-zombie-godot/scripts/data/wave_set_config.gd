@@ -8,3 +8,5 @@ extends Resource
 @export var break_duration: float = 15.0
 ## Countdown before wave 1 starts (spec 002 RF-22).
 @export var initial_countdown: float = 5.0
+## Zombies spawn only at perimeter points at least this far from the player (RF-74).
+@export var min_spawn_distance: float = 20.0

@@ -41,6 +41,11 @@ func _ready() -> void:
 	EventBus.player_died.connect(func() -> void: show_message("MSG_PLAYER_DIED", Kind.DANGER))
 	EventBus.player_respawned.connect(func() -> void: show_message("MSG_PLAYER_RESPAWNED", Kind.INFO))
 	EventBus.enclosure_damaged.connect(_on_enclosure_damaged)
+	EventBus.wave_started.connect(_on_wave_started)
+	EventBus.wave_break_started.connect(func(next_wave: int) -> void:
+		show_message("MSG_WAVE_BREAK", Kind.INFO, {"wave": next_wave}))
+	EventBus.game_won.connect(func(_stats: Dictionary) -> void: show_message("MSG_GAME_WON", Kind.POSITIVE))
+	EventBus.game_lost.connect(func(_stats: Dictionary) -> void: show_message("MSG_GAME_LOST", Kind.DANGER))
 	EventBus.animal_escaped.connect(func(animal_id: StringName) -> void:
 		show_message(_animal_key("MSG_ESCAPED", animal_id), Kind.DANGER))
 	EventBus.animal_state_changed.connect(_on_animal_state_changed)
@@ -92,6 +97,15 @@ func _on_weapon_empty(has_reserve: bool) -> void:
 func _on_action_blocked(reason: StringName) -> void:
 	if reason == &"weapons_while_carrying":
 		show_message("MSG_WEAPONS_BLOCKED", Kind.WARNING, {"key": _action_key(&"interact")})
+
+
+func _on_wave_started(wave: int) -> void:
+	var total := 3
+	var manager := get_tree().get_first_node_in_group(&"wave_manager") as WaveManager
+	if manager != null and manager.schedule != null:
+		total = manager.schedule.wave_count()
+	var key := "MSG_WAVE_FINAL" if wave >= total else "MSG_WAVE_STARTED"
+	show_message(key, Kind.DANGER, {"wave": wave, "total": total})
 
 
 func _on_enclosure_damaged(enclosure: Node3D) -> void:
