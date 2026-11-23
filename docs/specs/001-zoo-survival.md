@@ -1,6 +1,6 @@
 # Spec 001: Supervivencia en el zoológico
 
-**Estado:** Fase 4, monedas, suministro de comida e indicador de vida animal aprobados; implementación en curso · **Versión:** 0.6 · **Fecha:** 2026-11-20
+**Estado:** Fase 4, monedas, suministro de comida e indicador de vida animal aprobados; nuevas propuestas de HUD y puntos de comida documentadas, implementación pendiente · **Versión:** 0.7 · **Fecha:** 2026-11-23
 **Plan:** [`plans/001-zoo-survival.md`](../plans/001-zoo-survival.md) · **Tareas:** [`tasks/001-zoo-survival.md`](../tasks/001-zoo-survival.md)
 
 ---
@@ -77,6 +77,7 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 | RF-13 | Hay cinco cajas disponibles al comenzar, distribuidas entre las dos bodegas. Cada caja recogida queda en una cola global de reposición: tras el tiempo configurable aparece **una sola caja por intervalo**, en un punto libre de cualquiera de las bodegas. Nunca se supera el máximo de cinco cajas en el mapa, soltadas o cargadas por el jugador. |
 | RF-14 | Si el jugador muere mientras carga una caja, la caja **se pierde** y se suma una reposición a la cola global (RF-13). |
 | RF-15 | Cuando no queda ninguna caja disponible en las bodegas, el jugador recibe un aviso. Al reaparecer una caja, recibe un aviso de que hay comida disponible otra vez. |
+| RF-16 | La ubicación futura de las cajas prioriza las zonas que el modelo identifica como quioscos. Si esos espacios son accesibles y mantienen la distancia a recintos y aparición, las cajas se agrupan en pequeños montones en esos puntos. La distribución y el número de cajas por montón se determinan al revisar el mapa; se conservan el máximo y el intervalo globales de RF-13. |
 
 ### 5.3 Animales: hambre y alimentación
 
@@ -191,8 +192,8 @@ La dificultad nace de un dilema constante: **combatir, alimentar o rescatar**.
 | ID | Requisito |
 |---|---|
 | RF-100 | El HUD muestra: vida del jugador, munición (cargador / reserva), contador de monedas, oleada (1/3, 2/3, 3/3), tiempo de supervivencia e indicador de transporte de alimento. |
-| RF-101 | Por cada animal hay una tarjeta con: **barra de vida**, **barra de alimento** (saciedad), **barra de integridad de su recinto** y estado (**contenido**, **débil**, **escapado**, **cansado**, **siguiéndote** o **muerto**). |
-| RF-108 | La **barra de alimento** está llena justo después de comer y se vacía durante el periodo de gracia (RF-22). Cuando llega a 0, parpadea en rojo y la vida empieza a bajar. Así el jugador ve qué animal necesita comida antes de que pierda vida. |
+| RF-101 | Al acercarse a un animal, el HUD muestra una tarjeta compacta con su **barra verde de vida** y, cuando tiene recinto asignado, una **barra amarilla más pequeña de integridad del recinto**, colocada justo arriba de la barra de vida. Cada barra representa solo la vida o integridad correspondiente. La tarjeta también muestra el estado (**contenido**, **débil**, **escapado**, **cansado**, **siguiéndote** o **muerto**). |
+| RF-108 | El HUD no muestra una barra de saciedad. Después de comer, el periodo de gracia configurable transcurre sin que baje la vida; al terminar, la vida empieza a bajar gradualmente. |
 | RF-10A | **Contador de zombis** junto a la oleada: zombis **vivos** en el mapa y zombis que **faltan por aparecer** en la oleada actual (ej. `Zombis: 7 · Faltan 11`). Los zombis de una horda de zombificación cuentan como vivos. Durante el descanso solo se muestran los vivos. |
 | RF-10B | **Mensajes de acción:** mensajes breves en pantalla que confirman lo que hace el jugador y avisan de lo importante: caja de comida recogida o soltada, animal alimentado, munición recogida (`+4 cartuchos`), munición llena, cargador vacío (con la tecla de recarga), sin munición, arma equipada, armas bloqueadas mientras se carga comida, animal débil, animal muerto, muerte y reaparición del jugador. Tienen un color según su tipo (positivo, informativo, advertencia y peligro), se apilan (máximo configurable), desaparecen solos y un mismo mensaje no se repite antes de un tiempo configurable. Los textos están en español e inglés. |
 | RF-109 | El HUD muestra el icono del arma equipada. Con la escopeta, la munición aparece como `cargador / reserva`; con el hacha, como `∞`. Cuando el cargador está vacío o la reserva está baja (umbral configurable), cambia de color. |
@@ -361,6 +362,8 @@ La recaptura, las penalizaciones por muerte y el valor configurable por recoger 
 - **CA-22:** El HUD muestra el saldo de monedas; sube 5 por cada zombi eliminado y 5 por alimentar a cualquier animal, conserva las recompensas y penalizaciones configuradas para recapturas y muertes, y nunca baja de cero.
 - **CA-23:** Solo hay dos bodegas, alejadas de los recintos y del punto de aparición. Al inicio hay cinco cajas; cuando se agotan se muestra un aviso y reaparece como máximo una cada 30 s.
 - **CA-24:** El indicador cercano muestra únicamente la vida del animal; tras alimentarlo, su vida no baja durante 120 s. El hambre inicia el daño gradual después de ese periodo.
+- **CA-25:** Al acercarse a un animal contenido, se muestran su barra verde de vida y, justo arriba, una barra amarilla más pequeña de integridad del recinto. El daño al recinto solo actualiza la barra amarilla; el daño al animal solo actualiza la verde. La tarjeta no muestra una barra de saciedad.
+- **CA-26:** Antes de implementar nuevos puntos de comida, se revisan las zonas tipo quiosco del modelo. Los puntos accesibles que respeten la distancia a recintos y aparición pueden usarse para agrupar cajas en pequeños montones, conservando el máximo y el intervalo de reposición globales; se documentan las ubicaciones y cantidades concretas tras revisar el mapa.
 - **CA-13:** Todos los valores de la sección 6 se pueden cambiar en recursos `.tres` sin tocar el código.
 - **CA-14:** El juego se puede jugar completo tanto con teclado y mouse como con gamepad.
 - **CA-15:** El juego mantiene 60 FPS a 1080p en la máquina de desarrollo (Mac) con el máximo de zombis vivos.
@@ -403,4 +406,5 @@ La recaptura, las penalizaciones por muerte y el valor configurable por recoger 
 | D-15 | Munición en el mapa | Puntos aleatorios poco obvios, señalados con una luz | ✅ Confirmado |
 | S-01 | Refugios disponibles | `REC_RECINTO_NORTE_CENTRAL`, `REC_JAULA_NORTE_2` y `REC_HEX_SUR_5` (configurable). Todos son recintos abiertos | ✅ Confirmado (2026-11-17) |
 | S-02 | Roles de los zombis | Cazador / destructor, con proporción configurable por oleada | Supuesto |
+| S-04 | Puntos de comida en quioscos | Usar zonas identificadas como quioscos si el modelo y las distancias permiten colocar cajas de forma accesible; determinar el número por montón al revisar el mapa | ⏳ Pendiente de revisión del mapa |
 | S-03 | La atracción con comida es automática | El animal sigue al jugador si este carga una caja dentro del radio de atracción. No requiere pulsar ningún botón | Supuesto |

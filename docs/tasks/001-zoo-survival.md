@@ -124,7 +124,7 @@ Convenciones:
 - [ ] T-091 Crear el HUD base: vida, munición, contador de monedas, oleada, tiempo e indicador de carga — RF-100
 - [x] T-091a Mostrar vida actual/máxima y munición del jugador — RF-100, RF-109 (HUD parcial; T-091 sigue pendiente para los demás elementos)
 - [x] T-091b Mostrar el saldo de monedas en el HUD y actualizarlo por señal — RF-90, RF-100
-- [ ] T-092 Agregar tarjetas de los animales: barras de vida, alimento e integridad del recinto, y estado — RF-101, RF-108
+- [ ] T-092 Agregar tarjetas de los animales cercanos: barra amarilla pequeña de integridad del recinto arriba de la barra verde de vida animal, más el estado; omitir la barra de saciedad — RF-101, RF-108, CA-25
 - [ ] T-097 Agregar icono del arma equipada, munición (`cargador / reserva` o `∞` con el hacha) y alerta de munición baja — RF-109
 - [x] T-098 Agregar contador de zombis vivos y por aparecer; `WaveManager` emite `zombie_count_changed(alive, pending)` por `EventBus` — RF-10A (`scenes/ui/wave_hud.tscn`: oleada N/3, tiempo de la fase, zombis vivos y por aparecer; cuenta regresiva y descanso)
 - [ ] T-093 Agregar indicaciones contextuales con icono según el dispositivo — RF-102
@@ -148,3 +148,5 @@ Convenciones:
 - [x] T-107 Avisar cuando no haya cajas disponibles y cuando vuelva a aparecer una — RF-15
 - [ ] T-108 Verificar en partida accesibilidad de ambas bodegas, agotamiento, avisos y reposición serial — CA-23
 - [ ] T-109 Definir en una spec futura cómo reparar recintos, incluidos costo, materiales y estados reparables; la mecánica no se implementa en esta fase.
+- [ ] T-111 Revisar el modelo para identificar zonas tipo quiosco accesibles y seguras, y registrar sus marcadores candidatos respetando las distancias a recintos y aparición — RF-16, CA-26.
+- [ ] T-112 Agrupar las cajas de comida en pequeños montones en los puntos de quiosco validados; definir la cantidad por montón y conservar el máximo/intervalo global — RF-13, RF-16, CA-26.
