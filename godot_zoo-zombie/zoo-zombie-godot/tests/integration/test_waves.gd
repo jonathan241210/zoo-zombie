@@ -33,7 +33,11 @@ func before_each() -> void:
 	game = GAME.instantiate()
 	waves = game.get_node("WaveManager")
 	waves.config = _fast_waves()
+	# The end screen would pause the tree and stop the test waits.
+	(game.get_node("HUD/EndScreen") as EndScreen).pause_game = false
 	add_child_autofree(game)
+	# The start tutorial pauses the tree; dismiss it so the match runs.
+	(game.get_node("HUD/TutorialPopup") as TutorialPopup)._continue_game()
 	await wait_physics_frames(3)
 	(game.get_node("Player") as PlayerController).input_enabled = false
 
@@ -103,6 +107,7 @@ func test_no_victory_if_both_animals_died() -> void:
 	for node in game.get_node("ZooLevel").get_children():
 		if node is Animal:
 			(node as Animal).health.take_damage(1000.0)
+	await wait_physics_frames(2)
 	assert_eq(GameManager.state, GameManager.GameState.LOST)
 	watch_signals(EventBus)
 	await wait_seconds(5.0)

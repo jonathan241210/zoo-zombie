@@ -13,7 +13,11 @@ var spawner: ZombieSpawner
 func before_each() -> void:
 	game = GAME.instantiate()
 	(game.get_node("WaveManager") as WaveManager).enabled = false
+	# The end screen would pause the tree and stop the test waits.
+	(game.get_node("HUD/EndScreen") as EndScreen).pause_game = false
 	add_child_autofree(game)
+	# The start tutorial pauses the tree; dismiss it so the match runs.
+	(game.get_node("HUD/TutorialPopup") as TutorialPopup)._continue_game()
 	await wait_physics_frames(10)
 	player = game.get_node("Player")
 	player.input_enabled = false
@@ -166,5 +170,7 @@ func test_defeat_when_both_animals_die() -> void:
 	for animal_id: StringName in [&"giraffe", &"elephant"]:
 		var animal := _animal(animal_id)
 		animal.health.take_damage(animal.health.max_health)
+	# Defeat is declared deferred, once both deaths are processed.
+	await wait_physics_frames(2)
 	assert_signal_emitted(EventBus, "game_lost")
 	assert_eq(GameManager.state, GameManager.GameState.LOST)

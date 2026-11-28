@@ -15,6 +15,8 @@ func before_each() -> void:
 	game = GAME.instantiate()
 	(game.get_node("WaveManager") as WaveManager).enabled = false
 	add_child_autofree(game)
+	# The start tutorial pauses the tree; dismiss it so the match runs.
+	(game.get_node("HUD/TutorialPopup") as TutorialPopup)._continue_game()
 	await wait_physics_frames(10)
 	player = game.get_node("Player")
 	carry = player.get_node("PlayerCarry")
@@ -113,7 +115,8 @@ func test_e_key_drops_and_crate_can_be_picked_up_again() -> void:
 	assert_signal_emitted(carry, "crate_dropped")
 	var dropped: FoodCrate = get_signal_parameters(carry, "crate_dropped")[0]
 	assert_true(dropped.is_inside_tree())
-	assert_eq(director.active_count(), active_before + 1, "dropped crate counts as active")
+	# The carried crate already counts as active, so dropping it keeps the total.
+	assert_eq(director.active_count(), active_before, "dropped crate stays counted as active")
 	await _stand_facing(dropped.global_position + Vector3(0, 0.1, 1.2), dropped.global_position)
 	assert_eq(interactor.focused.prompt_key if interactor.focused else "", "PROMPT_PICK_UP")
 	await _press_interact()

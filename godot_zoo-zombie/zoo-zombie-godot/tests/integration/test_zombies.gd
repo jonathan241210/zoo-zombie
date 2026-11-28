@@ -13,6 +13,8 @@ func before_each() -> void:
 	game = GAME.instantiate()
 	(game.get_node("WaveManager") as WaveManager).enabled = false
 	add_child_autofree(game)
+	# The start tutorial pauses the tree; dismiss it so the match runs.
+	(game.get_node("HUD/TutorialPopup") as TutorialPopup)._continue_game()
 	await wait_physics_frames(10)
 	player = game.get_node("Player")
 	spawner = game.get_node("ZombieSpawner")
