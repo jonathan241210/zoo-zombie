@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="PlayerStatusHudConfig" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/player_status_hud_config.gd" id="1_config"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/weapon_shotgun.svg" id="2_shotgun"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/weapon_axe.svg" id="3_axe"]
+
+[resource]
+script = ExtResource("1_config")
+low_reserve_threshold = 6
+ammo_color = Color(1, 1, 1, 1)
+ammo_warning_color = Color(1, 0.72, 0.2, 1)
+ammo_empty_color = Color(0.95, 0.25, 0.2, 1)
+shotgun_icon = ExtResource("2_shotgun")
+axe_icon = ExtResource("3_axe")

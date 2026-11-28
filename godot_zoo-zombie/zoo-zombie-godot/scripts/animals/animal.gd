@@ -151,6 +151,22 @@ func is_escaped() -> bool:
 	return _escaped and state != State.DEAD
 
 
+## Translation key of the status shown on the HUD card and end screen (RF-101, RF-105).
+func get_status_key() -> String:
+	match state:
+		State.DEAD:
+			return "ANIMAL_STATUS_DEAD"
+		State.TIRED:
+			return "ANIMAL_STATUS_TIRED"
+		State.FOLLOWING:
+			return "ANIMAL_STATUS_FOLLOWING"
+	if _escaped:
+		return "ANIMAL_STATUS_ESCAPED"
+	if is_weak:
+		return "ANIMAL_STATUS_WEAK"
+	return "ANIMAL_STATUS_CONTAINED"
+
+
 ## RF-33: the enclosure was destroyed. The feeder is unusable until a new enclosure is
 ## assigned, and the animal runs out through the broken fence.
 func escape(from: Enclosure) -> void:

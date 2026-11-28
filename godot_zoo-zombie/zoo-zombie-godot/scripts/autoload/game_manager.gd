@@ -87,6 +87,17 @@ func restart_match() -> void:
 	get_tree().reload_current_scene()
 
 
+## Leaves the match (pause menu or end screen, RF-107) and opens `menu_path`.
+func return_to_menu(menu_path: String) -> void:
+	get_tree().paused = false
+	_set_state(GameState.MENU)
+	get_tree().change_scene_to_file(menu_path)
+
+
+func is_match_over() -> bool:
+	return state == GameState.WON or state == GameState.LOST
+
+
 func _set_state(new_state: GameState) -> void:
 	if state == new_state:
 		return

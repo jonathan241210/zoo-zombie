@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3]
+[gd_scene load_steps=32 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/game.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/levels/zoo_level.tscn" id="2_level"]
@@ -28,6 +28,9 @@
 [ext_resource type="Script" path="res://scripts/systems/score_manager.gd" id="26_score_manager"]
 [ext_resource type="Resource" path="res://config/score_config.tres" id="27_score_config"]
 [ext_resource type="PackedScene" path="res://scenes/ui/tutorial_popup.tscn" id="28_tutorial"]
+[ext_resource type="Script" path="res://scripts/ui/objective_markers.gd" id="29_markers"]
+[ext_resource type="Resource" path="res://config/objective_marker_config.tres" id="30_marker_config"]
+[ext_resource type="PackedScene" path="res://scenes/ui/end_screen.tscn" id="31_end_screen"]
 
 [node name="Game" type="Node3D"]
 script = ExtResource("1_game")
@@ -80,6 +83,19 @@ level = NodePath("../../ZooLevel")
 [node name="WaveHud" parent="HUD" node_paths=PackedStringArray("waves") instance=ExtResource("25_wave_hud")]
 waves = NodePath("../../WaveManager")
 
+[node name="ObjectiveMarkers" type="Control" parent="HUD" node_paths=PackedStringArray("player", "enclosures")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("29_markers")
+player = NodePath("../../Player")
+enclosures = NodePath("../../EnclosureRegistry")
+config = ExtResource("30_marker_config")
+
 [node name="ActionFeed" parent="HUD" instance=ExtResource("22_action_feed")]
 
 [node name="InteractionPrompt" parent="HUD" node_paths=PackedStringArray("interactor", "carry") instance=ExtResource("12_prompt")]
@@ -87,6 +103,9 @@ interactor = NodePath("../../Player/PlayerInteractor")
 carry = NodePath("../../Player/PlayerCarry")
 
 [node name="PauseMenu" parent="HUD" node_paths=PackedStringArray("player") instance=ExtResource("14_pause_menu")]
+player = NodePath("../../Player")
+
+[node name="EndScreen" parent="HUD" node_paths=PackedStringArray("player") instance=ExtResource("31_end_screen")]
 player = NodePath("../../Player")
 
 [node name="TutorialPopup" parent="HUD" instance=ExtResource("28_tutorial")]

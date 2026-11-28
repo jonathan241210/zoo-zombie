@@ -1,6 +1,7 @@
 class_name AnimalHealthHud
 extends Control
-## Shows one compact health row per living animal near the player.
+## Shows one compact card per living animal near the player (RF-101): enclosure
+## integrity, health and status.
 
 @export var player: PlayerController
 @export var config: AnimalHealthHudConfig
@@ -32,6 +33,8 @@ func _process(delta: float) -> void:
 		var in_range := animal.global_position.distance_to(player.global_position) <= config.visible_distance
 		var should_show := in_range and not animal.health.is_dead
 		indicator.visible = should_show
+		if should_show:
+			indicator.refresh()
 
 
 func _register_animal(node: Node3D) -> void:

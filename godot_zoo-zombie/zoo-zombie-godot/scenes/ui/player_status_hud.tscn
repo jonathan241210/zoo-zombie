@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/player_status_hud.gd" id="1_hud"]
+[ext_resource type="Resource" path="res://config/player_status_hud_config.tres" id="2_config"]
 
 [node name="PlayerStatusHud" type="Control" node_paths=PackedStringArray("player", "shotgun")]
 layout_mode = 3
@@ -11,6 +12,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_hud")
+config = ExtResource("2_config")
 
 [node name="HealthPanel" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -24,6 +26,7 @@ offset_top = -104.0
 offset_right = 340.0
 offset_bottom = -28.0
 grow_vertical = 0
+mouse_filter = 2
 theme_override_constants/separation = 4
 
 [node name="HealthLabel" type="Label" parent="HealthPanel"]
@@ -39,39 +42,85 @@ text = "Vida  100 / 100"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(280, 22)
 layout_mode = 2
+mouse_filter = 2
 show_percentage = false
 
-[node name="AmmoLabel" type="Label" parent="."]
-unique_name_in_owner = true
+[node name="WeaponPanel" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -310.0
-offset_top = -72.0
+offset_left = -360.0
+offset_top = -120.0
 offset_right = -28.0
 offset_bottom = -28.0
 grow_horizontal = 0
 grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/separation = 6
+alignment = 2
+
+[node name="CarryLabel" type="Label" parent="WeaponPanel"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.9, 0.45, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 22
+text = "Cargando comida"
+horizontal_alignment = 2
+
+[node name="AmmoRow" type="HBoxContainer" parent="WeaponPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+alignment = 2
+
+[node name="WeaponIcon" type="TextureRect" parent="WeaponPanel/AmmoRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 36)
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="AmmoLabel" type="Label" parent="WeaponPanel/AmmoRow"]
+unique_name_in_owner = true
+layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 26
-horizontal_alignment = 2
 text = "Munición  6 / 24"
+horizontal_alignment = 2
 
-[node name="CoinsLabel" type="Label" parent="."]
-unique_name_in_owner = true
+[node name="TopLeft" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 0
 offset_left = 28.0
 offset_top = 28.0
-offset_right = 260.0
-offset_bottom = 68.0
+offset_right = 300.0
+offset_bottom = 110.0
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="CoinsLabel" type="Label" parent="TopLeft"]
+unique_name_in_owner = true
+layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.83, 0.25, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 26
 text = "Monedas  0"
+
+[node name="TimeLabel" type="Label" parent="TopLeft"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 20
+text = "Tiempo  0:00"

@@ -408,3 +408,6 @@ La recaptura, las penalizaciones por muerte y el valor configurable por recoger 
 | S-02 | Roles de los zombis | Cazador / destructor, con proporción configurable por oleada | Supuesto |
 | S-04 | Puntos de comida en quioscos | Usar zonas identificadas como quioscos si el modelo y las distancias permiten colocar cajas de forma accesible; determinar el número por montón al revisar el mapa | ⏳ Pendiente de revisión del mapa |
 | S-03 | La atracción con comida es automática | El animal sigue al jugador si este carga una caja dentro del radio de atracción. No requiere pulsar ningún botón | Supuesto |
+| S-05 | Marcadores de refugios | Los marcadores hacia los refugios libres solo aparecen mientras hay un animal escapado (`refuges_only_while_escaped`, configurable), para no llenar la pantalla cuando no hacen falta | ⏳ Supuesto (validar jugando) |
+| S-06 | Textos de estado del animal | Se usan formas sin género para concordar con jirafa y elefante: "En su recinto", "Débil", "Escapó", "Sin fuerzas", "Te sigue" y "Murió" | ⏳ Supuesto (validar) |
+| S-07 | Salir desde la pausa y el final | "Salir" vuelve al menú principal; no hay diálogo de confirmación hasta que exista el de la spec 002 (T-B03) | ⏳ Supuesto (validar) |

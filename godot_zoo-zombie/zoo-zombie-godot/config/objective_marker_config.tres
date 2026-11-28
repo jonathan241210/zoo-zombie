@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ObjectiveMarkerConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/objective_marker_config.gd" id="1_config"]
+
+[resource]
+script = ExtResource("1_config")
+animal_color = Color(1, 0.45, 0.2, 1)
+refuge_color = Color(0.35, 0.85, 1, 1)
+height_offset = 2.5
+edge_margin = 48.0
+marker_size = 14.0
+font_size = 16
+refuges_only_while_escaped = true

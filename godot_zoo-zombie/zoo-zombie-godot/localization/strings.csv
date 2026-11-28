@@ -81,6 +81,11 @@ PROMPT_DROP,Soltar,Drop
 ANIMAL_GIRAFFE,Jirafa,Giraffe
 ANIMAL_ELEPHANT,Elefante,Elephant
 ANIMAL_STATUS_WEAK,Débil,Weak
+ANIMAL_STATUS_CONTAINED,En su recinto,Contained
+ANIMAL_STATUS_ESCAPED,Escapó,Escaped
+ANIMAL_STATUS_TIRED,Sin fuerzas,Tired
+ANIMAL_STATUS_FOLLOWING,Te sigue,Following you
+ANIMAL_STATUS_DEAD,Murió,Dead
 WAVE_LABEL,Oleada,Wave
 HUD_SCORE,Puntaje,Score
 HUD_COINS,Monedas,Coins
@@ -88,6 +93,19 @@ HUD_TIME,Tiempo,Time
 HUD_AMMO,Munición,Ammo
 HUD_HEALTH,Vida,Health
 HUD_FOOD,Alimento,Food
+HUD_CARRYING_FOOD,Cargando comida,Carrying food
+HUD_REFUGE,Refugio,Refuge
+END_VICTORY_TITLE,¡Victoria!,Victory!
+END_VICTORY_SUBTITLE,Resististe las tres oleadas y los animales sobrevivieron,You held out for all three waves and the animals survived
+END_DEFEAT_TITLE,Derrota,Defeat
+END_DEFEAT_SUBTITLE,Murieron los dos animales,Both animals died
+END_ZOMBIES_KILLED,Zombis eliminados,Zombies killed
+END_FEEDINGS,Comidas,Feedings
+END_RECAPTURES,Recapturas,Recaptures
+END_ENCLOSURES_DESTROYED,Recintos destruidos,Enclosures destroyed
+END_PLAYER_DEATHS,Veces que caíste,Times you fell
+END_FINAL_STATE,Estado final,Final state
+END_SURVIVAL_TIME,Tiempo de supervivencia,Survival time
 ACTION_MOVE,Moverse,Move
 ACTION_LOOK,Mirar,Look
 ACTION_SPRINT,Correr,Sprint

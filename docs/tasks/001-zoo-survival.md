@@ -120,16 +120,16 @@ Convenciones:
 ## Fase 9: HUD, puntuación y pantallas
 
 - [x] T-090 Crear `ScoreManager` con saldo de monedas y recompensas configurables — RF-90 a RF-93 (+5 por zombi y +5 por alimentar)
-- [ ] T-090a Agregar y ejecutar pruebas de saldo, recompensas, penalizaciones y mínimo de cero — RF-90 a RF-93
-- [ ] T-091 Crear el HUD base: vida, munición, contador de monedas, oleada, tiempo e indicador de carga — RF-100
+- [x] T-090a Agregar y ejecutar pruebas de saldo, recompensas, penalizaciones y mínimo de cero — RF-90 a RF-93 (`tests/test_score_manager.gd`)
+- [x] T-091 Crear el HUD base: vida, munición, contador de monedas, oleada, tiempo e indicador de carga — RF-100 (`PlayerStatusHud`: tiempo de supervivencia bajo las monedas e indicador "Cargando comida" sobre la munición; la oleada sigue en `WaveHud`)
 - [x] T-091a Mostrar vida actual/máxima y munición del jugador — RF-100, RF-109 (HUD parcial; T-091 sigue pendiente para los demás elementos)
 - [x] T-091b Mostrar el saldo de monedas en el HUD y actualizarlo por señal — RF-90, RF-100
-- [ ] T-092 Agregar tarjetas de los animales cercanos: barra amarilla pequeña de integridad del recinto arriba de la barra verde de vida animal, más el estado; omitir la barra de saciedad — RF-101, RF-108, CA-25
-- [ ] T-097 Agregar icono del arma equipada, munición (`cargador / reserva` o `∞` con el hacha) y alerta de munición baja — RF-109
+- [x] T-092 Agregar tarjetas de los animales cercanos: barra amarilla pequeña de integridad del recinto arriba de la barra verde de vida animal, más el estado; omitir la barra de saciedad — RF-101, RF-108, CA-25 (`AnimalHealthIndicator`, `Animal.get_status_key()`)
+- [x] T-097 Agregar icono del arma equipada, munición (`cargador / reserva` o `∞` con el hacha) y alerta de munición baja — RF-109 (`config/player_status_hud_config.tres`, iconos SVG propios en `assets/ui/icons/`)
 - [x] T-098 Agregar contador de zombis vivos y por aparecer; `WaveManager` emite `zombie_count_changed(alive, pending)` por `EventBus` — RF-10A (`scenes/ui/wave_hud.tscn`: oleada N/3, tiempo de la fase, zombis vivos y por aparecer; cuenta regresiva y descanso)
-- [ ] T-093 Agregar indicaciones contextuales con icono según el dispositivo — RF-102
-- [ ] T-094 Agregar avisos (oleada, descanso, recinto atacado o destruido, animal muerto) y marcadores hacia los animales escapados y los refugios — RF-103, RF-104
-- [ ] T-095 Crear las pantallas de victoria y derrota, y el menú de pausa — RF-105 a RF-107
+- [x] T-093 Agregar indicaciones contextuales con icono según el dispositivo — RF-102 (ya cubierto por `InteractionPrompt` + `InputGlyphs`)
+- [x] T-094 Agregar avisos (oleada, descanso, recinto atacado o destruido, animal muerto) y marcadores hacia los animales escapados y los refugios — RF-103, RF-104 (los avisos los da `ActionFeed`; marcadores en `ObjectiveMarkers` con `config/objective_marker_config.tres`)
+- [x] T-095 Crear las pantallas de victoria y derrota, y el menú de pausa — RF-105 a RF-107 (`scenes/ui/end_screen.tscn`; la pausa suma Reiniciar y Salir al menú; `tests/integration/test_hud_and_end_screens.gd`)
 - [x] T-099 Mensajes de acción: `ActionFeed`, `ActionFeedConfig`, señales nuevas en `EventBus` y textos en el CSV, con pruebas — RF-10B, CA-21 (se adelanta a pedido del usuario) (`scenes/ui/action_feed.tscn`, `config/action_feed_config.tres`, `tests/integration/test_action_feed.gd`)
 - [ ] T-096 Verificar — CA-10
 
